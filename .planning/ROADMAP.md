@@ -128,7 +128,7 @@ Plans:
   3. Đơn hàng được lưu vào Database với mã định danh duy nhất (`#DH-xxxxxx`).
   4. Màn hình xác nhận hiển thị nút "Chốt đơn qua Zalo" và "Chat Facebook" mở ứng dụng chat với tin nhắn soạn sẵn nội dung đơn hàng.
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 
