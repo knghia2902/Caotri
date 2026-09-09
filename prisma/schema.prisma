@@ -55,6 +55,7 @@ model Order {
   customerPhone   String
   customerAddress String
   customerNotes   String?
+  adminNotes      String?
   totalAmount     Float
   status          String      @default("PENDING") // "PENDING" | "CONTACTED" | "SHIPPING" | "COMPLETED" | "CANCELLED"
   items           OrderItem[]
