@@ -43,16 +43,16 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
       {/* Block 1: Kênh liên hệ & Chốt đơn */}
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-5">
-        <div className="flex items-center gap-3 pb-3 border-b border-zinc-800">
-          <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
+          <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-[#111]/30 flex items-center justify-center text-[#111]">
             <Phone className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-zinc-100">
+            <h2 className="text-base font-bold text-[#111]">
               Kênh liên hệ & Đặt hàng nhanh
             </h2>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[#74746E]">
               Các thông tin này sẽ hiển thị trên nút chốt đơn giỏ hàng, footer và thanh header của khách hàng
             </p>
           </div>
@@ -61,9 +61,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Hotline */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-cyan-400" />
-              Hotline tư vấn & Bán hàng <span className="text-rose-400">*</span>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5 flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-[#111]" />
+              Hotline tư vấn & Bán hàng <span className="text-[#D94A4A]">*</span>
             </label>
             <Input
               value={formData.hotline}
@@ -72,16 +72,16 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               disabled={isPending}
               required
             />
-            <p className="text-[11px] text-zinc-500 mt-1">
+            <p className="text-[11px] text-[#74746E] mt-1">
               Số điện thoại khách hàng bấm gọi trực tiếp khi chọn phương thức Gọi Hotline
             </p>
           </div>
 
           {/* Zalo OA */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5 flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5 text-blue-400" />
-              Đường dẫn Zalo (OA hoặc Cá nhân) <span className="text-rose-400">*</span>
+              Đường dẫn Zalo (OA hoặc Cá nhân) <span className="text-[#D94A4A]">*</span>
             </label>
             <Input
               value={formData.zalo}
@@ -90,14 +90,14 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               disabled={isPending}
               required
             />
-            <p className="text-[11px] text-zinc-500 mt-1">
+            <p className="text-[11px] text-[#74746E] mt-1">
               Khách hàng bấm vào sẽ mở chat Zalo để gửi danh sách đơn hàng
             </p>
           </div>
 
           {/* Facebook */}
           <div className="md:col-span-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5 flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 text-blue-400 fill-current" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
@@ -109,7 +109,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               placeholder="VD: https://facebook.com/caotrigear hoặc https://m.me/caotrigear"
               disabled={isPending}
             />
-            <p className="text-[11px] text-zinc-500 mt-1">
+            <p className="text-[11px] text-[#74746E] mt-1">
               Liên kết mở Fanpage hoặc khung chat Messenger của shop
             </p>
           </div>
@@ -117,16 +117,16 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </div>
 
       {/* Block 2: Thông tin cửa hàng */}
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-5">
-        <div className="flex items-center gap-3 pb-3 border-b border-zinc-800">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
+          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-[#21A366]">
             <Store className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-zinc-100">
+            <h2 className="text-base font-bold text-[#111]">
               Thông tin cửa hàng & Showroom
             </h2>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[#74746E]">
               Thông tin nhận diện thương hiệu và địa chỉ bảo hành hiển thị tại chân trang
             </p>
           </div>
@@ -135,8 +135,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Shop name */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
-              <Store className="w-3.5 h-3.5 text-zinc-400" />
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5 flex items-center gap-1.5">
+              <Store className="w-3.5 h-3.5 text-[#74746E]" />
               Tên cửa hàng / Thương hiệu
             </label>
             <Input
@@ -149,8 +149,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
           {/* Email */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-zinc-400" />
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5 flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-[#74746E]" />
               Email liên hệ & Hỗ trợ kỹ thuật
             </label>
             <Input
@@ -164,8 +164,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
           {/* Address */}
           <div className="md:col-span-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-zinc-400" />
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[#74746E]" />
               Địa chỉ showroom / Điểm bảo hành
             </label>
             <Input
@@ -179,8 +179,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </div>
 
       {/* Security alert for ADMIN only */}
-      <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-800/40 flex items-center gap-3 text-xs text-cyan-300">
-        <ShieldCheck className="w-5 h-5 flex-shrink-0 text-cyan-400" />
+      <div className="p-4 rounded-xl bg-cyan-950/20 border border-[#D5D5D0] flex items-center gap-3 text-xs text-[#111]">
+        <ShieldCheck className="w-5 h-5 flex-shrink-0 text-[#111]" />
         <span>
           Tính năng cấu hình cài đặt này được phân quyền nghiêm ngặt dành riêng cho vai trò <strong>ADMIN</strong>. Tài khoản Staff không có quyền lưu thay đổi.
         </span>
@@ -190,9 +190,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       <div className="flex items-center justify-end">
         <Button
           type="submit"
-          variant="neon"
+          className="bg-[#111] text-white rounded-lg h-11 px-[18px] min-w-[150px] gap-2"
           disabled={isPending}
-          className="min-w-[150px] gap-2"
         >
           {isPending ? (
             <>

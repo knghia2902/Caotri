@@ -5,7 +5,7 @@ import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { ProductCard } from "@/components/storefront/product-card";
 import { CatalogFilter } from "@/components/storefront/catalog-filter";
-import { ChevronRight, Package, ArrowUpDown, Layers } from "lucide-react";
+import { Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -91,50 +91,42 @@ export default async function CategoryPage({
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col selection:bg-cyan-500 selection:text-zinc-950">
+    <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">
       <StorefrontHeader categories={categories} hotline={settings.hotline} />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="flex-1 w-full max-w-[1360px] mx-auto px-8 py-10 space-y-8">
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-1.5 text-xs text-zinc-400">
-          <Link href="/" className="hover:text-cyan-400 transition-colors">
+        <nav className="flex items-center gap-2 text-sm text-[#74746E]">
+          <Link href="/" className="hover:text-[#111] transition-colors">
             Trang chủ
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
-          <Link href="/products" className="hover:text-cyan-400 transition-colors">
+          <span>/</span>
+          <Link href="/products" className="hover:text-[#111] transition-colors">
             Sản phẩm
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
-          <span className="text-cyan-400 font-semibold">{currentCategory.name}</span>
+          <span>/</span>
+          <span className="text-[#111]">{currentCategory.name}</span>
         </nav>
 
-        {/* Category Hero Banner */}
-        <div className="rounded-2xl border border-zinc-800 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 text-xs text-cyan-400 font-semibold uppercase tracking-wider">
-              <Layers className="w-3.5 h-3.5" />
-              Ngành Hàng Gaming Gear
-            </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-white">
+        {/* Category Header & Sort */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-[#E7E7E3]">
+          <div>
+            <h1 className="text-3xl font-semibold text-[#111] tracking-tight">
               {currentCategory.name}
             </h1>
-            {currentCategory.description && (
-              <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl">
+            {currentCategory.description ? (
+              <p className="text-sm text-[#74746E] mt-2 max-w-2xl">
                 {currentCategory.description}
+              </p>
+            ) : (
+              <p className="text-sm text-[#74746E] mt-2">
+                Tổng cộng {products.length} sản phẩm
               </p>
             )}
           </div>
-          <div className="px-4 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-400 font-mono flex-shrink-0">
-            Tổng cộng <span className="text-cyan-400 font-bold">{products.length}</span> sản phẩm
-          </div>
-        </div>
 
-        {/* Sort & Grid */}
-        <div className="flex items-center justify-end pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-zinc-400 flex items-center gap-1">
-              <ArrowUpDown className="w-3.5 h-3.5 text-zinc-500" /> Sắp xếp:
-            </span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-[#74746E]">Sắp xếp theo</span>
             <form method="GET" className="inline-block">
               {minPrice && <input type="hidden" name="minPrice" value={minPrice} />}
               {maxPrice && <input type="hidden" name="maxPrice" value={maxPrice} />}
@@ -144,7 +136,7 @@ export default async function CategoryPage({
                 defaultValue={sort}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e: any) => e.target.form.submit()}
-                className="h-9 rounded-xl bg-zinc-900 border border-zinc-800 px-3 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                className="h-10 rounded-lg bg-white border border-[#D5D5D0] px-3 pr-8 text-sm text-[#111] focus:outline-none focus:border-[#111]"
               >
                 <option value="newest">Mới nhất</option>
                 <option value="featured">Sản phẩm nổi bật</option>
@@ -156,8 +148,8 @@ export default async function CategoryPage({
         </div>
 
         {/* 2-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
+        <div className="flex flex-col lg:flex-row gap-10">
+          <div className="w-full lg:w-[240px] shrink-0">
             <CatalogFilter
               categories={categories}
               currentCategorySlug={currentCategory.slug}
@@ -167,25 +159,25 @@ export default async function CategoryPage({
             />
           </div>
 
-          <div className="lg:col-span-3">
+          <div className="flex-1">
             {products.length === 0 ? (
-              <div className="py-16 text-center rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/30">
-                <Package className="w-12 h-12 mx-auto mb-3 text-zinc-600" />
-                <h3 className="text-base font-semibold text-zinc-300">
+              <div className="py-20 text-center rounded-lg border border-dashed border-[#D5D5D0] bg-white">
+                <Package className="w-12 h-12 mx-auto mb-4 text-[#A3A39D]" />
+                <h3 className="text-lg font-medium text-[#111]">
                   Chưa có sản phẩm nào phù hợp trong danh mục này
                 </h3>
-                <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+                <p className="text-sm text-[#74746E] mt-2 max-w-sm mx-auto">
                   Thử điều chỉnh lại khoảng giá hoặc xem các danh mục thiết bị khác.
                 </p>
                 <Link
                   href={`/category/${currentCategory.slug}`}
-                  className="inline-block mt-4 text-xs font-semibold text-cyan-400 hover:underline"
+                  className="inline-flex items-center justify-center h-10 px-4 mt-6 text-sm font-medium text-[#111] bg-white border border-[#D5D5D0] rounded-lg hover:bg-[#FAFAFA] transition-colors"
                 >
                   Xóa bộ lọc giá
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

@@ -15,7 +15,7 @@ export function AdminShell({ session, children }: AdminShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-zinc-950 text-zinc-100">
+    <div className="min-h-screen flex bg-[#F7F7F5] text-[#111111]">
       {/* Sidebar navigation */}
       <AdminSidebar
         userRole={session.role}

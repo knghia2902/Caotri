@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter, RotateCcw, Check, Layers, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { PriceRangeSlider } from "@/components/storefront/price-range-slider";
 
 export interface FilterCategoryItem {
@@ -83,40 +82,39 @@ export function CatalogFilter({
     currentCategorySlug || searchParams.get("category") || "";
 
   return (
-    <div className="space-y-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 p-5">
+    <div className="space-y-8 lg:w-[240px]">
       {/* Title & Reset */}
-      <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-        <div className="flex items-center gap-2 text-zinc-200 font-bold text-sm">
-          <SlidersHorizontal className="w-4 h-4 text-cyan-400" />
-          <span>Bộ Lọc Sản Phẩm</span>
+      <div className="flex items-center justify-between pb-4 border-b border-[#E7E7E3]">
+        <div className="flex items-center gap-2 text-[#111] font-semibold text-sm">
+          <SlidersHorizontal className="w-4 h-4" />
+          <span>Bộ Lọc</span>
         </div>
         <button
           type="button"
           onClick={handleReset}
-          className="text-[11px] text-zinc-500 hover:text-cyan-400 flex items-center gap-1 transition-colors"
+          className="text-xs text-[#74746E] hover:text-[#111] transition-colors"
         >
-          <RotateCcw className="w-3 h-3" />
-          <span>Đặt lại</span>
+          Xóa tất cả bộ lọc
         </button>
       </div>
 
       {/* 1. Category Filter */}
-      <div className="space-y-2.5">
-        <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+      <div className="space-y-4">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
           Danh mục thiết bị
         </label>
         <div className="space-y-1">
           <button
             type="button"
             onClick={() => handleCategorySelect(null)}
-            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-colors ${
+            className={`w-full text-left py-1.5 text-sm flex items-center justify-between transition-colors ${
               !activeCategory
-                ? "bg-cyan-500/15 text-cyan-400 border border-cyan-500/30"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
+                ? "font-semibold text-[#111]"
+                : "text-[#111] hover:text-[#74746E]"
             }`}
           >
             <span>Tất cả ngành hàng</span>
-            {!activeCategory && <Check className="w-3.5 h-3.5" />}
+            {!activeCategory && <Check className="w-4 h-4" />}
           </button>
 
           {categories.map((cat) => {
@@ -126,15 +124,15 @@ export function CatalogFilter({
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategorySelect(cat.slug)}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-colors ${
+                className={`w-full text-left py-1.5 text-sm flex items-center justify-between transition-colors ${
                   isSelected
-                    ? "bg-cyan-500/15 text-cyan-400 border border-cyan-500/30"
-                    : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
+                    ? "font-semibold text-[#111]"
+                    : "text-[#111] hover:text-[#74746E]"
                 }`}
               >
                 <span>{cat.name}</span>
                 {cat._count?.products !== undefined && (
-                  <span className="text-[10px] text-zinc-600 font-mono">
+                  <span className="text-xs text-[#A3A39D]">
                     {cat._count.products}
                   </span>
                 )}
@@ -145,7 +143,7 @@ export function CatalogFilter({
       </div>
 
       {/* 2. Price Range Slider */}
-      <div className="pt-4 border-t border-zinc-800">
+      <div className="pt-6 border-t border-[#E7E7E3]">
         <PriceRangeSlider
           min={0}
           max={10000000}
@@ -156,15 +154,15 @@ export function CatalogFilter({
       </div>
 
       {/* 3. In Stock Only Checkbox */}
-      <div className="pt-4 border-t border-zinc-800">
-        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+      <div className="pt-6 border-t border-[#E7E7E3]">
+        <label className="flex items-center gap-3 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={inStockOnly}
             onChange={(e) => handleToggleStock(e.target.checked)}
-            className="w-4 h-4 rounded border-zinc-700 bg-zinc-950 text-cyan-500 focus:ring-cyan-500/30"
+            className="w-4 h-4 rounded border-[#D5D5D0] text-[#111] accent-[#111] focus:ring-[#111]"
           />
-          <span className="text-xs font-medium text-zinc-300">
+          <span className="text-sm text-[#111]">
             Chỉ hiện sản phẩm còn hàng
           </span>
         </label>

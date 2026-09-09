@@ -114,11 +114,11 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
       {/* Top action bar */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs text-zinc-400">
-            Hiện có <span className="text-cyan-400 font-semibold">{banners.length}</span> banner trong hệ thống
+          <p className="text-xs text-[#74746E]">
+            Hiện có <span className="text-[#111] font-semibold">{banners.length}</span> banner trong hệ thống
           </p>
         </div>
-        <Button onClick={handleAddNew} variant="neon" className="gap-2">
+        <Button onClick={handleAddNew} className="bg-[#111] text-white rounded-lg h-11 px-[18px] gap-2">
           <Plus className="w-4 h-4" />
           Thêm banner mới
         </Button>
@@ -126,13 +126,13 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
 
       {/* Card Grid */}
       {banners.length === 0 ? (
-        <div className="py-16 text-center rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/30">
-          <ImageIcon className="w-12 h-12 mx-auto text-zinc-600 mb-3" />
-          <h3 className="text-base font-semibold text-zinc-300">Chưa có banner nào</h3>
-          <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
+        <div className="py-16 text-center rounded-2xl border border-dashed border-[#E7E7E3] bg-white/30">
+          <ImageIcon className="w-12 h-12 mx-auto text-[#A3A39D] mb-3" />
+          <h3 className="text-base font-semibold text-[#111]">Chưa có banner nào</h3>
+          <p className="text-xs text-[#74746E] mt-1 max-w-sm mx-auto">
             Tạo banner đầu tiên để hiển thị các chương trình khuyến mãi và sản phẩm nổi bật trên slider trang chủ.
           </p>
-          <Button onClick={handleAddNew} variant="neon" className="mt-4 gap-2">
+          <Button onClick={handleAddNew} className="bg-[#111] text-white rounded-lg h-11 px-[18px] mt-4 gap-2">
             <Plus className="w-4 h-4" />
             Tạo banner ngay
           </Button>
@@ -142,10 +142,10 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
           {banners.map((banner) => (
             <div
               key={banner.id}
-              className="group rounded-2xl border border-zinc-800 bg-zinc-900/60 overflow-hidden hover:border-cyan-500/40 transition-all flex flex-col shadow-sm"
+              className="group rounded-2xl border border-[#E7E7E3] bg-white overflow-hidden hover:border-[#111] transition-all flex flex-col "
             >
               {/* Image Preview */}
-              <div className="relative aspect-[16/8] w-full bg-zinc-950 overflow-hidden">
+              <div className="relative aspect-[16/8] w-full bg-[#111111] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={banner.imageUrl}
@@ -159,7 +159,7 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
 
                 {/* Badges on top of image */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                  <Badge className="bg-zinc-900/80 backdrop-blur-md text-zinc-300 border border-zinc-700/60 font-mono text-[11px] px-2 py-0.5">
+                  <Badge className="bg-white/80  text-[#111] border border-[#E7E7E3] font-mono text-[11px] px-2 py-0.5">
                     Thứ tự #{banner.orderIndex}
                   </Badge>
                 </div>
@@ -169,10 +169,10 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
                     type="button"
                     onClick={() => handleToggleActive(banner)}
                     disabled={togglingId === banner.id}
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold backdrop-blur-md border transition-all ${
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold  border transition-all ${
                       banner.isActive
                         ? "bg-emerald-950/80 text-emerald-300 border-emerald-700/60 hover:bg-emerald-900/90"
-                        : "bg-zinc-900/80 text-zinc-400 border-zinc-700/60 hover:bg-zinc-800/90"
+                        : "bg-white/80 text-[#74746E] border-[#E7E7E3] hover:bg-[#FAFAFA]/90"
                     }`}
                   >
                     {togglingId === banner.id ? (
@@ -190,24 +190,24 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
               {/* Card Body */}
               <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                 <div>
-                  <h4 className="font-semibold text-zinc-100 group-hover:text-cyan-400 transition-colors line-clamp-1">
+                  <h4 className="font-semibold text-[#111] group-hover:text-[#111] transition-colors line-clamp-1">
                     {banner.title}
                   </h4>
                   {banner.linkUrl ? (
-                    <div className="flex items-center gap-1 text-xs text-zinc-400 font-mono mt-1 truncate">
-                      <ExternalLink className="w-3 h-3 text-cyan-400 flex-shrink-0" />
+                    <div className="flex items-center gap-1 text-xs text-[#74746E] font-mono mt-1 truncate">
+                      <ExternalLink className="w-3 h-3 text-[#111] flex-shrink-0" />
                       <span className="truncate">{banner.linkUrl}</span>
                     </div>
                   ) : (
-                    <div className="text-xs text-zinc-600 mt-1 italic">
+                    <div className="text-xs text-[#A3A39D] mt-1 italic">
                       (Không gắn liên kết)
                     </div>
                   )}
                 </div>
 
                 {/* Card Actions */}
-                <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between">
-                  <span className="text-[11px] text-zinc-500 font-mono">
+                <div className="pt-3 border-t border-[#E7E7E3] flex items-center justify-between">
+                  <span className="text-[11px] text-[#74746E] font-mono">
                     ID: {banner.id.slice(0, 8)}...
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -216,7 +216,7 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
                       variant="ghost"
                       onClick={() => handleEdit(banner)}
                       title="Chỉnh sửa banner"
-                      className="h-8 w-8 p-0 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-950/30"
+                      className="h-8 w-8 p-0 text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1]"
                     >
                       <Edit3 className="w-4 h-4" />
                     </Button>
@@ -226,10 +226,10 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
                       onClick={() => handleDelete(banner)}
                       disabled={deletingId === banner.id}
                       title="Xóa banner"
-                      className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-400 hover:bg-rose-950/30"
+                      className="h-8 w-8 p-0 text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50"
                     >
                       {deletingId === banner.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                        <Loader2 className="w-4 h-4 animate-spin text-[#D94A4A]" />
                       ) : (
                         <Trash2 className="w-4 h-4" />
                       )}

@@ -161,24 +161,24 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E7E7E3]">
         <div className="flex items-center gap-3">
           <Link href="/admin/products">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="h-9 border-zinc-800 text-zinc-400 hover:text-zinc-100"
+              className="h-9 border-[#E7E7E3] text-[#74746E] hover:text-[#111]"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
               Danh sách
             </Button>
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-zinc-100">
+            <h1 className="text-xl font-bold text-[#111]">
               {isEditing ? `Sửa: ${initialData?.name}` : "Thêm sản phẩm mới"}
             </h1>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[#74746E]">
               {isEditing
                 ? "Cập nhật giá, ảnh, thông số kỹ thuật và trạng thái"
                 : "Tạo sản phẩm gaming gear mới với đầy đủ thông số và gallery"}
@@ -194,9 +194,8 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </Link>
           <Button
             type="submit"
-            variant="neon"
+            className="bg-[#111] text-white rounded-lg h-11 px-[18px] gap-2 min-w-[130px]"
             disabled={isPending}
-            className="gap-2 min-w-[130px]"
           >
             {isPending ? (
               <>
@@ -218,14 +217,14 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         {/* Left 2 Cols: Main Details, Gallery & Specs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Card: Thông tin cơ bản */}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-zinc-200 uppercase tracking-wider">
+          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Thông tin cơ bản
             </h2>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                Tên sản phẩm <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Tên sản phẩm <span className="text-[#D94A4A]">*</span>
               </label>
               <Input
                 value={name}
@@ -238,7 +237,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
                   Đường dẫn (Slug)
                 </label>
                 {isCustomSlug && (
@@ -248,7 +247,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                       setIsCustomSlug(false);
                       setSlug(slugify(name));
                     }}
-                    className="text-xs text-cyan-400 hover:underline"
+                    className="text-xs text-[#111] hover:underline"
                   >
                     Tạo lại từ tên
                   </button>
@@ -260,13 +259,13 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 placeholder="chuot-dragonfly-f1-pro-max"
                 disabled={isPending}
               />
-              <p className="text-[11px] text-zinc-500 mt-1">
+              <p className="text-[11px] text-[#74746E] mt-1">
                 Đường dẫn tĩnh cho sản phẩm: caotri.vn/products/{slug || "slug-mau"}
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
                 Mô tả chi tiết sản phẩm
               </label>
               <textarea
@@ -275,14 +274,14 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 placeholder="Mô tả các tính năng nổi bật, trải nghiệm sử dụng, chế độ bảo hành..."
                 rows={5}
                 disabled={isPending}
-                className="w-full rounded-lg bg-zinc-950 border border-zinc-800 px-3.5 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all resize-y"
+                className="w-full rounded-lg bg-[#111111] border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0 focus:border-[#111] transition-all resize-y"
               />
             </div>
           </div>
 
           {/* Card: Bộ sưu tập hình ảnh */}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-zinc-200 uppercase tracking-wider">
+          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Bộ sưu tập hình ảnh (CDN Gallery)
             </h2>
             <ImageGalleryEditor
@@ -293,7 +292,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Card: Thông số kỹ thuật */}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
+          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5">
             <SpecsEditor
               specs={specs}
               onChange={setSpecs}
@@ -306,20 +305,20 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         {/* Right 1 Col: Category, Pricing, Visibility */}
         <div className="space-y-6">
           {/* Phân loại danh mục */}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-zinc-200 uppercase tracking-wider">
+          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Phân loại ngành hàng
             </h2>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                Danh mục <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Danh mục <span className="text-[#D94A4A]">*</span>
               </label>
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
                 disabled={isPending}
-                className="w-full h-10 rounded-lg bg-zinc-950 border border-zinc-800 px-3 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                className="w-full h-10 rounded-lg bg-[#111111] border border-[#E7E7E3] px-3 text-sm text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
                 required
               >
                 {categories.map((c) => (
@@ -328,21 +327,21 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                   </option>
                 ))}
               </select>
-              <p className="text-[11px] text-zinc-500 mt-1">
+              <p className="text-[11px] text-[#74746E] mt-1">
                 Chọn danh mục để tự động gợi ý mẫu thông số kỹ thuật
               </p>
             </div>
           </div>
 
           {/* Thiết lập giá bán */}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-zinc-200 uppercase tracking-wider">
+          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Giá bán sản phẩm
             </h2>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                Giá khuyến mãi / Giá bán (VNĐ) <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Giá khuyến mãi / Giá bán (VNĐ) <span className="text-[#D94A4A]">*</span>
               </label>
               <Input
                 type="number"
@@ -352,13 +351,13 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 disabled={isPending}
                 required
               />
-              <p className="text-xs font-mono text-cyan-400 mt-1 font-semibold">
+              <p className="text-xs font-mono text-[#111] mt-1 font-semibold">
                 Hiển thị: {formatPrice(price || 0)}
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
                 Giá niêm yết gốc (VNĐ, tùy chọn)
               </label>
               <Input
@@ -369,11 +368,11 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 disabled={isPending}
               />
               {originalPrice ? (
-                <p className="text-xs font-mono text-zinc-500 line-through mt-1">
+                <p className="text-xs font-mono text-[#74746E] line-through mt-1">
                   Giá cũ: {formatPrice(originalPrice)}
                 </p>
               ) : (
-                <p className="text-[11px] text-zinc-500 mt-1">
+                <p className="text-[11px] text-[#74746E] mt-1">
                   Nếu có giảm giá, giá gốc sẽ được hiển thị gạch ngang
                 </p>
               )}
@@ -381,63 +380,63 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Trạng thái hiển thị */}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
-            <h2 className="text-sm font-semibold text-zinc-200 uppercase tracking-wider">
+          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Trạng thái & Hiển thị
             </h2>
 
             {/* Tồn kho */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors">
+            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#111111]/60 border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={inStock}
                 onChange={(e) => setInStock(e.target.checked)}
                 disabled={isPending}
-                className="mt-0.5 rounded border-zinc-700 text-cyan-500 focus:ring-cyan-500/30"
+                className="mt-0.5 rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
               />
               <div>
-                <span className="text-sm font-semibold text-zinc-200">
+                <span className="text-sm font-semibold text-[#111]">
                   Còn hàng trong kho
                 </span>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[#74746E]">
                   Khách hàng có thể bấm liên hệ đặt mua sản phẩm này
                 </p>
               </div>
             </label>
 
             {/* Nổi bật */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors">
+            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#111111]/60 border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
                 disabled={isPending}
-                className="mt-0.5 rounded border-zinc-700 text-cyan-500 focus:ring-cyan-500/30"
+                className="mt-0.5 rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
               />
               <div>
-                <span className="text-sm font-semibold text-zinc-200">
+                <span className="text-sm font-semibold text-[#111]">
                   Sản phẩm Nổi bật (Featured)
                 </span>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[#74746E]">
                   Ghim sản phẩm vào mục nổi bật ở đầu trang chủ
                 </p>
               </div>
             </label>
 
             {/* Mới về */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors">
+            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#111111]/60 border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={isNew}
                 onChange={(e) => setIsNew(e.target.checked)}
                 disabled={isPending}
-                className="mt-0.5 rounded border-zinc-700 text-cyan-500 focus:ring-cyan-500/30"
+                className="mt-0.5 rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
               />
               <div>
-                <span className="text-sm font-semibold text-zinc-200">
+                <span className="text-sm font-semibold text-[#111]">
                   Gắn nhãn Hàng Mới (New)
                 </span>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[#74746E]">
                   Hiển thị huy hiệu &quot;Mới&quot; trên thẻ sản phẩm
                 </p>
               </div>

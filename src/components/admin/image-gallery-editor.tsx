@@ -85,20 +85,20 @@ export function ImageGalleryEditor({
           onClick={handleAddImage}
           disabled={disabled || !newUrl.trim()}
           variant="outline"
-          className="border-zinc-700 hover:border-cyan-500 hover:text-cyan-400 gap-1.5 whitespace-nowrap"
+          className="border-[#D5D5D0] hover:border-[#111] hover:text-[#111] gap-1.5 whitespace-nowrap"
         >
           <Plus className="w-4 h-4" />
           Thêm ảnh
         </Button>
       </div>
 
-      <p className="text-[11px] text-zinc-500">
+      <p className="text-[11px] text-[#74746E]">
         💡 Hệ thống hỗ trợ CDN trực tiếp không tốn dung lượng ổ đĩa hosting. Ảnh đầu tiên sẽ là ảnh đại diện chính của sản phẩm.
       </p>
 
       {/* Gallery Grid */}
       {images.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-dashed border-zinc-800 bg-zinc-950/40 text-zinc-500">
+        <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-dashed border-[#E7E7E3] bg-[#111111]/40 text-[#74746E]">
           <ImageIcon className="w-10 h-10 mb-2 text-zinc-700" />
           <p className="text-xs">Chưa có hình ảnh nào. Dán URL để thêm ảnh sản phẩm.</p>
         </div>
@@ -109,14 +109,14 @@ export function ImageGalleryEditor({
             return (
               <div
                 key={url + idx}
-                className={`group relative rounded-xl overflow-hidden border bg-zinc-950 transition-all ${
+                className={`group relative rounded-xl overflow-hidden border bg-[#111111] transition-all ${
                   isMain
-                    ? "border-cyan-500 ring-2 ring-cyan-500/30"
-                    : "border-zinc-800 hover:border-zinc-700"
+                    ? "border-[#111] ring-2 ring-cyan-500/30"
+                    : "border-[#E7E7E3] hover:border-[#D5D5D0]"
                 }`}
               >
                 {/* Image Aspect ratio container */}
-                <div className="aspect-square w-full relative overflow-hidden bg-zinc-900 flex items-center justify-center">
+                <div className="aspect-square w-full relative overflow-hidden bg-white flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
@@ -130,7 +130,7 @@ export function ImageGalleryEditor({
 
                   {/* Main badge */}
                   {isMain && (
-                    <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-md bg-cyan-500 text-zinc-950 px-2 py-0.5 text-[10px] font-bold shadow-md">
+                    <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-md bg-cyan-500 text-zinc-950 px-2 py-0.5 text-[10px] font-bold ">
                       <Star className="w-3 h-3 fill-current" />
                       Ảnh chính
                     </div>
@@ -145,7 +145,7 @@ export function ImageGalleryEditor({
                           onClick={() => handleSetMain(idx)}
                           disabled={disabled}
                           title="Đặt làm ảnh chính"
-                          className="p-1.5 rounded-lg bg-zinc-800/90 text-zinc-300 hover:text-amber-400 hover:bg-zinc-700 transition-colors"
+                          className="p-1.5 rounded-lg bg-[#FAFAFA]/90 text-[#111] hover:text-[#D99A24] hover:bg-zinc-700 transition-colors"
                         >
                           <Star className="w-3.5 h-3.5" />
                         </button>
@@ -155,13 +155,13 @@ export function ImageGalleryEditor({
                         onClick={() => handleRemoveImage(idx)}
                         disabled={disabled}
                         title="Xóa ảnh"
-                        className="p-1.5 rounded-lg bg-rose-950/80 text-rose-400 hover:bg-rose-900 transition-colors"
+                        className="p-1.5 rounded-lg bg-rose-950/80 text-[#D94A4A] hover:bg-rose-900 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                    <div className="flex items-center justify-between text-[11px] text-[#74746E] font-mono">
                       <span>#{idx + 1}</span>
                       <div className="flex gap-1">
                         {idx > 0 && (
@@ -170,7 +170,7 @@ export function ImageGalleryEditor({
                             onClick={() => handleMove(idx, "up")}
                             disabled={disabled}
                             title="Di chuyển lên trước"
-                            className="p-1 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                            className="p-1 rounded bg-[#FAFAFA] text-[#111] hover:bg-zinc-700"
                           >
                             <ArrowUp className="w-3 h-3" />
                           </button>
@@ -181,7 +181,7 @@ export function ImageGalleryEditor({
                             onClick={() => handleMove(idx, "down")}
                             disabled={disabled}
                             title="Di chuyển về sau"
-                            className="p-1 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                            className="p-1 rounded bg-[#FAFAFA] text-[#111] hover:bg-zinc-700"
                           >
                             <ArrowDown className="w-3 h-3" />
                           </button>

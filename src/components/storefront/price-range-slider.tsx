@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { formatPrice } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 interface PriceRangeSliderProps {
   min: number;
@@ -38,12 +37,9 @@ export function PriceRangeSlider({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between text-xs font-semibold text-zinc-300">
-        <span>Khoảng giá</span>
-        <span className="font-mono text-cyan-400">
-          {formatPrice(minVal)} - {formatPrice(maxVal)}
-        </span>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between text-xs font-semibold text-[#74746E]">
+        <span className="uppercase tracking-wider">Khoảng giá</span>
       </div>
 
       {/* Dual Slider Input */}
@@ -58,7 +54,7 @@ export function PriceRangeSlider({
             const val = Number(e.target.value);
             if (val <= maxVal) setMinVal(val);
           }}
-          className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-zinc-800 rounded-lg appearance-none"
+          className="w-full accent-[#111] cursor-pointer h-1 bg-[#E7E7E3] rounded-full appearance-none"
         />
         <input
           type="range"
@@ -70,75 +66,73 @@ export function PriceRangeSlider({
             const val = Number(e.target.value);
             if (val >= minVal) setMaxVal(val);
           }}
-          className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-zinc-800 rounded-lg appearance-none mt-2"
+          className="w-full accent-[#111] cursor-pointer h-1 bg-[#E7E7E3] rounded-full appearance-none mt-3"
         />
       </div>
 
       {/* Direct Value Inputs */}
-      <div className="grid grid-cols-2 gap-2 text-xs">
+      <div className="grid grid-cols-2 gap-3 text-sm">
         <div>
-          <label className="block text-[10px] text-zinc-500 mb-1">Từ (VNĐ)</label>
+          <label className="block text-xs text-[#74746E] mb-1.5">Từ (VNĐ)</label>
           <input
             type="number"
             value={minVal}
             onChange={(e) => setMinVal(Number(e.target.value) || 0)}
             step={50000}
-            className="w-full h-8 px-2 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs font-mono focus:outline-none focus:border-cyan-500"
+            className="w-full h-10 px-3 rounded-lg bg-white border border-[#D5D5D0] text-[#111] text-sm focus:outline-none focus:border-[#111] transition-colors"
           />
         </div>
         <div>
-          <label className="block text-[10px] text-zinc-500 mb-1">Đến (VNĐ)</label>
+          <label className="block text-xs text-[#74746E] mb-1.5">Đến (VNĐ)</label>
           <input
             type="number"
             value={maxVal}
             onChange={(e) => setMaxVal(Number(e.target.value) || 0)}
             step={50000}
-            className="w-full h-8 px-2 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs font-mono focus:outline-none focus:border-cyan-500"
+            className="w-full h-10 px-3 rounded-lg bg-white border border-[#D5D5D0] text-[#111] text-sm focus:outline-none focus:border-[#111] transition-colors"
           />
         </div>
       </div>
 
       {/* Quick Budget Pills */}
-      <div className="flex flex-wrap gap-1.5 pt-1">
+      <div className="flex flex-wrap gap-2 pt-1">
         <button
           type="button"
           onClick={() => handlePreset(0, 500000)}
-          className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 text-[10px] text-zinc-400 hover:text-cyan-300 transition-colors"
+          className="px-3 py-1.5 rounded-md border border-[#D5D5D0] text-[#555550] text-xs hover:bg-[#F3F3F1] active:bg-[#111] active:text-white transition-colors"
         >
           &lt; 500k
         </button>
         <button
           type="button"
           onClick={() => handlePreset(500000, 1500000)}
-          className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 text-[10px] text-zinc-400 hover:text-cyan-300 transition-colors"
+          className="px-3 py-1.5 rounded-md border border-[#D5D5D0] text-[#555550] text-xs hover:bg-[#F3F3F1] active:bg-[#111] active:text-white transition-colors"
         >
           500k - 1.5tr
         </button>
         <button
           type="button"
           onClick={() => handlePreset(1500000, 3000000)}
-          className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 text-[10px] text-zinc-400 hover:text-cyan-300 transition-colors"
+          className="px-3 py-1.5 rounded-md border border-[#D5D5D0] text-[#555550] text-xs hover:bg-[#F3F3F1] active:bg-[#111] active:text-white transition-colors"
         >
           1.5tr - 3tr
         </button>
         <button
           type="button"
           onClick={() => handlePreset(3000000, 10000000)}
-          className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 text-[10px] text-zinc-400 hover:text-cyan-300 transition-colors"
+          className="px-3 py-1.5 rounded-md border border-[#D5D5D0] text-[#555550] text-xs hover:bg-[#F3F3F1] active:bg-[#111] active:text-white transition-colors"
         >
           &gt; 3tr
         </button>
       </div>
 
-      <Button
+      <button
         type="button"
-        size="sm"
-        variant="neon"
         onClick={handleApply}
-        className="w-full h-8 text-xs font-semibold mt-2"
+        className="w-full bg-[#111] text-white h-11 px-[18px] rounded-lg text-sm font-medium hover:opacity-90 transition-opacity mt-2"
       >
-        Áp dụng lọc giá
-      </Button>
+        Áp dụng giá
+      </button>
     </div>
   );
 }

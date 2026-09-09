@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Layers, ArrowRight } from "lucide-react";
+import { Layers } from "lucide-react";
 
 export interface CategoryRibbonItem {
   id: string;
@@ -18,58 +18,51 @@ interface CategoryRibbonProps {
 
 export function CategoryRibbon({ categories }: CategoryRibbonProps) {
   return (
-    <section className="space-y-4">
+    <section className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            Danh Mục Thiết Bị
-          </h3>
-          <p className="text-xs text-zinc-400 mt-0.5">
-            Phân loại gear chuyên nghiệp cho góc setup gaming
-          </p>
-        </div>
+        <h3 className="text-lg font-semibold text-[#111] tracking-tight">
+          Danh Mục
+        </h3>
         <Link
           href="/products"
-          className="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors"
+          className="text-sm text-[#74746E] hover:text-[#111] transition-colors"
         >
-          <span>Xem tất cả</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          Xem tất cả
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
         {categories.map((cat) => (
           <Link
             key={cat.id}
             href={`/category/${cat.slug}`}
-            className="group relative rounded-2xl bg-zinc-900/40 border border-zinc-800/80 p-4 flex flex-col items-center text-center hover:border-cyan-500/50 hover:bg-zinc-900/80 transition-all duration-300 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]"
+            className="group flex flex-col items-center text-center p-4 rounded-lg hover:bg-[#F3F3F1] transition-colors bg-[#FAFAFA]"
           >
             {/* Category Icon / Image */}
-            <div className="w-14 h-14 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center mb-3 group-hover:border-cyan-500/40 group-hover:scale-110 transition-all duration-300">
+            <div className="w-12 h-12 flex items-center justify-center mb-3">
               {cat.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={cat.imageUrl}
                   alt={cat.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
               ) : (
-                <Layers className="w-6 h-6 text-cyan-400" />
+                <Layers className="w-6 h-6 text-[#111] stroke-[1.5px]" />
               )}
             </div>
 
             {/* Name */}
-            <span className="font-semibold text-xs text-zinc-200 group-hover:text-cyan-400 transition-colors line-clamp-1">
+            <span className="font-medium text-sm text-[#111] mb-1">
               {cat.name}
             </span>
 
             {/* Product count if available */}
             {cat._count?.products !== undefined && (
-              <span className="text-[10px] text-zinc-500 font-mono mt-1">
+              <span className="text-xs text-[#74746E]">
                 {cat._count.products} sản phẩm
               </span>
             )}

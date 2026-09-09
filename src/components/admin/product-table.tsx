@@ -183,7 +183,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#74746E]" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -198,7 +198,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="h-10 rounded-lg bg-zinc-900 border border-zinc-800 px-3 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
           >
             <option value="all">Tất cả danh mục ({categories.length})</option>
             {categories.map((c) => (
@@ -212,7 +212,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           <select
             value={stockFilter}
             onChange={(e) => setStockFilter(e.target.value)}
-            className="h-10 rounded-lg bg-zinc-900 border border-zinc-800 px-3 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
           >
             <option value="all">Tất cả tồn kho</option>
             <option value="in_stock">🟢 Còn hàng</option>
@@ -223,7 +223,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           <select
             value={featuredFilter}
             onChange={(e) => setFeaturedFilter(e.target.value)}
-            className="h-10 rounded-lg bg-zinc-900 border border-zinc-800 px-3 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
           >
             <option value="all">Tất cả sản phẩm</option>
             <option value="featured">⭐ Sản phẩm Nổi bật</option>
@@ -232,7 +232,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
           {/* Add Product Button */}
           <Link href="/admin/products/new">
-            <Button variant="neon" className="gap-2">
+            <Button className="bg-[#111] text-white rounded-lg h-11 px-4 gap-2">
               <Plus className="w-4 h-4" />
               Thêm sản phẩm
             </Button>
@@ -241,10 +241,10 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
       </div>
 
       {/* Table Container */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm overflow-hidden shadow-sm">
+      <div className="rounded-xl border border-[#E7E7E3] bg-white  overflow-hidden ">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-zinc-300">
-            <thead className="bg-zinc-900/90 border-b border-zinc-800 text-xs font-semibold uppercase text-zinc-400 tracking-wider">
+          <table className="w-full text-left text-sm text-[#111]">
+            <thead className="bg-[#FAFAFA] border-b border-[#E7E7E3] text-xs font-semibold uppercase text-[#74746E] tracking-wider">
               <tr>
                 <th className="py-3.5 px-4 w-16">Ảnh</th>
                 <th className="py-3.5 px-4">Tên sản phẩm</th>
@@ -258,10 +258,10 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             <tbody className="divide-y divide-zinc-800/60">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-zinc-500">
-                    <Package className="w-10 h-10 mx-auto mb-3 text-zinc-600" />
+                  <td colSpan={7} className="py-12 text-center text-[#74746E]">
+                    <Package className="w-10 h-10 mx-auto mb-3 text-[#A3A39D]" />
                     <p className="text-sm font-medium">Không tìm thấy sản phẩm nào phù hợp</p>
-                    <p className="text-xs text-zinc-600 mt-1">
+                    <p className="text-xs text-[#A3A39D] mt-1">
                       Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm
                     </p>
                   </td>
@@ -279,11 +279,11 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   return (
                     <tr
                       key={product.id}
-                      className="hover:bg-zinc-800/40 transition-colors group"
+                      className="hover:bg-white transition-colors group"
                     >
                       {/* Image */}
                       <td className="py-3.5 px-4">
-                        <div className="w-12 h-12 rounded-lg bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center group-hover:border-cyan-500/40 transition-colors">
+                        <div className="w-12 h-12 rounded-lg bg-[#111111] border border-[#E7E7E3] overflow-hidden flex items-center justify-center group-hover:border-[#111] transition-colors">
                           {firstImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -296,7 +296,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                               }}
                             />
                           ) : (
-                            <Package className="w-5 h-5 text-zinc-600" />
+                            <Package className="w-5 h-5 text-[#A3A39D]" />
                           )}
                         </div>
                       </td>
@@ -304,16 +304,16 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       {/* Name & Slug */}
                       <td className="py-3.5 px-4 max-w-xs sm:max-w-sm">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-zinc-100 group-hover:text-cyan-400 transition-colors line-clamp-1">
+                          <span className="font-semibold text-[#111] group-hover:text-[#111] transition-colors line-clamp-1">
                             {product.name}
                           </span>
                           {product.isNew && (
-                            <Badge className="bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 text-[10px] px-1.5 py-0">
+                            <Badge className="bg-[#F3F3F1] text-[#21A366] border border-[#21A366] text-[10px] px-1.5 py-0">
                               Mới
                             </Badge>
                           )}
                         </div>
-                        <div className="text-xs font-mono text-zinc-500 truncate mt-0.5">
+                        <div className="text-xs font-mono text-[#74746E] truncate mt-0.5">
                           /{product.slug}
                         </div>
                       </td>
@@ -322,7 +322,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       <td className="py-3.5 px-4">
                         <Badge
                           variant="secondary"
-                          className="bg-zinc-800/80 text-zinc-300 border-zinc-700/60 text-xs"
+                          className="bg-[#FAFAFA] text-[#111] border-[#E7E7E3] text-xs"
                         >
                           {product.category.name}
                         </Badge>
@@ -330,11 +330,11 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
                       {/* Price */}
                       <td className="py-3.5 px-4 font-mono">
-                        <div className="font-bold text-cyan-400">
+                        <div className="font-bold text-[#111]">
                           {formatPrice(product.price)}
                         </div>
                         {product.originalPrice && product.originalPrice > product.price && (
-                          <div className="text-xs text-zinc-500 line-through">
+                          <div className="text-xs text-[#74746E] line-through">
                             {formatPrice(product.originalPrice)}
                           </div>
                         )}
@@ -353,16 +353,16 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                           }
                           className={`p-1.5 rounded-lg border transition-all ${
                             product.isFeatured
-                              ? "bg-amber-500/10 border-amber-500/40 text-amber-400 hover:bg-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                              : "bg-zinc-800/40 border-zinc-700/50 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800"
+                              ? "bg-[#FAFAFA] border-[#D99A24] text-[#D99A24] hover:bg-[#F3F3F1] "
+                              : "bg-white border-[#D5D5D0] text-[#74746E] hover:text-[#111] hover:bg-[#FAFAFA]"
                           }`}
                         >
                           {togglingFeaturedId === product.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                            <Loader2 className="w-4 h-4 animate-spin text-[#D99A24]" />
                           ) : (
                             <Star
                               className={`w-4 h-4 ${
-                                product.isFeatured ? "fill-amber-400" : ""
+                                product.isFeatured ? "fill-[#D99A24]" : ""
                               }`}
                             />
                           )}
@@ -378,8 +378,8 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                           title="Bấm 1-Click để đổi trạng thái Còn hàng / Hết hàng"
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
                             product.inStock
-                              ? "bg-emerald-950/40 text-emerald-400 border-emerald-800/50 hover:bg-emerald-950/70"
-                              : "bg-rose-950/40 text-rose-400 border-rose-800/50 hover:bg-rose-950/70"
+                              ? "bg-[#F3F3F1] text-[#21A366] border-[#21A366] hover:bg-[#E7E7E3]"
+                              : "bg-[#F3F3F1] text-[#D94A4A] border-[#D94A4A] hover:bg-[#E7E7E3]"
                           }`}
                         >
                           {togglingStockId === product.id ? (
@@ -401,7 +401,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                               size="sm"
                               variant="ghost"
                               title="Chỉnh sửa sản phẩm"
-                              className="h-8 w-8 p-0 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-950/30"
+                              className="h-8 w-8 p-0 text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1]"
                             >
                               <Edit3 className="w-4 h-4" />
                             </Button>
@@ -412,10 +412,10 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             onClick={() => handleDelete(product)}
                             disabled={deletingId === product.id}
                             title="Xóa sản phẩm"
-                            className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-400 hover:bg-rose-950/30"
+                            className="h-8 w-8 p-0 text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50"
                           >
                             {deletingId === product.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                              <Loader2 className="w-4 h-4 animate-spin text-[#D94A4A]" />
                             ) : (
                               <Trash2 className="w-4 h-4" />
                             )}

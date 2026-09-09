@@ -72,7 +72,7 @@ export function InstantSearch() {
     <div ref={containerRef} className="relative w-full">
       {/* Search Input Bar */}
       <div className="relative flex items-center">
-        <Search className="w-4 h-4 absolute left-3.5 text-zinc-500 pointer-events-none" />
+        <Search className="w-4 h-4 absolute left-3.5 text-[#A3A39D] pointer-events-none" />
         <input
           type="text"
           value={query}
@@ -81,31 +81,31 @@ export function InstantSearch() {
             if (results.length > 0) setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Tìm kiếm chuột, phím cơ, tai nghe, màn hình..."
-          className="w-full h-10 pl-10 pr-9 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
+          placeholder="Tìm sản phẩm..."
+          className="w-full bg-white border border-[#D5D5D0] h-11 rounded-lg px-3.5 pl-10 pr-9 text-sm text-[#111] placeholder:text-[#A3A39D] focus:border-[#111] focus:outline-none transition-all"
         />
         {isPending ? (
-          <Loader2 className="w-4 h-4 absolute right-3 text-cyan-400 animate-spin" />
+          <Loader2 className="w-4 h-4 absolute right-3 text-[#A3A39D] animate-spin" />
         ) : query ? (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 p-0.5 rounded text-zinc-500 hover:text-zinc-300"
+            className="absolute right-3 p-0.5 rounded text-[#A3A39D] hover:text-[#111]"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         ) : null}
       </div>
 
       {/* Popover Results Dropdown */}
       {isOpen && query.trim().length >= 2 && (
-        <div className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-zinc-900/95 border border-zinc-800 shadow-2xl backdrop-blur-xl overflow-hidden z-50 animate-in fade-in-0 zoom-in-95 duration-150">
-          <div className="p-2 divide-y divide-zinc-800/60">
+        <div className="absolute top-full left-0 right-0 mt-2 rounded-lg bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.05)] overflow-hidden z-50 animate-in fade-in-0 zoom-in-95 duration-150">
+          <div className="p-2 divide-y divide-[#E7E7E3]">
             {results.length === 0 && !isPending ? (
-              <div className="py-6 text-center text-zinc-500">
-                <Package className="w-8 h-8 mx-auto mb-2 text-zinc-600" />
-                <p className="text-xs font-medium">Không tìm thấy sản phẩm nào</p>
-                <p className="text-[11px] text-zinc-600 mt-0.5">
+              <div className="py-6 text-center text-[#74746E]">
+                <Package className="w-8 h-8 mx-auto mb-2 text-[#A3A39D]" />
+                <p className="text-sm font-medium">Không tìm thấy sản phẩm nào</p>
+                <p className="text-xs text-[#A3A39D] mt-0.5">
                   Thử tìm với tên thiết bị hoặc danh mục khác
                 </p>
               </div>
@@ -124,10 +124,10 @@ export function InstantSearch() {
                     key={product.id}
                     href={`/products/${product.slug}`}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-zinc-800/60 transition-colors group"
+                    className="flex items-center gap-3 p-2.5 rounded-md hover:bg-[#FAFAFA] transition-colors group"
                   >
                     {/* Thumbnail */}
-                    <div className="w-11 h-11 rounded-lg bg-zinc-950 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:border-cyan-500/40 transition-colors">
+                    <div className="w-12 h-12 rounded-md bg-[#F3F3F1] border border-[#E7E7E3] overflow-hidden flex items-center justify-center flex-shrink-0 transition-colors">
                       {firstImg ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -139,27 +139,27 @@ export function InstantSearch() {
                           }}
                         />
                       ) : (
-                        <Package className="w-4 h-4 text-zinc-600" />
+                        <Package className="w-4 h-4 text-[#A3A39D]" />
                       )}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-zinc-200 group-hover:text-cyan-400 transition-colors truncate">
+                      <p className="text-sm font-medium text-[#111] transition-colors truncate">
                         {product.name}
                       </p>
-                      <p className="text-[10px] text-zinc-500 uppercase font-medium mt-0.5">
+                      <p className="text-xs text-[#74746E] uppercase font-medium mt-0.5">
                         {product.category.name}
                       </p>
                     </div>
 
                     {/* Price */}
-                    <div className="text-right flex-shrink-0 font-mono">
-                      <span className="text-xs font-bold text-cyan-400">
+                    <div className="text-right flex-shrink-0">
+                      <span className="text-sm font-semibold text-[#111]">
                         {formatPrice(product.price)}
                       </span>
                       {product.originalPrice && product.originalPrice > product.price && (
-                        <span className="block text-[10px] text-zinc-500 line-through">
+                        <span className="block text-xs text-[#A3A39D] line-through">
                           {formatPrice(product.originalPrice)}
                         </span>
                       )}
@@ -171,7 +171,7 @@ export function InstantSearch() {
           </div>
 
           {/* View All Results Footer */}
-          <div className="bg-zinc-950/80 p-2.5 border-t border-zinc-800/80 text-center">
+          <div className="bg-[#FAFAFA] p-2.5 border-t border-[#E7E7E3] text-center">
             <button
               type="button"
               onClick={() => {
@@ -180,10 +180,10 @@ export function InstantSearch() {
                   `/products?search=${encodeURIComponent(query.trim())}`
                 );
               }}
-              className="w-full py-1.5 px-3 rounded-lg text-xs font-medium text-cyan-400 hover:bg-cyan-500/10 flex items-center justify-center gap-1.5 transition-colors"
+              className="w-full py-2 px-3 rounded-md text-sm font-medium text-[#74746E] hover:text-[#111] flex items-center justify-center gap-1.5 transition-colors"
             >
-              <span>Xem tất cả kết quả cho &quot;{query}&quot;</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Xem tất cả kết quả</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -191,3 +191,4 @@ export function InstantSearch() {
     </div>
   );
 }
+

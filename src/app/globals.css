@@ -4,25 +4,37 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
-    --card: #ffffff;
-    --card-foreground: #0f172a;
-    --primary: #0f172a;
-    --primary-foreground: #ffffff;
-    --primary-hover: #1e293b;
-    --secondary: #f1f5f9;
-    --secondary-foreground: #0f172a;
-    --muted: #f1f5f9;
-    --muted-foreground: #64748b;
-    --accent: #0284c7;
-    --accent-foreground: #ffffff;
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    --border: #e2e8f0;
-    --input: #e2e8f0;
-    --ring: #0284c7;
-    --radius: 0.5rem;
+    /* DESIGN.md: Minimal Editorial Commerce */
+    --color-black: #111111;
+    --color-black-soft: #1A1A1A;
+    --color-white: #FFFFFF;
+    --color-background: #F7F7F5;
+    --color-surface: #FFFFFF;
+
+    --background: #F7F7F5;
+    --foreground: #111111;
+    --card: #FFFFFF;
+    --card-foreground: #111111;
+    --primary: #111111;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #1A1A1A;
+    --secondary: #FFFFFF;
+    --secondary-foreground: #111111;
+    --muted: #F3F3F1;
+    --muted-foreground: #74746E;
+    --accent: #111111;
+    --accent-foreground: #FFFFFF;
+    --destructive: #D94A4A;
+    --destructive-foreground: #FFFFFF;
+    --border: #E7E7E3;
+    --input: #D5D5D0;
+    --ring: #111111;
+    --radius: 10px;
+
+    --success: #21A366;
+    --warning: #D99A24;
+    --danger: #D94A4A;
+    --info: #3B82F6;
   }
 }
 
@@ -30,4 +42,6 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

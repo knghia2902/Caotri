@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "secondary" | "outline" | "accent" | "danger" | "success" | "neon";
+  variant?: "default" | "secondary" | "outline" | "danger" | "success" | "warning";
 }
 
 export function Badge({
@@ -11,19 +11,18 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variantStyles = {
-    default: "bg-primary text-primary-foreground",
-    secondary: "bg-secondary text-secondary-foreground",
-    outline: "border border-border text-foreground",
-    accent: "bg-accent text-accent-foreground",
-    danger: "bg-red-100 text-red-700 border border-red-200",
-    success: "bg-emerald-100 text-emerald-800 border border-emerald-200",
-    neon: "bg-cyan-950/80 text-cyan-400 border border-cyan-500/50 shadow-sm shadow-cyan-950/50",
+    default: "bg-[#111] text-white",
+    secondary: "bg-[#F3F3F1] text-[#555550]",
+    outline: "border border-[#E7E7E3] text-[#555550]",
+    danger: "bg-red-50 text-[#D94A4A] border border-red-100",
+    success: "bg-emerald-50 text-[#21A366] border border-emerald-100",
+    warning: "bg-amber-50 text-[#D99A24] border border-amber-100",
   };
 
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors",
+        "inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium",
         variantStyles[variant],
         className
       )}

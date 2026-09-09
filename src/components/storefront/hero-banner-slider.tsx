@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface HeroBannerItem {
   id: string;
@@ -48,7 +48,7 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
 
   const content = (
     <div
-      className="group relative w-full rounded-2xl md:rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-950 shadow-2xl aspect-[16/8] sm:aspect-[21/9] md:aspect-[24/9]"
+      className="group relative w-full rounded-md overflow-hidden bg-[#F7F7F5] min-h-[400px] aspect-[16/8] sm:aspect-[21/9] md:aspect-[24/9]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -67,22 +67,22 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
             className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
-                "https://placehold.co/1200x500/18181b/a1a1aa?text=CaoTri+Gaming+Gear";
+                "https://placehold.co/1200x500/F3F3F1/74746E?text=CaoTri+Gaming+Gear";
             }}
           />
 
-          {/* Bottom Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent" />
-
           {/* Banner Title Caption */}
-          <div className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 z-20 max-w-xl">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 text-xs font-semibold backdrop-blur-md mb-2">
-              <Sparkles className="w-3 h-3 text-cyan-400" />
-              Sự Kiện Hot • Ưu Đãi Mùa Này
-            </div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
+          <div className="absolute bottom-8 left-8 z-20 max-w-xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#111] bg-white/90 backdrop-blur-sm px-4 py-2 rounded-md mb-4 inline-block">
               {b.title}
             </h2>
+            {b.linkUrl && (
+              <div>
+                <span className="inline-flex items-center justify-center bg-[#111] text-white h-11 px-[18px] rounded-lg text-sm font-medium">
+                  Xem ngay
+                </span>
+              </div>
+            )}
           </div>
         </div>
       ))}
@@ -97,10 +97,10 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
               e.stopPropagation();
               handlePrev();
             }}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-11 md:h-11 rounded-full bg-zinc-950/70 border border-zinc-700/80 text-zinc-200 hover:text-cyan-400 hover:border-cyan-500 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white border border-[#E7E7E3] text-[#111] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-[#FAFAFA]"
             aria-label="Slide trước"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5 stroke-[1.5px]" />
           </button>
           <button
             type="button"
@@ -109,14 +109,14 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
               e.stopPropagation();
               handleNext();
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-11 md:h-11 rounded-full bg-zinc-950/70 border border-zinc-700/80 text-zinc-200 hover:text-cyan-400 hover:border-cyan-500 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white border border-[#E7E7E3] text-[#111] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-[#FAFAFA]"
             aria-label="Slide sau"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 stroke-[1.5px]" />
           </button>
 
           {/* Dots Indicator */}
-          <div className="absolute bottom-3 right-6 z-30 flex items-center gap-1.5">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
             {banners.map((_, idx) => (
               <button
                 key={idx}
@@ -128,8 +128,8 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
                 }}
                 className={`transition-all rounded-full ${
                   idx === currentIndex
-                    ? "w-6 h-2 bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.8)]"
-                    : "w-2 h-2 bg-zinc-600 hover:bg-zinc-400"
+                    ? "w-2.5 h-2.5 bg-[#111]"
+                    : "w-2.5 h-2.5 bg-[#D5D5D0]"
                 }`}
                 aria-label={`Đi tới slide ${idx + 1}`}
               />

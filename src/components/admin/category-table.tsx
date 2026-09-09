@@ -95,44 +95,44 @@ export function CategoryTable({ categories }: CategoryTableProps) {
       {/* Top action bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A3A39D]" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Tìm theo tên danh mục, slug..."
-            className="pl-10"
+            className="pl-10 h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
           />
         </div>
-        <Button onClick={handleAddNew} variant="neon" className="gap-2">
+        <Button onClick={handleAddNew} className="gap-2 bg-[#111] text-white rounded-lg h-11 px-[18px]">
           <Plus className="w-4 h-4" />
           Thêm danh mục
         </Button>
       </div>
 
       {/* Categories Table */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm overflow-hidden shadow-sm">
+      <div className="bg-white overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-zinc-300">
-            <thead className="bg-zinc-900/90 border-b border-zinc-800 text-xs font-semibold uppercase text-zinc-400 tracking-wider">
+          <table className="w-full text-left text-sm text-[#111]">
+            <thead className="bg-[#FAFAFA] text-xs font-semibold text-[#111]">
               <tr>
-                <th className="py-3.5 px-4 w-16 text-center">Thứ tự</th>
-                <th className="py-3.5 px-4">Ảnh / Icon</th>
-                <th className="py-3.5 px-4">Tên danh mục</th>
-                <th className="py-3.5 px-4">Đường dẫn (Slug)</th>
-                <th className="py-3.5 px-4 text-center">Số sản phẩm</th>
-                <th className="py-3.5 px-4 text-right">Thao tác</th>
+                <th className="py-3.5 px-4 w-16 text-center border-b border-[#E7E7E3]">Thứ tự</th>
+                <th className="py-3.5 px-4 border-b border-[#E7E7E3]">Ảnh / Icon</th>
+                <th className="py-3.5 px-4 border-b border-[#E7E7E3]">Tên danh mục</th>
+                <th className="py-3.5 px-4 border-b border-[#E7E7E3]">Đường dẫn (Slug)</th>
+                <th className="py-3.5 px-4 text-center border-b border-[#E7E7E3]">Số sản phẩm</th>
+                <th className="py-3.5 px-4 text-right border-b border-[#E7E7E3]">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60">
+            <tbody>
               {filteredCategories.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-zinc-500">
-                    <FolderKanban className="w-10 h-10 mx-auto mb-3 text-zinc-600" />
+                  <td colSpan={6} className="py-12 text-center text-[#74746E]">
+                    <FolderKanban className="w-10 h-10 mx-auto mb-3 text-[#A3A39D]" />
                     <p className="text-sm font-medium">
                       {search ? "Không tìm thấy danh mục phù hợp" : "Chưa có danh mục nào"}
                     </p>
                     {search && (
-                      <p className="text-xs text-zinc-600 mt-1">
+                      <p className="text-xs text-[#A3A39D] mt-1">
                         Thử tìm kiếm với từ khóa khác
                       </p>
                     )}
@@ -142,16 +142,16 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                 filteredCategories.map((cat) => (
                   <tr
                     key={cat.id}
-                    className="hover:bg-zinc-800/40 transition-colors group"
+                    className="hover:bg-[#FAFAFA] h-14 border-b border-[#E7E7E3] transition-colors group"
                   >
                     {/* Thứ tự */}
-                    <td className="py-4 px-4 text-center font-mono text-xs text-zinc-400 font-semibold">
+                    <td className="py-4 px-4 text-center text-xs text-[#74746E] font-semibold">
                       #{cat.orderIndex}
                     </td>
 
                     {/* Ảnh / Icon */}
                     <td className="py-4 px-4">
-                      <div className="w-11 h-11 rounded-lg bg-zinc-800/80 border border-zinc-700/60 overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:border-cyan-500/40 transition-colors">
+                      <div className="w-11 h-11 rounded-lg bg-[#F3F3F1] border border-[#E7E7E3] overflow-hidden flex items-center justify-center flex-shrink-0 transition-colors">
                         {cat.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -163,18 +163,18 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                             }}
                           />
                         ) : (
-                          <Layers className="w-5 h-5 text-zinc-500" />
+                          <Layers className="w-5 h-5 text-[#A3A39D]" />
                         )}
                       </div>
                     </td>
 
                     {/* Tên & Mô tả */}
                     <td className="py-4 px-4">
-                      <div className="font-semibold text-zinc-100 group-hover:text-cyan-400 transition-colors">
+                      <div className="font-semibold text-[#111] transition-colors">
                         {cat.name}
                       </div>
                       {cat.description && (
-                        <div className="text-xs text-zinc-400 line-clamp-1 mt-0.5 max-w-md">
+                        <div className="text-xs text-[#74746E] line-clamp-1 mt-0.5 max-w-md">
                           {cat.description}
                         </div>
                       )}
@@ -182,7 +182,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
 
                     {/* Slug */}
                     <td className="py-4 px-4">
-                      <span className="inline-flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded bg-zinc-800 text-cyan-300/90 border border-zinc-700/50">
+                      <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-[#FAFAFA] text-[#74746E] border border-[#E7E7E3]">
                         /{cat.slug}
                       </span>
                     </td>
@@ -193,8 +193,8 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                         variant={cat._count.products > 0 ? "secondary" : "outline"}
                         className={
                           cat._count.products > 0
-                            ? "bg-cyan-950/40 text-cyan-400 border border-cyan-800/40"
-                            : "text-zinc-500 border-zinc-800"
+                            ? "bg-[#111] text-white border border-[#111]"
+                            : "text-[#74746E] border-[#E7E7E3]"
                         }
                       >
                         {cat._count.products} sản phẩm
@@ -209,7 +209,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                           variant="ghost"
                           onClick={() => handleEdit(cat)}
                           title="Chỉnh sửa danh mục"
-                          className="h-8 w-8 p-0 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-950/30"
+                          className="h-8 w-8 p-0 text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1]"
                         >
                           <Edit3 className="w-4 h-4" />
                         </Button>
@@ -223,10 +223,10 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                               ? "Không thể xóa danh mục đang có sản phẩm"
                               : "Xóa danh mục"
                           }
-                          className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-400 hover:bg-rose-950/30 disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="h-8 w-8 p-0 text-[#D94A4A] hover:text-[#D94A4A] hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           {deletingId === cat.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                            <Loader2 className="w-4 h-4 animate-spin text-[#D94A4A]" />
                           ) : (
                             <Trash2 className="w-4 h-4" />
                           )}

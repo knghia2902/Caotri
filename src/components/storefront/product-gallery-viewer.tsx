@@ -28,14 +28,14 @@ export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProp
   return (
     <div className="space-y-4">
       {/* Khung ảnh lớn chính */}
-      <div className="relative aspect-square w-full rounded-2xl bg-zinc-900/90 border border-zinc-800/80 overflow-hidden group">
+      <div className="relative aspect-square w-full rounded-md bg-[#F7F7F5] overflow-hidden group">
         <Image
           src={isCurrentError ? "/placeholder-gear.svg" : currentImage}
           alt={`${title} - Ảnh ${selectedIndex + 1}`}
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain p-4 sm:p-6 transition-transform duration-500 group-hover:scale-105"
+          className="object-contain p-4 sm:p-6"
           onError={() => setHasError((prev) => ({ ...prev, [selectedIndex]: true }))}
         />
 
@@ -45,26 +45,26 @@ export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProp
             <button
               onClick={handlePrev}
               type="button"
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-700/60 text-zinc-300 hover:text-cyan-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-sm"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border border-[#E7E7E3] text-[#111] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
               aria-label="Ảnh trước"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
             </button>
             <button
               onClick={handleNext}
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-zinc-950/80 hover:bg-zinc-900 border border-zinc-700/60 text-zinc-300 hover:text-cyan-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-sm"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border border-[#E7E7E3] text-[#111] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
               aria-label="Ảnh kế tiếp"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5" strokeWidth={1.5} />
             </button>
           </>
         )}
 
         {/* Badge số ảnh */}
         {displayImages.length > 1 && (
-          <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-zinc-950/80 border border-zinc-800 text-[11px] font-mono text-zinc-400 backdrop-blur-sm flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-white border border-[#E7E7E3] text-[11px] text-[#74746E] flex items-center gap-1.5 shadow-sm">
+            <Eye className="w-3.5 h-3.5 text-[#74746E]" strokeWidth={1.5} />
             <span>
               {selectedIndex + 1} / {displayImages.length}
             </span>
@@ -74,7 +74,7 @@ export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProp
 
       {/* Dải thumbnail nhỏ cuộn ngang bên dưới */}
       {displayImages.length > 1 && (
-        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#D5D5D0] scrollbar-track-transparent">
           {displayImages.map((img, idx) => {
             const isSelected = idx === selectedIndex;
             const isThumbError = hasError[idx];
@@ -83,10 +83,10 @@ export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProp
                 key={idx}
                 type="button"
                 onClick={() => setSelectedIndex(idx)}
-                className={`relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-zinc-900 ${
+                className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden transition-all duration-200 bg-[#F7F7F5] ${
                   isSelected
-                    ? "border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)] ring-1 ring-cyan-400/50 scale-105"
-                    : "border-zinc-800 hover:border-zinc-700 opacity-70 hover:opacity-100"
+                    ? "border-2 border-[#111]"
+                    : "border border-[#E7E7E3] opacity-60 hover:opacity-100"
                 }`}
               >
                 <Image

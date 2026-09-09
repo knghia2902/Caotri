@@ -108,15 +108,15 @@ export function CategoryModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-2xl bg-zinc-900 border border-zinc-800 shadow-2xl p-6 text-zinc-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg rounded-[10px] bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.05)] p-6 text-[#111]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#E7E7E3]">
           <div>
-            <h3 className="text-lg font-bold text-zinc-100">
+            <h3 className="text-lg font-bold text-[#111]">
               {isEditing ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"}
             </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-[#74746E] mt-0.5">
               {isEditing
                 ? "Cập nhật thông tin và thứ tự hiển thị danh mục"
                 : "Tạo danh mục phân loại mới cho sản phẩm"}
@@ -125,7 +125,7 @@ export function CategoryModal({
           <button
             onClick={onClose}
             disabled={isPending}
-            className="rounded-lg p-1.5 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+            className="rounded-lg p-1.5 text-[#74746E] hover:text-[#111] hover:bg-[#FAFAFA] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -134,8 +134,8 @@ export function CategoryModal({
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-              Tên danh mục <span className="text-rose-400">*</span>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+              Tên danh mục <span className="text-[#D94A4A]">*</span>
             </label>
             <Input
               value={name}
@@ -143,12 +143,13 @@ export function CategoryModal({
               placeholder="VD: Bàn phím cơ, Chuột gaming..."
               disabled={isPending}
               required
+              className="h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
                 Đường dẫn (Slug)
               </label>
               {isCustomSlug && (
@@ -158,7 +159,7 @@ export function CategoryModal({
                     setIsCustomSlug(false);
                     setSlug(slugify(name));
                   }}
-                  className="text-xs text-cyan-400 hover:underline"
+                  className="text-xs text-[#3B82F6] hover:underline"
                 >
                   Tạo lại từ tên
                 </button>
@@ -169,14 +170,15 @@ export function CategoryModal({
               onChange={handleSlugChange}
               placeholder="ban-phim-co"
               disabled={isPending}
+              className="h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
             />
-            <p className="text-[11px] text-zinc-500 mt-1">
+            <p className="text-[11px] text-[#A3A39D] mt-1">
               Đường dẫn thân thiện SEO (ví dụ: caotri.vn/category/{slug || "slug-mau"})
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
               URL Hình ảnh / Icon đại diện
             </label>
             <Input
@@ -184,10 +186,11 @@ export function CategoryModal({
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://images.unsplash.com/... hoặc Cloudinary URL"
               disabled={isPending}
+              className="h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
             />
             {imageUrl && (
-              <div className="mt-2 flex items-center gap-3 p-2 rounded-lg bg-zinc-950 border border-zinc-800">
-                <div className="w-12 h-12 rounded bg-zinc-900 overflow-hidden flex items-center justify-center border border-zinc-800 flex-shrink-0">
+              <div className="mt-2 flex items-center gap-3 p-2 rounded-lg bg-[#FAFAFA] border border-[#E7E7E3]">
+                <div className="w-12 h-12 rounded bg-white overflow-hidden flex items-center justify-center border border-[#E7E7E3] flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imageUrl}
@@ -198,7 +201,7 @@ export function CategoryModal({
                     }}
                   />
                 </div>
-                <div className="text-xs text-zinc-400 truncate flex-1">
+                <div className="text-xs text-[#74746E] truncate flex-1">
                   Preview ảnh danh mục
                 </div>
               </div>
@@ -206,7 +209,7 @@ export function CategoryModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
               Thứ tự hiển thị
             </label>
             <Input
@@ -215,14 +218,15 @@ export function CategoryModal({
               onChange={(e) => setOrderIndex(parseInt(e.target.value) || 0)}
               placeholder="0"
               disabled={isPending}
+              className="h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
             />
-            <p className="text-[11px] text-zinc-500 mt-1">
+            <p className="text-[11px] text-[#A3A39D] mt-1">
               Số nhỏ hơn sẽ hiển thị trước trên thanh menu storefront
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
               Mô tả ngắn
             </label>
             <textarea
@@ -231,25 +235,24 @@ export function CategoryModal({
               placeholder="Mô tả danh mục sản phẩm..."
               rows={3}
               disabled={isPending}
-              className="w-full rounded-lg bg-zinc-950 border border-zinc-800 px-3.5 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all resize-none"
+              className="w-full rounded-lg bg-white border border-[#D5D5D0] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-[#111] transition-all resize-none"
             />
           </div>
 
           {/* Footer actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E7E7E3]">
             <Button
               type="button"
-              variant="outline"
               onClick={onClose}
               disabled={isPending}
+              className="bg-white text-[#111] border border-[#D5D5D0] hover:bg-[#FAFAFA] rounded-lg h-11 px-[18px]"
             >
               Hủy
             </Button>
             <Button
               type="submit"
-              variant="neon"
               disabled={isPending}
-              className="min-w-[120px]"
+              className="min-w-[120px] bg-[#111] hover:bg-black text-white rounded-lg h-11 px-[18px]"
             >
               {isPending ? (
                 <>

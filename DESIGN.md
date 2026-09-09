@@ -1,322 +1,459 @@
-# DESIGN.md — Caotri Gear
+# Caotri Gear — Design System & UI Specification
 
 ## 1. Tổng quan
 
-**Caotri Gear** là website bán phụ kiện công nghệ và gaming gear, gồm 2 khu vực chính:
+**Caotri Gear** là website thương mại điện tử bán gear công nghệ/gaming gồm chuột, bàn phím, tai nghe, pad, màn hình và phụ kiện.
 
-- **Website khách hàng**: Trang chủ, danh mục sản phẩm, tìm kiếm & lọc, chi tiết sản phẩm, giỏ hàng, đặt hàng/liên hệ.
-- **Trang quản trị Admin**: Dashboard, quản lý sản phẩm, đơn hàng, danh mục, banner/nội dung, người dùng và phân quyền.
+Thiết kế theo hướng **minimal / editorial commerce**:
 
-Phong cách thiết kế hướng tới cảm giác **gaming hiện đại, sạch, chuyên nghiệp, dễ mua hàng**, ưu tiên trải nghiệm desktop nhưng vẫn cần responsive tốt trên tablet và mobile.
-
----
-
-## 2. Design direction
-
-### 2.1. Phong cách
-
-- Modern e-commerce
-- Gaming / technology
-- Tối giản, rõ ràng
-- Nội dung đặt trong các khối card sáng
-- Header/footer sử dụng nền navy đậm để tạo nhận diện
-- Accent chính là xanh dương tươi
-- Hạn chế hiệu ứng neon quá mạnh; ưu tiên giao diện thực tế, dễ triển khai
-
-### 2.2. Từ khóa hình ảnh
-
-`Gaming` · `Technology` · `Clean UI` · `Modern` · `Navy` · `Blue Accent` · `White Cards` · `Sharp & Premium`
+- Tối giản, sạch, ít màu.
+- Ưu tiên khoảng trắng lớn.
+- Typography rõ, mạnh.
+- Hình sản phẩm là điểm nhấn chính.
+- Hạn chế gradient, glow, hiệu ứng gaming đại trà.
+- Giao diện khách hàng và admin dùng chung một hệ thiết kế.
+- Cảm giác hiện đại, cao cấp, dễ đọc và dễ sử dụng.
 
 ---
 
-## 3. Design Tokens
+# 2. Design Direction
 
-### 3.1. Màu sắc
+## 2.1. Từ khóa thiết kế
 
-```css
-:root {
-  --color-primary: #1677FF;
-  --color-primary-hover: #0F67E8;
-  --color-primary-light: #EAF3FF;
+- Minimal
+- Monochrome
+- Editorial
+- Premium
+- Functional
+- Product-focused
+- Clean grid
+- Quiet UI
 
-  --color-dark-900: #0B1624;
-  --color-dark-800: #111E2E;
-  --color-dark-700: #18283A;
+## 2.2. Nguyên tắc
 
-  --color-bg: #F5F7FA;
-  --color-surface: #FFFFFF;
-  --color-surface-soft: #F8FAFC;
+1. **Nội dung quan trọng hơn trang trí.**
+2. Không dùng quá nhiều màu.
+3. Không dùng shadow nặng.
+4. Không dùng quá nhiều border radius.
+5. Không nhồi quá nhiều component vào một khu vực.
+6. Mỗi section phải có khoảng thở rõ ràng.
+7. CTA chính luôn nổi bật bằng màu đen.
+8. Ảnh sản phẩm nên có nền sáng, đơn giản.
+9. Layout ưu tiên grid thẳng và khoảng cách đều.
+10. Tránh phong cách gaming neon phổ thông.
 
-  --color-text-primary: #172033;
-  --color-text-secondary: #687386;
-  --color-text-muted: #98A2B3;
+---
 
-  --color-border: #E5EAF0;
-  --color-border-strong: #D5DCE5;
+# 3. Color System
 
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
-  --color-info: #3B82F6;
-
-  --color-price: #EF2D2D;
-}
-```
-
-### 3.2. Nền
-
-- Body khách hàng: `#F5F7FA` hoặc trắng.
-- Header/footer: navy đậm `#0B1624`.
-- Sidebar admin: `#0B1624`.
-- Nội dung admin: `#F5F7FA`.
-- Card/table/form: trắng.
-
-### 3.3. Typography
-
-Ưu tiên font dễ đọc, hỗ trợ tiếng Việt tốt:
+## 3.1. Neutral
 
 ```css
-font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+--color-black: #111111;
+--color-black-soft: #1A1A1A;
+
+--color-white: #FFFFFF;
+--color-background: #F7F7F5;
+--color-surface: #FFFFFF;
+
+--color-gray-50: #FAFAFA;
+--color-gray-100: #F3F3F1;
+--color-gray-200: #E7E7E3;
+--color-gray-300: #D5D5D0;
+--color-gray-400: #A3A39D;
+--color-gray-500: #74746E;
+--color-gray-600: #555550;
+--color-gray-700: #3A3A36;
+--color-gray-900: #181816;
 ```
 
-Cấp chữ tham khảo:
+## 3.2. Semantic
 
-| Loại | Size | Weight |
-|---|---:|---:|
-| Hero heading | 40–52px | 700–800 |
-| Page title | 28–32px | 700 |
-| Section title | 22–26px | 700 |
-| Card title | 15–18px | 600 |
-| Body | 14–16px | 400 |
-| Small text | 12–13px | 400–500 |
-| Price | 16–22px | 700 |
+```css
+--color-success: #21A366;
+--color-warning: #D99A24;
+--color-danger: #D94A4A;
+--color-info: #3B82F6;
+```
 
-### 3.4. Border radius
+## 3.3. Quy tắc sử dụng màu
+
+- Nền website: `#F7F7F5`
+- Card: `#FFFFFF`
+- Text chính: `#111111`
+- Text phụ: `#74746E`
+- Border: `#E7E7E3`
+- CTA chính: nền đen, chữ trắng
+- CTA phụ: nền trắng, border xám
+- Không sử dụng màu thương hiệu quá mạnh trên diện tích lớn.
+
+---
+
+# 4. Typography
+
+## Font đề xuất
+
+Ưu tiên:
+
+```text
+Inter
+Manrope
+Geist
+SF Pro Display
+```
+
+Fallback:
+
+```css
+font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+```
+
+## Type Scale
+
+### Display
+
+```css
+font-size: 56px;
+line-height: 1.05;
+font-weight: 600;
+letter-spacing: -0.04em;
+```
+
+### H1
+
+```css
+font-size: 40px;
+line-height: 1.1;
+font-weight: 600;
+letter-spacing: -0.03em;
+```
+
+### H2
+
+```css
+font-size: 28px;
+line-height: 1.2;
+font-weight: 600;
+```
+
+### H3
+
+```css
+font-size: 20px;
+line-height: 1.3;
+font-weight: 600;
+```
+
+### Body Large
+
+```css
+font-size: 16px;
+line-height: 1.6;
+font-weight: 400;
+```
+
+### Body
+
+```css
+font-size: 14px;
+line-height: 1.55;
+font-weight: 400;
+```
+
+### Caption
+
+```css
+font-size: 12px;
+line-height: 1.4;
+font-weight: 500;
+```
+
+---
+
+# 5. Spacing
+
+Sử dụng hệ spacing theo bội số 4.
+
+```css
+--space-1: 4px;
+--space-2: 8px;
+--space-3: 12px;
+--space-4: 16px;
+--space-5: 20px;
+--space-6: 24px;
+--space-8: 32px;
+--space-10: 40px;
+--space-12: 48px;
+--space-16: 64px;
+--space-20: 80px;
+--space-24: 96px;
+```
+
+Section trên desktop:
+
+```text
+Padding vertical: 64–96px
+Padding horizontal: 32–48px
+```
+
+---
+
+# 6. Border & Radius
+
+## Border
+
+```css
+border: 1px solid #E7E7E3;
+```
+
+## Radius
 
 ```css
 --radius-sm: 6px;
 --radius-md: 10px;
 --radius-lg: 14px;
---radius-xl: 18px;
 ```
 
-- Input/button: 6–8px
-- Product card: 10–12px
-- Main card: 12–16px
-- Banner: 12–16px
+Không dùng radius quá tròn.
 
-### 3.5. Shadow
+---
+
+# 7. Shadow
+
+Ưu tiên không dùng shadow.
+
+Khi thực sự cần:
 
 ```css
---shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
---shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
---shadow-lg: 0 14px 40px rgba(15, 23, 42, 0.12);
+box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
 ```
 
-Không dùng shadow quá nặng.
+Không dùng glow.
 
-### 3.6. Spacing
+---
 
-Dùng hệ 4px:
+# 8. Layout
 
-`4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64`
+## Desktop
 
-Container desktop:
+```text
+Max width: 1440px
+Content width: 1280–1360px
+```
+
+Container:
 
 ```css
-max-width: 1440px;
+max-width: 1360px;
 margin: 0 auto;
-padding: 0 24px;
+padding: 0 32px;
 ```
 
----
+## Grid
 
-# 4. Layout website khách hàng
-
-## 4.1. Header
-
-### Cấu trúc
-
-1. Logo `Caotri Gear`
-2. Navigation
-3. Search box
-4. User / account icon
-5. Wishlist icon (optional)
-6. Cart icon + badge số lượng
-
-### Desktop
-
-Chiều cao khoảng `64–72px`.
+### Product grid desktop
 
 ```text
-[Logo] [Trang chủ] [Sản phẩm] [Danh mục] [Khuyến mãi] [Liên hệ]     [Search] [♡] [User] [Cart]
+4 columns
+gap: 16–24px
 ```
 
-### Style
-
-- Nền trắng ở khu vực content hoặc navy tùy phiên bản.
-- Viền dưới mảnh.
-- Search box rộng khoảng 260–360px.
-- Cart badge dùng màu đỏ.
-
----
-
-## 4.2. Hero Banner
-
-Banner lớn nằm ngay dưới header.
-
-### Nội dung
-
-- Ảnh gaming setup / keyboard / mouse / monitor.
-- Overlay tối nhẹ.
-- Headline lớn.
-- Subheading ngắn.
-- CTA màu xanh dương.
-
-Ví dụ nội dung:
+### Tablet
 
 ```text
-GEAR CHO MỌI CUỘC CHƠI
-Hiệu năng vượt trội — Trải nghiệm khác biệt
-[Khám phá ngay]
+2–3 columns
 ```
 
-### Kích thước desktop
-
-- Tỉ lệ khoảng `16:5` hoặc `16:6`.
-- Border radius 12–16px.
-
----
-
-## 4.3. Service highlights
-
-Ngay dưới banner có 3–4 item:
-
-- Sản phẩm chính hãng
-- Giao hàng toàn quốc
-- Tư vấn 24/7
-- Thanh toán linh hoạt
-
-Mỗi item gồm:
+### Mobile
 
 ```text
-[icon]  Tiêu đề
-        Nội dung phụ
+2 columns
 ```
 
 ---
 
-## 4.4. Danh mục sản phẩm
+# 9. Header
 
-Hiển thị dạng icon card ngang.
+Header tối giản.
 
-Danh mục gợi ý:
+## Desktop
+
+Bố cục:
+
+```text
+[Caotri Gear]  [Sản phẩm] [Bộ sưu tập] [Về chúng tôi] [Liên hệ]
+                                        [Search] [Account] [Cart]
+```
+
+Thông số:
+
+```text
+Height: 72px
+Background: white
+Border-bottom: #E7E7E3
+Position: sticky
+```
+
+Logo:
+
+- Wordmark đơn giản.
+- Có thể kết hợp biểu tượng chữ `C`.
+- Không dùng gradient.
+
+---
+
+# 10. Trang chủ
+
+## 10.1 Hero
+
+Hero dùng split layout.
+
+```text
+┌──────────────────┬──────────────────┐
+│                  │                  │
+│ Gear tốt         │   Product image  │
+│ cho trải nghiệm  │                  │
+│ thật.            │                  │
+│                  │                  │
+│ [Khám phá ngay]  │                  │
+│                  │                  │
+└──────────────────┴──────────────────┘
+```
+
+Desktop:
+
+```text
+50% text
+50% image
+min-height: 520px
+```
+
+Headline:
+
+```text
+Gear tốt
+cho trải nghiệm
+thật.
+```
+
+CTA:
+
+```text
+Background: black
+Text: white
+Height: 44px
+Padding: 0 20px
+```
+
+## 10.2 Danh mục
+
+Danh mục hiển thị dạng icon hoặc ảnh sản phẩm monochrome.
+
+Danh mục:
 
 - Chuột
-- Bàn phím
+- Phím
 - Tai nghe
-- Lót chuột / Pad
+- Pad
 - Màn hình
-- Phụ kiện khác
+- Phụ kiện
 
-Card:
+Layout:
 
-- Icon/ảnh sản phẩm ở giữa.
-- Tên danh mục phía dưới.
-- Hover: border xanh + background `primary-light`.
+```text
+6 columns desktop
+3 columns tablet
+3 columns mobile
+```
+
+Không cần card nặng.
 
 ---
 
-## 4.5. Product sections
+# 11. Product Card
 
-Trang chủ gồm tối thiểu:
-
-- **Sản phẩm nổi bật**
-- **Sản phẩm mới**
-
-Mỗi section:
+Thiết kế rất tối giản.
 
 ```text
-[Tên section]                           [Xem tất cả →]
-[Product] [Product] [Product] [Product] [Product]
+┌───────────────────┐
+│                   │
+│   Product image   │
+│                   │
+├───────────────────┤
+│ Logitech G Pro X  │
+│ 2.590.000đ        │
+└───────────────────┘
 ```
 
-### Product card
-
-Cấu trúc:
+## Product image
 
 ```text
-┌────────────────────────┐
-│ Badge        ♡          │
-│                        │
-│      Product image     │
-│                        │
-│ Tên sản phẩm           │
-│ ★★★★★ (optional)       │
-│ 2.990.000đ             │
-│                  [cart]│
-└────────────────────────┘
+Aspect ratio: 1:1
+Background: #F3F3F1
 ```
 
-Style:
+## Product info
 
-- Nền trắng.
-- Border `#E5EAF0`.
-- Radius 10–12px.
-- Không shadow hoặc shadow rất nhẹ.
-- Hover: translateY(-2px), shadow-md.
+Tên sản phẩm:
 
-Ảnh sản phẩm dùng nền trắng/sáng, object-fit `contain`.
+```text
+14px / 500
+```
 
-### Badge
+Giá:
 
-- `Mới`: xanh dương.
-- `Bán chạy`: đỏ/cam.
-- `% giảm`: đỏ.
-- `Hết hàng`: xám.
+```text
+14px / 600
+```
+
+Badge:
+
+```text
+Mới
+Bán chạy
+Hết hàng
+```
+
+Badge nhỏ, không quá nổi.
 
 ---
 
-# 5. Trang danh mục sản phẩm
+# 12. Trang danh mục
 
-## 5.1. Bố cục desktop
+Layout desktop:
 
 ```text
-┌──────────────┬──────────────────────────────────────────┐
-│ FILTER       │ Tiêu đề danh mục         [Sort dropdown]│
-│              │                                          │
-│ Danh mục     │ [Product] [Product] [Product]           │
-│ Khoảng giá   │ [Product] [Product] [Product]           │
-│ Thương hiệu  │ [Product] [Product] [Product]           │
-│ Tình trạng   │                                          │
-│              │             Pagination                   │
-└──────────────┴──────────────────────────────────────────┘
+┌──────────────┬────────────────────────────────────┐
+│ Filters      │ Chuột                              │
+│              │                                    │
+│ Danh mục     │ [Product][Product][Product][Product]│
+│ Khoảng giá   │ [Product][Product][Product][Product]│
+│ Thương hiệu  │                                    │
+│ Tình trạng   │                                    │
+└──────────────┴────────────────────────────────────┘
 ```
 
-Sidebar khoảng `220–260px`.
+Sidebar:
 
-Main content chiếm phần còn lại.
+```text
+Width: 220–240px
+```
 
-## 5.2. Filter
+Không dùng sidebar card nổi.
+
+Các filter:
 
 ### Danh mục
 
-Checkbox hoặc selectable item.
+Checkbox.
 
 ### Khoảng giá
 
-- Range slider.
-- 2 ô `Giá từ` / `Giá đến` nếu cần.
+Slider + input min/max.
 
 ### Thương hiệu
 
-- Logitech
-- Razer
-- HyperX
-- Keychron
-- SteelSeries
-- Asus
-- Khác
+Checkbox.
 
 ### Tình trạng
 
@@ -327,258 +464,283 @@ Checkbox hoặc selectable item.
 
 Dropdown:
 
-- Mặc định
-- Giá thấp → cao
-- Giá cao → thấp
-- Mới nhất
+```text
+Giá: thấp → cao
+Giá: cao → thấp
+Mới nhất
+```
 
 ---
 
-# 6. Trang chi tiết sản phẩm
+# 13. Search
 
-## 6.1. Layout
+Search ưu tiên dạng overlay hoặc page result.
+
+Input:
 
 ```text
-Breadcrumb
-
-┌──────────────────────────┬───────────────────────────────┐
-│                          │ Tên sản phẩm                  │
-│      Main product image  │ ★★★★★                         │
-│                          │ Giá                           │
-│ [thumb] [thumb] [thumb]  │ Mô tả ngắn                   │
-│                          │                               │
-│                          │ Màu sắc                       │
-│                          │ Số lượng [-] 1 [+]           │
-│                          │ [Thêm vào giỏ hàng]           │
-│                          │                               │
-│                          │ Facebook | Zalo | Gọi điện   │
-└──────────────────────────┴───────────────────────────────┘
+Height: 44px
+Border: 1px solid #E7E7E3
+Background: white
 ```
 
-## 6.2. Product gallery
+Placeholder:
 
+```text
+Tìm sản phẩm...
+```
+
+---
+
+# 14. Product Detail
+
+Desktop layout:
+
+```text
+┌─────────────────────────────┬──────────────────────────┐
+│ Thumbnail │ Product Image   │ Product title            │
+│           │                 │ Rating                   │
+│           │                 │ Price                    │
+│           │                 │ Stock                    │
+│           │                 │ Description              │
+│           │                 │ Quantity                 │
+│           │                 │ [Thêm vào giỏ hàng]      │
+└─────────────────────────────┴──────────────────────────┘
+```
+
+## Gallery
+
+- Thumbnail bên trái.
 - Main image lớn.
-- Thumbnail ở dưới hoặc bên trái.
-- Thumbnail active có border xanh.
+- Nền ảnh `#F7F7F5`.
 
-## 6.3. Product info
-
-- Tên sản phẩm: 28–32px.
-- Giá sale: màu đỏ.
-- Giá cũ: xám + line-through.
-- Discount badge nếu có.
-
-### CTA
-
-Primary:
+## CTA
 
 ```text
-[ 🛒 Thêm vào giỏ hàng ]
+Full width
+Black background
+White text
+Height: 48px
 ```
 
-Secondary contact buttons:
+## Service information
 
-```text
-[ Facebook ] [ Zalo ] [ Gọi điện ]
-```
+4 item ngang:
 
-Facebook và Zalo có thể dùng outline blue; gọi điện outline green.
+- Chính hãng
+- Bảo hành
+- Đổi trả
+- Giao hàng
+
+Icon outline.
 
 ---
 
-## 6.4. Tabs thông tin
+# 15. Product Tabs
 
-Tabs dưới product detail:
-
-- Mô tả
-- Thông số kỹ thuật
-- Đánh giá
-
-Active tab:
-
-- chữ đậm
-- border-bottom xanh
-
----
-
-# 7. Giỏ hàng
-
-## 7.1. Layout
-
-Desktop chia `70/30`:
+Tabs:
 
 ```text
-┌─────────────────────────────────┬──────────────────────┐
-│ Giỏ hàng                        │ Tóm tắt đơn hàng     │
-│                                 │                      │
-│ Product row                     │ Tạm tính             │
-│ Product row                     │ Giảm giá             │
-│ Product row                     │ Tổng cộng            │
-│                                 │                      │
-│                                 │ [Liên hệ đặt hàng]   │
-│                                 │ Facebook / Zalo / Tel│
-└─────────────────────────────────┴──────────────────────┘
+Mô tả
+Thông số kỹ thuật
+Đánh giá
 ```
 
-### Product row
+Active:
 
-- Ảnh 64–80px.
-- Tên.
-- Giá.
-- Stepper số lượng.
-- Tổng giá.
-- Delete icon màu đỏ.
+```text
+Text: black
+Border-bottom: 2px solid black
+```
 
 ---
 
-# 8. Đặt hàng / Liên hệ
+# 16. Cart
 
-Caotri Gear không cần bắt buộc checkout online phức tạp.
+Layout:
 
-Khách có thể đặt hàng bằng:
+```text
+┌───────────────────────────────────┬───────────────┐
+│ Cart Items                        │ Summary       │
+│                                   │               │
+│ Product 1                         │ Tổng tiền     │
+│ Product 2                         │               │
+│ Product 3                         │ [Đặt hàng]    │
+│                                   │ Facebook      │
+│                                   │ Zalo          │
+│                                   │ Điện thoại    │
+└───────────────────────────────────┴───────────────┘
+```
+
+Cart item:
+
+- Thumbnail
+- Tên
+- Giá
+- Quantity stepper
+- Delete button
+
+Không dùng background màu cho từng item.
+
+Chỉ dùng divider.
+
+---
+
+# 17. Đặt hàng
+
+Website không cần cổng thanh toán.
+
+Khách hàng liên hệ qua:
 
 - Facebook
 - Zalo
 - Điện thoại
 
-Khi nhấn liên hệ, nên chuẩn bị sẵn nội dung đơn:
+CTA:
 
 ```text
-Xin chào Caotri Gear,
-Tôi muốn đặt:
-- Logitech G Pro X × 1
-- Keychron K8 Pro × 1
-
-Tổng: 5.980.000đ
+Đặt hàng
 ```
 
-Có thể có trang xác nhận đơn đơn giản với:
+Sau đó hiển thị:
 
-- Mã đơn hàng.
-- Số sản phẩm.
-- Tổng tiền.
-- Các nút liên hệ.
+```text
+Liên hệ qua Facebook
+Liên hệ qua Zalo
+Gọi ngay
+```
 
 ---
 
-# 9. Footer
+# 18. Footer
 
-Footer nền navy đậm.
-
-Chia 3–4 cột:
+Minimal footer.
 
 ```text
 Caotri Gear
-Mô tả ngắn
-Social icons
 
 Về chúng tôi
-- Giới thiệu
-- Chính sách
-- Điều khoản
-
-Hỗ trợ khách hàng
-- Hướng dẫn mua hàng
-- Chính sách bảo hành
-- Đổi trả
-
+Chính sách
+Bảo hành
 Liên hệ
-- Facebook
-- Zalo
-- Hotline
-- Email
+
+Facebook
+Zalo
 ```
 
-Bottom footer:
+Nền:
 
 ```text
-© 2026 Caotri Gear. All rights reserved.
+#111111
+```
+
+Text:
+
+```text
+white / muted gray
 ```
 
 ---
 
-# 10. Admin Design
+# 19. Admin Design
 
-## 10.1. Layout tổng
+Admin sử dụng cùng visual language.
 
-Desktop admin dùng layout sidebar cố định bên trái.
+Layout:
 
 ```text
-┌───────────────┬──────────────────────────────────────────┐
-│ SIDEBAR       │ TOPBAR                                   │
-│               ├──────────────────────────────────────────┤
-│ Dashboard     │                                          │
-│ Sản phẩm      │             PAGE CONTENT                 │
-│ Đơn hàng      │                                          │
-│ Danh mục      │                                          │
-│ Banner        │                                          │
-│ Người dùng    │                                          │
-│ Phân quyền    │                                          │
-│ Cài đặt       │                                          │
-└───────────────┴──────────────────────────────────────────┘
+┌──────────────┬─────────────────────────────────────────┐
+│ Sidebar      │ Header                                  │
+│              ├─────────────────────────────────────────┤
+│ Dashboard    │ Content                                 │
+│ Products     │                                         │
+│ Orders       │                                         │
+│ Categories   │                                         │
+│ Banner       │                                         │
+│ Users        │                                         │
+│ Settings     │                                         │
+└──────────────┴─────────────────────────────────────────┘
 ```
-
-### Sidebar
-
-- Width: `210–240px`.
-- Background: `#0B1624`.
-- Logo ở đầu.
-- Menu item cao ~40–44px.
-- Icon trái + label.
-- Active item dùng background xanh `#1677FF`.
-
-### Topbar
-
-- Cao 56–64px.
-- Nền trắng.
-- Breadcrumb hoặc page title trái.
-- Notification + avatar + account dropdown phải.
 
 ---
 
-# 11. Admin Dashboard
+# 20. Admin Sidebar
 
-## 11.1. KPI cards
+```text
+Width: 220px
+Background: #111111
+Text: #FFFFFF
+```
 
-4 card đầu trang:
+Menu:
 
-- Tổng sản phẩm
+- Dashboard
+- Sản phẩm
+- Đơn hàng
+- Danh mục
+- Banner & nội dung
+- Người dùng
+- Phân quyền
+- Cài đặt
+
+Active menu:
+
+```text
+background: rgba(255,255,255,0.10)
+```
+
+Không dùng màu xanh neon.
+
+---
+
+# 21. Admin Dashboard
+
+Cards:
+
+- Tổng doanh thu
 - Tổng đơn hàng
-- Doanh thu
+- Sản phẩm
 - Khách hàng
 
-Card structure:
+Card style:
 
 ```text
-[icon] Label
-       128
-       ↑ 12%
+Background: white
+Border: 1px solid #E7E7E3
+Radius: 10px
 ```
 
-Mỗi card có icon nền pastel nhẹ.
+Số liệu lớn.
 
-## 11.2. Chart
+Ví dụ:
 
-Line chart doanh thu / đơn hàng theo ngày.
+```text
+128.560.000đ
+256
+128
+1.024
+```
 
-- Card trắng.
-- Gridline nhẹ.
-- Line xanh dương.
-- Có filter 7 ngày / 30 ngày / tháng.
+Chart:
+
+- Line chart hoặc bar chart đơn sắc.
+- Không gradient.
 
 ---
 
-# 12. Quản lý sản phẩm
+# 22. Product Management
 
-## 12.1. Toolbar
+Toolbar:
 
 ```text
-[Tìm kiếm sản phẩm...] [Danh mục ▼] [Trạng thái ▼]     [+ Thêm sản phẩm]
+Search
+Danh mục
+Trạng thái
+
+[+ Thêm sản phẩm]
 ```
 
-## 12.2. Table
-
-Columns:
+Table:
 
 ```text
 Ảnh
@@ -591,45 +753,52 @@ Thao tác
 
 Actions:
 
-- Edit: icon xanh.
-- Delete: icon đỏ.
+- Edit
+- Delete
 
 Status:
 
-- `Còn hàng`: badge xanh lá.
-- `Hết hàng`: badge đỏ/xám.
-
----
-
-# 13. Form thêm / sửa sản phẩm
-
-Dùng modal lớn hoặc trang riêng.
-
-Fields:
-
-- Tên sản phẩm
-- Slug
-- Danh mục
-- Thương hiệu
-- Giá
-- Giá sale
-- Tình trạng
-- Ảnh sản phẩm
-- Mô tả ngắn
-- Mô tả chi tiết
-- Thông số kỹ thuật
-- Nổi bật
-- Sản phẩm mới
-
-Footer actions:
-
 ```text
-[Hủy] [Lưu sản phẩm]
+Còn hàng
+Hết hàng
+Ẩn
 ```
 
 ---
 
-# 14. Quản lý đơn hàng
+# 23. Product Form
+
+Fields:
+
+```text
+Tên sản phẩm
+Slug
+Mô tả
+Giá
+Giá khuyến mãi
+Danh mục
+Thương hiệu
+Tình trạng
+Ảnh
+Sản phẩm nổi bật
+Sản phẩm mới
+```
+
+Layout desktop:
+
+```text
+2-column form
+```
+
+Save button:
+
+```text
+Black
+```
+
+---
+
+# 24. Order Management
 
 Table:
 
@@ -643,21 +812,23 @@ Ngày đặt
 Thao tác
 ```
 
-Status badge:
+Statuses:
 
-- Chờ xác nhận → cam.
-- Đang xử lý → xanh dương.
-- Đang giao → tím/xanh.
-- Đã giao → xanh lá.
-- Đã hủy → đỏ.
+```text
+Chờ xử lý
+Đang xử lý
+Đang giao
+Đã giao
+Đã hủy
+```
 
-Click `Chi tiết` mở drawer/modal.
+Status badge nên dùng màu semantic nhẹ.
 
 ---
 
-# 15. Quản lý danh mục
+# 25. Category Management
 
-Table đơn giản:
+Table:
 
 ```text
 Tên danh mục
@@ -667,300 +838,292 @@ Trạng thái
 Thao tác
 ```
 
-Ví dụ:
-
-- Chuột
-- Bàn phím
-- Tai nghe
-- Pad
-- Màn hình
-- Phụ kiện
-
-CTA:
+Action:
 
 ```text
-[+ Thêm danh mục]
++ Thêm danh mục
 ```
 
 ---
 
-# 16. Banner & nội dung
+# 26. Banner / Content Management
 
-Admin có khu vực quản lý:
+Cho phép quản lý:
 
 - Hero banner.
-- Banner phụ trang chủ.
-- Section sản phẩm nổi bật.
-- Section sản phẩm mới.
-- Nội dung footer.
-- Thông tin Facebook / Zalo / Hotline.
+- Collection banner.
+- Featured products.
+- New products.
+- Homepage title.
+- Homepage subtitle.
+- Contact information.
 
-Banner form:
+Banner upload gồm:
 
 ```text
-Tiêu đề
-Mô tả
-Ảnh banner
-CTA text
-CTA link
-Trạng thái hiển thị
-Thứ tự
+Image
+Title
+Subtitle
+CTA label
+CTA URL
+Status
 ```
 
 ---
 
-# 17. Người dùng & phân quyền
+# 27. User Management
 
-## Roles
-
-### Admin
-
-Có toàn quyền:
-
-- Dashboard.
-- Sản phẩm.
-- Danh mục.
-- Đơn hàng.
-- Banner.
-- Người dùng.
-- Phân quyền.
-- Cài đặt.
-
-### Nhân viên
-
-Quyền tùy cấu hình, ví dụ:
-
-- Xem dashboard.
-- Quản lý đơn hàng.
-- Xem sản phẩm.
-- Không được xóa sản phẩm.
-- Không quản lý người dùng.
-- Không thay đổi phân quyền.
-
-## UI phân quyền
-
-Có thể dùng checkbox matrix:
+Table:
 
 ```text
-                 Xem   Thêm   Sửa   Xóa
-Sản phẩm          ✓     ✓      ✓     ✕
-Đơn hàng          ✓     -      ✓     ✕
-Danh mục          ✓     ✕      ✕     ✕
-Banner            ✓     ✕      ✕     ✕
-Người dùng        ✕     ✕      ✕     ✕
+Tên đăng nhập
+Email
+Vai trò
+Trạng thái
+Thao tác
+```
+
+Vai trò:
+
+```text
+Admin
+Nhân viên
 ```
 
 ---
 
-# 18. Buttons
+# 28. Permissions
+
+## Admin
+
+Toàn quyền:
+
+```text
+Dashboard
+Products
+Orders
+Categories
+Banner
+Users
+Permissions
+Settings
+```
+
+## Nhân viên
+
+Có thể giới hạn:
+
+```text
+View dashboard
+Manage products
+Manage orders
+View categories
+```
+
+Không có quyền:
+
+```text
+Delete admin
+Change role
+Permission settings
+System settings
+```
+
+---
+
+# 29. Buttons
 
 ## Primary
 
 ```css
-background: #1677FF;
+background: #111111;
 color: #FFFFFF;
-border: none;
-```
-
-Hover:
-
-```css
-background: #0F67E8;
+height: 44px;
+padding: 0 18px;
+border-radius: 8px;
 ```
 
 ## Secondary
 
 ```css
 background: #FFFFFF;
-color: #172033;
-border: 1px solid #D5DCE5;
+color: #111111;
+border: 1px solid #D5D5D0;
 ```
 
 ## Danger
 
 ```css
-color: #EF4444;
-border-color: #FECACA;
-background: #FFF5F5;
+color: #D94A4A;
 ```
 
-Button height:
-
-- Small: 32px
-- Normal: 40px
-- Large CTA: 44–48px
+Không cần button nền đỏ nếu chỉ là action nhỏ.
 
 ---
 
-# 19. Inputs
-
-Input style:
+# 30. Inputs
 
 ```css
-height: 40px;
-border: 1px solid #D5DCE5;
-border-radius: 8px;
+height: 44px;
 background: #FFFFFF;
-padding: 0 12px;
+border: 1px solid #D5D5D0;
+border-radius: 8px;
+padding: 0 14px;
 ```
 
 Focus:
 
 ```css
-border-color: #1677FF;
-box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12);
+border-color: #111111;
+outline: none;
 ```
 
 ---
 
-# 20. Tables
+# 31. Table
 
-Admin table style:
+Table ưu tiên flat.
 
-- Header background `#F8FAFC`.
-- Header text 12–13px / semibold.
-- Row height 56–64px.
-- Border-bottom mảnh.
-- Hover row background `#F8FAFC`.
-- Actions luôn nằm phía phải.
-
-Pagination:
+Header:
 
 ```text
-[‹] [1] [2] [3] […] [›]
+Background: #FAFAFA
+Font size: 12px
+Font weight: 600
 ```
 
-Active page xanh dương.
+Row:
+
+```text
+Height: 56px
+Border-bottom
+```
+
+Hover:
+
+```text
+#FAFAFA
+```
+
+Không dùng card bao quanh từng row.
 
 ---
 
-# 21. Icons
+# 32. Icons
 
-Ưu tiên icon outline hiện đại:
+Phong cách:
 
-- Lucide Icons
-- Heroicons
-- Tabler Icons
+```text
+Outline
+1.5px stroke
+```
 
-Icon thickness đồng nhất khoảng 1.5–2px.
+Đề xuất:
 
-Các icon chính:
+```text
+Lucide Icons
+Heroicons
+Phosphor Icons
+```
 
-- Search
-- User
-- Heart
-- Shopping Cart
-- Mouse
-- Keyboard
-- Headphones
-- Monitor
-- Package
-- Layout Dashboard
-- Shopping Bag
-- Clipboard List
-- Folder
-- Image
-- Users
-- Shield
-- Settings
-- Pencil
-- Trash
+Không trộn nhiều icon library.
 
 ---
 
-# 22. Responsive
+# 33. Images
 
-## Desktop ≥ 1200px
+Ảnh sản phẩm:
 
-- Full nav.
-- Product grid 4–5 columns.
-- Category page có sidebar filter.
-- Admin sidebar luôn hiển thị.
+- Background trắng hoặc xám rất nhạt.
+- Sản phẩm đặt giữa.
+- Không thêm glow.
+- Không cần shadow mạnh.
+- Cùng một tỷ lệ ảnh.
 
-## Tablet 768–1199px
+Hero image:
 
+- Có thể dùng ảnh lifestyle tối.
+- Không đặt quá nhiều text trên ảnh.
+
+---
+
+# 34. Responsive
+
+## Desktop
+
+```text
+>= 1200px
+```
+
+Full layout.
+
+## Tablet
+
+```text
+768px – 1199px
+```
+
+- Sidebar filter collapsible.
 - Product grid 3 columns.
-- Search nhỏ hơn.
-- Admin sidebar có thể collapse.
-- Filter chuyển thành drawer.
+- Admin sidebar compact.
 
-## Mobile < 768px
-
-### Storefront
-
-- Header dạng compact.
-- Hamburger menu.
-- Logo ở trái.
-- Cart/search icon phải.
-- Product grid 2 cột.
-- Hero banner thấp hơn.
-- Danh mục horizontal scroll.
-- Filter mở bottom sheet/drawer.
-- Detail product chuyển thành 1 column.
-- Cart summary xuống dưới danh sách.
-
-### Admin
-
-- Sidebar thành drawer.
-- Table có horizontal scroll hoặc chuyển card list.
-- KPI card 2 cột hoặc 1 cột.
-
----
-
-# 23. Recommended component structure
+## Mobile
 
 ```text
-components/
-├── common/
-│   ├── Button
-│   ├── Input
-│   ├── Select
-│   ├── Badge
-│   ├── Modal
-│   ├── Drawer
-│   ├── Pagination
-│   └── EmptyState
-│
-├── storefront/
-│   ├── Header
-│   ├── Footer
-│   ├── HeroBanner
-│   ├── ServiceHighlights
-│   ├── CategoryCard
-│   ├── ProductCard
-│   ├── ProductGrid
-│   ├── ProductFilters
-│   ├── ProductGallery
-│   ├── QuantitySelector
-│   ├── CartItem
-│   └── ContactOrderCard
-│
-└── admin/
-    ├── AdminSidebar
-    ├── AdminTopbar
-    ├── StatCard
-    ├── DataTable
-    ├── ProductForm
-    ├── OrderDetail
-    ├── CategoryForm
-    ├── BannerForm
-    └── PermissionMatrix
+< 768px
+```
+
+Header:
+
+```text
+Logo
+Search
+Cart
+Menu
+```
+
+Product grid:
+
+```text
+2 columns
+```
+
+Product detail:
+
+```text
+Image
+Info
+CTA
+Description
+```
+
+Cart:
+
+```text
+Single column
+```
+
+Admin:
+
+```text
+Sidebar → drawer
+Table → horizontal scroll
 ```
 
 ---
 
-# 24. Suggested pages / routes
+# 35. Suggested Routes
 
 ## Customer
 
 ```text
 /
-/products
-/products?category=mouse
-/products/:slug
-/cart
-/order-success
-/contact
+ /products
+ /products/:slug
+ /category/:slug
+ /search
+ /cart
+ /contact
 ```
 
 ## Admin
@@ -975,82 +1138,104 @@ components/
 /admin/categories
 /admin/banners
 /admin/users
-/admin/roles
+/admin/permissions
 /admin/settings
 ```
 
 ---
 
-# 25. UX states cần có
-
-Mọi chức năng quan trọng cần thiết kế các trạng thái:
-
-- Loading.
-- Empty.
-- Error.
-- Success.
-- Disabled.
-- Hover.
-- Focus.
-- Selected.
-- Out of stock.
-
-Ví dụ empty cart:
+# 36. Component Structure
 
 ```text
-🛒
-Giỏ hàng của bạn đang trống
-Khám phá các sản phẩm phù hợp với bạn.
-[Xem sản phẩm]
+components/
+│
+├── layout/
+│   ├── Header
+│   ├── Footer
+│   ├── Container
+│   └── AdminSidebar
+│
+├── product/
+│   ├── ProductCard
+│   ├── ProductGrid
+│   ├── ProductGallery
+│   ├── ProductPrice
+│   └── ProductFilter
+│
+├── cart/
+│   ├── CartItem
+│   ├── CartSummary
+│   └── QuantityInput
+│
+├── admin/
+│   ├── StatCard
+│   ├── DataTable
+│   ├── StatusBadge
+│   └── AdminToolbar
+│
+└── ui/
+    ├── Button
+    ├── Input
+    ├── Select
+    ├── Checkbox
+    ├── Modal
+    ├── Badge
+    ├── Pagination
+    └── Tabs
 ```
 
 ---
 
-# 26. Nguyên tắc hình ảnh sản phẩm
+# 37. UX Rules
 
-- Ảnh rõ, nền sạch.
-- Tỉ lệ thống nhất `1:1`.
-- Product card dùng `object-fit: contain`.
-- Padding ảnh 16–24px để sản phẩm không sát viền.
-- Banner dùng ảnh gaming setup chất lượng cao, tỷ lệ ngang.
+1. Thêm vào giỏ phải phản hồi ngay.
+2. Cart icon hiển thị số lượng.
+3. Filter thay đổi kết quả nhanh.
+4. URL phản ánh filter nếu có thể.
+5. Search hỗ trợ debounce.
+6. Form admin hiển thị validation rõ.
+7. Delete phải có confirm.
+8. Admin table có pagination.
+9. Trạng thái đơn hàng dễ nhận biết.
+10. Mobile không được ẩn CTA chính.
 
 ---
 
-# 27. Animation & interaction
+# 38. Không nên sử dụng
 
-Animation nhẹ, nhanh:
+Tránh:
 
-```css
-transition: all 160ms ease;
+- Neon blue/purple phủ toàn website.
+- Gradient gaming.
+- Glassmorphism.
+- Shadow dày.
+- Border radius 20–30px.
+- Background RGB.
+- Animation liên tục.
+- Text glow.
+- Nhiều icon màu.
+- Quá nhiều badge.
+- Banner có quá nhiều chữ.
+- Card trong card.
+
+---
+
+# 39. Design Summary
+
+Caotri Gear nên tạo cảm giác:
+
+> **Một cửa hàng gear hiện đại, tối giản và đáng tin cậy — nơi sản phẩm là trung tâm, không phải hiệu ứng đồ họa.**
+
+Visual identity:
+
+```text
+Black
+White
+Warm gray
+Large typography
+Product photography
+Strong grid
+Minimal UI
 ```
 
-Recommended:
-
-- Product hover: nâng nhẹ.
-- Button hover: đổi màu.
-- Drawer/modal: fade + slide.
-- Cart badge: scale animation khi thêm hàng.
-- Skeleton khi load sản phẩm.
-
-Không dùng animation dài hoặc hiệu ứng gaming quá mạnh gây rối.
-
----
-
-# 28. Accessibility
-
-- Contrast text đạt WCAG AA khi có thể.
-- Button/icon có `aria-label`.
-- Keyboard navigation cho form/modal.
-- Focus ring rõ ràng.
-- Không dùng màu làm dấu hiệu trạng thái duy nhất; kết hợp text/icon.
-- Ảnh sản phẩm có `alt`.
-
----
-
-# 29. Mục tiêu cuối cùng
-
-Giao diện Caotri Gear cần tạo cảm giác:
-
-> **Một cửa hàng gaming gear hiện đại, đáng tin cậy, nhanh, rõ ràng và dễ mua hàng — với hệ thống Admin có cùng ngôn ngữ thiết kế để việc vận hành đơn giản và chuyên nghiệp.**
-
-Thiết kế nên ưu tiên **usability trước hiệu ứng**, dùng nền trắng cho nội dung chính, navy cho khu vực nhận diện và xanh dương làm accent xuyên suốt toàn bộ hệ thống.
+Mục tiêu cuối cùng là tạo ra một website có cá tính riêng, cao cấp hơn các mẫu web bán gear gaming phổ thông nhưng vẫn thực dụng và dễ triển khai.

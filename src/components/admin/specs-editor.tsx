@@ -88,8 +88,8 @@ export function SpecsEditor({
       {/* Action header */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Wrench className="w-4 h-4 text-cyan-400" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <Wrench className="w-4 h-4 text-[#111]" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#74746E]">
             Thông số kỹ thuật (Tech Specs)
           </span>
         </div>
@@ -100,9 +100,9 @@ export function SpecsEditor({
             variant="outline"
             onClick={handleApplyPreset}
             disabled={disabled}
-            className="text-xs border-cyan-500/30 text-cyan-300 hover:bg-cyan-950/40 gap-1.5 h-8"
+            className="text-xs border-[#111]/30 text-[#111] hover:bg-blue-50 gap-1.5 h-8"
           >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <Sparkles className="w-3.5 h-3.5 text-[#111]" />
             Nạp mẫu gợi ý
           </Button>
           <Button
@@ -111,7 +111,7 @@ export function SpecsEditor({
             variant="outline"
             onClick={handleAddRow}
             disabled={disabled}
-            className="text-xs border-zinc-700 hover:border-zinc-500 text-zinc-200 gap-1 h-8"
+            className="text-xs border-[#D5D5D0] hover:border-zinc-500 text-[#111] gap-1 h-8"
           >
             <Plus className="w-3.5 h-3.5" />
             Thêm dòng
@@ -121,12 +121,12 @@ export function SpecsEditor({
 
       {/* Specs rows table */}
       {entries.length === 0 ? (
-        <div className="p-6 text-center rounded-xl border border-dashed border-zinc-800 bg-zinc-950/40 text-zinc-500 text-xs">
+        <div className="p-6 text-center rounded-xl border border-dashed border-[#E7E7E3] bg-[#111111]/40 text-[#74746E] text-xs">
           Chưa có thông số kỹ thuật nào. Bấm &quot;Nạp mẫu gợi ý&quot; hoặc &quot;Thêm dòng&quot; để thiết lập thông số cho sản phẩm.
         </div>
       ) : (
-        <div className="rounded-xl border border-zinc-800 overflow-hidden bg-zinc-950/60 divide-y divide-zinc-800/60">
-          <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-zinc-900/80 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+        <div className="rounded-xl border border-[#E7E7E3] overflow-hidden bg-[#111111]/60 divide-y divide-zinc-800/60">
+          <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-white/80 text-[11px] font-semibold uppercase tracking-wider text-[#74746E]">
             <div className="col-span-5 sm:col-span-4">Tên thông số (Key)</div>
             <div className="col-span-6 sm:col-span-7">Giá trị (Value)</div>
             <div className="col-span-1 text-right">Xóa</div>
@@ -135,7 +135,7 @@ export function SpecsEditor({
           {entries.map(([k, v], index) => (
             <div
               key={index}
-              className="grid grid-cols-12 gap-2 p-2 items-center hover:bg-zinc-900/40 transition-colors"
+              className="grid grid-cols-12 gap-2 p-2 items-center hover:bg-white transition-colors"
             >
               <div className="col-span-5 sm:col-span-4">
                 <Input
@@ -143,7 +143,7 @@ export function SpecsEditor({
                   onChange={(e) => handleKeyChange(index, e.target.value)}
                   placeholder="VD: Cảm biến, DPI..."
                   disabled={disabled}
-                  className="h-8 text-xs bg-zinc-900 border-zinc-700/60 font-medium text-zinc-200"
+                  className="h-8 text-xs bg-white border-[#E7E7E3] font-medium text-[#111]"
                 />
               </div>
               <div className="col-span-6 sm:col-span-7">
@@ -152,7 +152,7 @@ export function SpecsEditor({
                   onChange={(e) => handleValueChange(index, e.target.value)}
                   placeholder="VD: PAW3395 26000 DPI..."
                   disabled={disabled}
-                  className="h-8 text-xs bg-zinc-900 border-zinc-700/60 text-zinc-300"
+                  className="h-8 text-xs bg-white border-[#E7E7E3] text-[#111]"
                 />
               </div>
               <div className="col-span-1 text-right">
@@ -161,7 +161,7 @@ export function SpecsEditor({
                   onClick={() => handleRemoveRow(k)}
                   disabled={disabled}
                   title="Xóa dòng"
-                  className="p-1 rounded text-zinc-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
+                  className="p-1 rounded text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

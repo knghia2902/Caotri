@@ -10,13 +10,10 @@ import { ProductActions } from "@/components/storefront/product-actions";
 import { ProductTabs } from "@/components/storefront/product-tabs";
 import { ProductCard } from "@/components/storefront/product-card";
 import {
-  ChevronRight,
   ShieldCheck,
   Truck,
   RotateCcw,
-  Sparkles,
-  Flame,
-  Star,
+  Headphones,
 } from "lucide-react";
 
 interface ProductPageProps {
@@ -101,96 +98,69 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       : null;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col selection:bg-cyan-500/30 selection:text-cyan-300">
+    <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col">
       <StorefrontHeader categories={categories} hotline={settings.hotline} />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 sm:py-8 space-y-10">
+      <main className="flex-1 max-w-[1360px] mx-auto w-full px-4 sm:px-8 py-8 space-y-12">
         {/* Breadcrumb Navigation */}
-        <nav aria-label="Đường dẫn trang" className="flex items-center gap-2 text-xs text-zinc-400 overflow-x-auto whitespace-nowrap pb-2">
-          <Link href="/" className="hover:text-cyan-400 transition-colors">
+        <nav aria-label="Đường dẫn trang" className="flex items-center gap-2 text-sm text-[#74746E] overflow-x-auto whitespace-nowrap">
+          <Link href="/" className="hover:text-[#111] transition-colors">
             Trang chủ
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
-          <Link href="/products" className="hover:text-cyan-400 transition-colors">
+          <span className="text-[#A3A39D]">/</span>
+          <Link href="/products" className="hover:text-[#111] transition-colors">
             Sản phẩm
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
+          <span className="text-[#A3A39D]">/</span>
           <Link
             href={`/category/${product.category.slug}`}
-            className="hover:text-cyan-400 transition-colors"
+            className="hover:text-[#111] transition-colors"
           >
             {product.category.name}
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
-          <span className="text-zinc-200 font-medium truncate max-w-[200px] sm:max-w-md">
+          <span className="text-[#A3A39D]">/</span>
+          <span className="text-[#111] font-medium truncate max-w-[200px] sm:max-w-md">
             {product.name}
           </span>
         </nav>
 
         {/* 2-Column Product Showcase */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* Cột trái: Bộ sưu tập ảnh (5/12) */}
-          <div className="lg:col-span-6 xl:col-span-5 lg:sticky lg:top-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start bg-white p-6 sm:p-10 rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+          {/* Cột trái: Bộ sưu tập ảnh */}
+          <div className="lg:sticky lg:top-24">
             <ProductGalleryViewer images={imageList} title={product.name} />
           </div>
 
-          {/* Cột phải: Thông tin & Mua hàng (7/12) */}
-          <div className="lg:col-span-6 xl:col-span-7 space-y-6">
-            {/* Category & Badges */}
-            <div className="flex flex-wrap items-center gap-2.5">
+          {/* Cột phải: Thông tin & Mua hàng */}
+          <div className="space-y-8">
+            {/* Category */}
+            <div>
               <Link
                 href={`/category/${product.category.slug}`}
-                className="px-2.5 py-1 rounded-md text-xs font-semibold bg-zinc-900 border border-zinc-800 text-cyan-400 hover:border-cyan-500/50 transition-colors"
+                className="text-xs text-[#74746E] hover:text-[#111] transition-colors uppercase tracking-wider font-medium"
               >
                 {product.category.name}
               </Link>
-
-              {product.isFeatured && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                  <Flame className="w-3.5 h-3.5" />
-                  Nổi bật
-                </span>
-              )}
-
-              {product.isNew && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Hàng mới
-                </span>
-              )}
-
-              <div className="ml-auto flex items-center gap-1.5 text-xs text-zinc-400">
-                <div className="flex items-center text-amber-400">
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                </div>
-                <span className="font-semibold text-zinc-200">5.0</span>
-                <span className="text-zinc-600">|</span>
-                <span>Gaming Tested</span>
-              </div>
             </div>
 
             {/* Tên sản phẩm */}
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-zinc-100 tracking-tight leading-snug">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-[#111] tracking-tight">
               {product.name}
             </h1>
 
             {/* Khối Giá & Tiết Kiệm */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-wrap items-baseline gap-3.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-cyan-400 tracking-tight drop-shadow-[0_0_12px_rgba(6,182,212,0.3)]">
+            <div className="flex items-baseline gap-3">
+              <span className="text-2xl font-semibold text-[#111]">
                 {formatVND(product.price)}
               </span>
 
               {product.originalPrice && product.originalPrice > product.price && (
                 <>
-                  <span className="text-base sm:text-lg text-zinc-500 line-through">
+                  <span className="text-base text-[#A3A39D] line-through">
                     {formatVND(product.originalPrice)}
                   </span>
                   {discountPercent && (
-                    <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                    <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-[#F3F3F1] text-[#555550]">
                       Tiết kiệm {discountPercent}%
                     </span>
                   )}
@@ -199,50 +169,45 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             </div>
 
             {/* Tóm tắt sản phẩm ngắn */}
-            <p className="text-xs sm:text-sm text-zinc-400 line-clamp-3 leading-relaxed">
+            <p className="text-sm text-[#74746E] line-clamp-3 leading-relaxed">
               {product.description}
             </p>
 
             {/* Khung Tương tác Mua hàng & Thêm giỏ hàng */}
-            <ProductActions
-              productId={product.id}
-              productName={product.name}
-              price={product.price}
-              inStock={product.inStock}
-              zaloUrl={settings.zalo}
-            />
+            <div className="pt-2 border-t border-[#E7E7E3]">
+              <ProductActions
+                productId={product.id}
+                productName={product.name}
+                price={product.price}
+                inStock={product.inStock}
+                zaloUrl={settings.zalo}
+              />
+            </div>
 
             {/* Hộp Cam Kết Dịch Vụ Khách Hàng (Assurance Box) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-zinc-800/80">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60">
-                <ShieldCheck className="w-5 h-5 text-cyan-400 flex-shrink-0" />
-                <div>
-                  <h4 className="text-xs font-semibold text-zinc-200">Chính hãng 100%</h4>
-                  <p className="text-[11px] text-zinc-500">Bảo hành 1 đổi 1</p>
-                </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-[#E7E7E3]">
+              <div className="flex flex-col items-center text-center gap-2">
+                <ShieldCheck className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
+                <span className="text-xs text-[#555550]">Chính hãng 100%</span>
               </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60">
-                <Truck className="w-5 h-5 text-cyan-400 flex-shrink-0" />
-                <div>
-                  <h4 className="text-xs font-semibold text-zinc-200">Giao nhanh 24h</h4>
-                  <p className="text-[11px] text-zinc-500">Toàn quốc an toàn</p>
-                </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <RotateCcw className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
+                <span className="text-xs text-[#555550]">Bảo hành 1 đổi 1</span>
               </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60">
-                <RotateCcw className="w-5 h-5 text-cyan-400 flex-shrink-0" />
-                <div>
-                  <h4 className="text-xs font-semibold text-zinc-200">Đổi trả 7 ngày</h4>
-                  <p className="text-[11px] text-zinc-500">Nếu lỗi kỹ thuật</p>
-                </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <Truck className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
+                <span className="text-xs text-[#555550]">Giao hàng toàn quốc</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <Headphones className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
+                <span className="text-xs text-[#555550]">Hỗ trợ 24/7</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tabs: Mô tả chi tiết & Thông số kỹ thuật Zebra-Striped */}
-        <div className="pt-6">
+        {/* Tabs: Mô tả chi tiết & Thông số kỹ thuật */}
+        <div className="bg-white p-6 sm:p-10 rounded-[14px] shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
           <ProductTabs
             description={product.description || ""}
             specsJson={product.specs}
@@ -251,27 +216,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
         {/* Sản phẩm tương tự (Related Products) */}
         {relatedProducts.length > 0 && (
-          <section className="pt-10 border-t border-zinc-800/80 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-zinc-100 flex items-center gap-2.5">
-                  <span className="w-2 h-5 rounded-full bg-cyan-400" />
-                  Sản Phẩm Tương Tự Cùng Danh Mục
-                </h2>
-                <p className="text-xs text-zinc-400 mt-1">
-                  Khám phá thêm các tùy chọn {product.category.name.toLowerCase()} khác dành cho bạn
-                </p>
-              </div>
-              <Link
-                href={`/category/${product.category.slug}`}
-                className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
-              >
-                Xem tất cả
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+          <section className="space-y-6 pt-4">
+            <h2 className="text-xl font-semibold text-[#111]">
+              Sản phẩm liên quan
+            </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {relatedProducts.map((item) => (
                 <ProductCard key={item.id} product={item} />
               ))}

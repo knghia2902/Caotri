@@ -96,15 +96,15 @@ export function BannerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-2xl bg-zinc-900 border border-zinc-800 shadow-2xl p-6 text-zinc-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75  animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg rounded-2xl bg-white border border-[#E7E7E3]  p-6 text-[#111]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#E7E7E3]">
           <div>
-            <h3 className="text-lg font-bold text-zinc-100">
+            <h3 className="text-lg font-bold text-[#111]">
               {isEditing ? "Chỉnh sửa Banner" : "Thêm Banner mới"}
             </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-[#74746E] mt-0.5">
               {isEditing
                 ? "Cập nhật hình ảnh và liên kết điều hướng banner"
                 : "Tạo banner quảng cáo mới hiển thị trên slider trang chủ"}
@@ -113,7 +113,7 @@ export function BannerModal({
           <button
             onClick={onClose}
             disabled={isPending}
-            className="rounded-lg p-1.5 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+            className="rounded-lg p-1.5 text-[#74746E] hover:text-[#111] hover:bg-[#FAFAFA] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -122,8 +122,8 @@ export function BannerModal({
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-              Tiêu đề Banner <span className="text-rose-400">*</span>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+              Tiêu đề Banner <span className="text-[#D94A4A]">*</span>
             </label>
             <Input
               value={title}
@@ -135,8 +135,8 @@ export function BannerModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-              URL Hình ảnh Banner (Khuyên dùng tỉ lệ 16:9 hoặc 21:9) <span className="text-rose-400">*</span>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+              URL Hình ảnh Banner (Khuyên dùng tỉ lệ 16:9 hoặc 21:9) <span className="text-[#D94A4A]">*</span>
             </label>
             <Input
               value={imageUrl}
@@ -146,7 +146,7 @@ export function BannerModal({
               required
             />
             {imageUrl && (
-              <div className="mt-2 relative rounded-lg bg-zinc-950 border border-zinc-800 overflow-hidden aspect-[16/7] flex items-center justify-center">
+              <div className="mt-2 relative rounded-lg bg-[#111111] border border-[#E7E7E3] overflow-hidden aspect-[16/7] flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imageUrl}
@@ -162,7 +162,7 @@ export function BannerModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
               Liên kết đích (Link URL khi bấm vào banner)
             </label>
             <Input
@@ -171,14 +171,14 @@ export function BannerModal({
               placeholder="VD: /products/chuot-dragonfly-f1-pro-max hoặc https://..."
               disabled={isPending}
             />
-            <p className="text-[11px] text-zinc-500 mt-1">
+            <p className="text-[11px] text-[#74746E] mt-1">
               Khách hàng click vào banner sẽ được chuyển hướng tới trang này
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
                 Thứ tự hiển thị
               </label>
               <Input
@@ -188,19 +188,19 @@ export function BannerModal({
                 placeholder="0"
                 disabled={isPending}
               />
-              <p className="text-[11px] text-zinc-500 mt-1">Số nhỏ hiển thị trước</p>
+              <p className="text-[11px] text-[#74746E] mt-1">Số nhỏ hiển thị trước</p>
             </div>
 
             <div className="flex flex-col justify-end">
-              <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors">
+              <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#111111] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
                 <input
                   type="checkbox"
                   checked={isActive}
                   onChange={(e) => setIsActive(e.target.checked)}
                   disabled={isPending}
-                  className="rounded border-zinc-700 text-cyan-500 focus:ring-cyan-500/30"
+                  className="rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
                 />
-                <span className="text-xs font-semibold text-zinc-200">
+                <span className="text-xs font-semibold text-[#111]">
                   Hiển thị trên Slider
                 </span>
               </label>
@@ -208,7 +208,7 @@ export function BannerModal({
           </div>
 
           {/* Footer actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E7E7E3]">
             <Button
               type="button"
               variant="outline"
@@ -219,9 +219,8 @@ export function BannerModal({
             </Button>
             <Button
               type="submit"
-              variant="neon"
+              className="bg-[#111] text-white rounded-lg h-11 px-[18px] min-w-[120px]"
               disabled={isPending}
-              className="min-w-[120px]"
             >
               {isPending ? (
                 <>

@@ -76,30 +76,29 @@ export function AdminSidebar({
 }: SidebarProps) {
   const pathname = usePathname();
 
-  // Lọc bỏ các menu chỉ dành cho Admin nếu userRole là STAFF
   const filteredNavItems = navItems.filter(
     (item) => !item.adminOnly || userRole === "ADMIN"
   );
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-zinc-950 border-r border-zinc-800/80 text-zinc-300">
+    <div className="flex flex-col h-full bg-[#111111] border-r border-[#111111] text-white">
       {/* Header Logo */}
       <div
         className={cn(
-          "flex items-center h-16 px-4 border-b border-zinc-800/80 transition-all duration-200",
+          "flex items-center h-16 px-4 border-b border-white/10 transition-all duration-200",
           isCollapsed ? "justify-center" : "justify-between"
         )}
       >
         <Link href="/admin" className="flex items-center gap-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0">
+          <div className="w-8 h-8 rounded-lg border border-white/20 flex items-center justify-center text-white shrink-0">
             <Gamepad2 className="w-5 h-5" />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col leading-none whitespace-nowrap">
-              <span className="font-bold text-base tracking-wide text-zinc-100">
-                CAOTRI <span className="text-cyan-400">GEAR</span>
+              <span className="font-semibold text-base tracking-wide text-white">
+                Caotri Gear
               </span>
-              <span className="text-[10px] text-zinc-500 tracking-wider mt-1 uppercase">
+              <span className="text-[10px] text-white/50 tracking-wider mt-1 uppercase">
                 Admin Panel
               </span>
             </div>
@@ -109,7 +108,7 @@ export function AdminSidebar({
         {/* Nút đóng trên mobile */}
         <button
           onClick={() => setMobileOpen(false)}
-          className="lg:hidden p-1.5 text-zinc-400 hover:text-white rounded-lg"
+          className="lg:hidden p-1.5 text-white/70 hover:text-white rounded-lg"
           aria-label="Đóng menu"
         >
           <X className="w-5 h-5" />
@@ -117,7 +116,7 @@ export function AdminSidebar({
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 py-4 px-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
+      <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
         {filteredNavItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -133,8 +132,8 @@ export function AdminSidebar({
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative",
                 isActive
-                  ? "bg-cyan-950/50 text-cyan-300 border border-cyan-800/50 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/60 border border-transparent",
+                  ? "bg-white/10 text-white"
+                  : "text-white/70 hover:text-white hover:bg-white/5",
                 isCollapsed && "justify-center px-0"
               )}
               title={isCollapsed ? item.title : undefined}
@@ -142,14 +141,14 @@ export function AdminSidebar({
               <Icon
                 className={cn(
                   "w-5 h-5 shrink-0 transition-colors",
-                  isActive ? "text-cyan-400" : "text-zinc-400 group-hover:text-zinc-200"
+                  isActive ? "text-white" : "text-white/70 group-hover:text-white"
                 )}
               />
               {!isCollapsed && <span>{item.title}</span>}
 
               {/* Tooltip khi thu gọn */}
               {isCollapsed && (
-                <span className="absolute left-full ml-3 px-2 py-1 bg-zinc-900 text-zinc-200 text-xs font-medium rounded-md shadow-xl border border-zinc-800 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap">
+                <span className="absolute left-full ml-3 px-2 py-1 bg-white text-[#111] text-xs font-medium rounded-md shadow-[0_8px_30px_rgba(0,0,0,0.05)] border border-[#E7E7E3] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap">
                   {item.title}
                 </span>
               )}
@@ -159,10 +158,10 @@ export function AdminSidebar({
       </div>
 
       {/* Nút Toggle thu gọn/mở rộng sidebar (Desktop only) */}
-      <div className="hidden lg:flex p-3 border-t border-zinc-800/80 justify-center">
+      <div className="hidden lg:flex p-3 border-t border-white/10 justify-center">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex items-center justify-center w-full py-2 px-3 text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/60 rounded-lg border border-zinc-800/60 transition-all"
+          className="flex items-center justify-center w-full py-2 px-3 text-xs font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all"
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4" />
@@ -183,7 +182,7 @@ export function AdminSidebar({
       <aside
         className={cn(
           "hidden lg:block shrink-0 transition-all duration-300 ease-in-out h-screen sticky top-0 z-30",
-          isCollapsed ? "w-20" : "w-64"
+          isCollapsed ? "w-20" : "w-[220px]"
         )}
       >
         {sidebarContent}
@@ -192,7 +191,7 @@ export function AdminSidebar({
       {/* Mobile Drawer Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden fade-in duration-200"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -200,7 +199,7 @@ export function AdminSidebar({
       {/* Mobile Drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 w-72 z-50 lg:hidden transition-transform duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 w-[220px] z-50 lg:hidden transition-transform duration-300 ease-in-out",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
