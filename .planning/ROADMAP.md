@@ -11,7 +11,7 @@ Hệ thống Website bán linh kiện và Gaming Gear được phát triển the
 - [x] **Phase 3: Admin Catalog & Content Management** - Quản lý CRUD Danh mục, Sản phẩm (nhiều ảnh, giá, specs), upload ảnh qua CDN, quản lý Banner slider và thông tin liên hệ. (completed 2026-09-09)
 - [x] **Phase 4: Storefront Discovery & Browsing Experience** - Trang chủ hấp dẫn, danh mục gear, tìm kiếm theo tên, bộ lọc theo tầm giá, trang chi tiết sản phẩm và dock liên hệ nhanh. (completed 2026-09-09)
 - [x] **Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow** - Giỏ hàng không lỗi hydration, form đặt hàng nhanh guest checkout, tạo mã đơn hàng và nút 1-click chuyển tiếp chat Zalo/FB. (completed 2026-09-09)
-- [ ] **Phase 6: Admin Order Fulfillment & Dashboard Analytics** - Quản lý trạng thái đơn hàng (Mới -> Đã liên hệ -> Giao hàng -> Hoàn thành), thống kê doanh số & đơn hàng tại Dashboard, nghiệm thu dự án.
+- [x] **Phase 6: Admin Order Fulfillment & Dashboard Analytics** - Quản lý trạng thái đơn hàng (Mới -> Đã liên hệ -> Giao hàng -> Hoàn thành), thống kê doanh số & đơn hàng tại Dashboard, nghiệm thu dự án. (completed 2026-09-09)
 
 ## Phase Details
 
@@ -152,13 +152,13 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 06-01: Cập nhật Schema CSDL (adminNotes), Xây dựng Module Doanh thu & Trang Dashboard (/admin) với Stat Cards và Biểu đồ thanh SVG 7 ngày.
+- [x] 06-01: Cập nhật Schema CSDL (adminNotes), Xây dựng Module Doanh thu & Trang Dashboard (/admin) với Stat Cards và Biểu đồ thanh SVG 7 ngày.
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06-02: Xây dựng Server Action updateOrderStatusAction và Trang Quản lý Đơn hàng (/admin/orders) với Tabs lọc số lượng realtime, tìm kiếm, phân trang và đổi trạng thái nhanh.
+- [x] 06-02: Xây dựng Server Action updateOrderStatusAction và Trang Quản lý Đơn hàng (/admin/orders) với Tabs lọc số lượng realtime, tìm kiếm, phân trang và đổi trạng thái nhanh.
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06-03: Xây dựng Trang Chi tiết Đơn hàng (/admin/orders/[id]) với bộ nút 1-Click (Gọi điện, Chat Zalo), Staff Notes, Bản in phiếu giao hàng print-friendly và Kịch bản kiểm thử tự động toàn diện.
+- [x] 06-03: Xây dựng Trang Chi tiết Đơn hàng (/admin/orders/[id]) với bộ nút 1-Click (Gọi điện, Chat Zalo), Staff Notes, Bản in phiếu giao hàng print-friendly và Kịch bản kiểm thử tự động toàn diện.
 
 ## Progress
 
@@ -172,7 +172,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Admin Catalog & Content Management | 3/3 | Complete    | 2026-09-09 |
 | 4. Storefront Discovery & Browsing Experience | 3/3 | Complete    | 2026-09-09 |
 | 5. Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow | 3/3 | Complete    | 2026-09-09 |
-| 6. Admin Order Fulfillment & Dashboard Analytics | 0/3 | Not started | - |
+| 6. Admin Order Fulfillment & Dashboard Analytics | 3/3 | Complete    | 2026-09-09 |
 
 ---
 *Roadmap created: 2026-09-09*
