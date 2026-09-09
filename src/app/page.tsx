@@ -1,138 +1,169 @@
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { StorefrontHeader } from "@/components/storefront/storefront-header";
+import { StorefrontFooter } from "@/components/storefront/storefront-footer";
+import { HeroBannerSlider } from "@/components/storefront/hero-banner-slider";
+import { CategoryRibbon } from "@/components/storefront/category-ribbon";
+import { ProductCard } from "@/components/storefront/product-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { formatPrice } from "@/lib/utils";
-import { Gamepad2, ShoppingBag, ShieldCheck, ArrowRight } from "lucide-react";
+import { Star, Sparkles, ArrowRight, ShieldCheck, Zap, Headphones, Keyboard, Mouse } from "lucide-react";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  // Nạp đồng thời dữ liệu từ CSDL Prisma
+  const [banners, categories, featuredProducts, newProducts, settingsRecords] =
+    await Promise.all([
+      prisma.banner.findMany({
+        where: { isActive: true },
+        orderBy: { orderIndex: "asc" },
+      }),
+      prisma.category.findMany({
+        orderBy: { orderIndex: "asc" },
+        include: {
+          _count: {
+            select: { products: true },
+          },
+        },
+      }),
+      prisma.product.findMany({
+        where: { isFeatured: true },
+        take: 8,
+        orderBy: { createdAt: "desc" },
+        include: {
+          category: {
+            select: { id: true, name: true, slug: true },
+          },
+        },
+      }),
+      prisma.product.findMany({
+        where: { isNew: true },
+        take: 8,
+        orderBy: { createdAt: "desc" },
+        include: {
+          category: {
+            select: { id: true, name: true, slug: true },
+          },
+        },
+      }),
+      prisma.siteSetting.findMany(),
+    ]);
+
+  const settings: Record<string, string> = {};
+  for (const s of settingsRecords) {
+    settings[s.key] = s.value;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col selection:bg-cyan-500 selection:text-zinc-950">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Gamepad2 className="w-7 h-7 text-sky-600" />
-            <span className="font-bold text-xl tracking-tight">CAOTRI GEAR</span>
-          </div>
-          <nav className="flex items-center space-x-4">
-            <Link href="/admin/login">
-              <Button variant="outline" size="sm">
-                Trang Quản trị
-              </Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <StorefrontHeader
+        categories={categories}
+        hotline={settings.hotline}
+      />
 
-      {/* Hero Section */}
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <Badge variant="secondary" className="mb-4">
-            Clean Tech Minimalist • Phase 1 Scaffolding
-          </Badge>
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900 mb-4">
-            Gaming Gear & Phụ Kiện Máy Tính
-          </h1>
-          <p className="text-lg text-slate-600 mb-6">
-            Hệ thống bán lẻ thiết bị chuột gaming, bàn phím cơ, tai nghe chính hãng. Trải nghiệm mua hàng tức thì, chốt đơn nhanh chóng qua Zalo & Facebook.
-          </p>
-          <div className="flex justify-center gap-3">
-            <Button size="lg" className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5" /> Khám phá danh mục
-            </Button>
-            <Button variant="outline" size="lg">
-              Tìm kiếm linh kiện
-            </Button>
-          </div>
-        </div>
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-12">
+        {/* 1. Hero Banner Slider */}
+        {banners.length > 0 && (
+          <section>
+            <HeroBannerSlider banners={banners} />
+          </section>
+        )}
 
-        {/* Showcase Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <Badge variant="accent">Nổi bật</Badge>
-                <span className="text-xs text-slate-400 font-mono">LOGI-01</span>
-              </div>
-              <CardTitle className="mt-2">Logitech G Pro X Superlight 2</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-500 mb-4">
-                Cảm biến HERO 2 32K DPI, tần số 2000Hz, trọng lượng siêu nhẹ 60g, switch quang học hybrid LIGHTFORCE.
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold text-slate-900">{formatPrice(3490000)}</span>
-                <span className="text-xs text-slate-400 line-through">{formatPrice(3990000)}</span>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="default" className="w-full flex items-center justify-center gap-2">
-                Thêm vào giỏ <ArrowRight className="w-4 h-4" />
-              </Button>
-            </CardFooter>
-          </Card>
+        {/* 2. Category Ribbon */}
+        <CategoryRibbon categories={categories} />
 
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <Badge variant="success">Mới về</Badge>
-                <span className="text-xs text-slate-400 font-mono">KEY-01</span>
+        {/* 3. Featured Products Section */}
+        {featuredProducts.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <div>
+                <h3 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
+                  <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+                  Sản Phẩm Nổi Bật
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Những dòng gear được cộng đồng game thủ săn đón nhiều nhất
+                </p>
               </div>
-              <CardTitle className="mt-2">Keychron Q1 Pro Wireless</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-500 mb-4">
-                Bàn phím cơ Custom nhôm nguyên khối CNC, Gasket Mount, Bluetooth 5.1 & Type-C, mạch xuôi hotswap RGB.
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold text-slate-900">{formatPrice(4450000)}</span>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="default" className="w-full flex items-center justify-center gap-2">
-                Thêm vào giỏ <ArrowRight className="w-4 h-4" />
-              </Button>
-            </CardFooter>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <Badge variant="secondary">Bán chạy</Badge>
-                <span className="text-xs text-slate-400 font-mono">HYPER-01</span>
-              </div>
-              <CardTitle className="mt-2">HyperX Cloud II Wireless</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-500 mb-4">
-                Âm thanh vòm 7.1 vòm ảo, đệm tai mút hoạt tính êm ái, kết nối không dây 2.4GHz không độ trễ, pin 30 giờ.
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold text-slate-900">{formatPrice(2790000)}</span>
-                <span className="text-xs text-slate-400 line-through">{formatPrice(3190000)}</span>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="default" className="w-full flex items-center justify-center gap-2">
-                Thêm vào giỏ <ArrowRight className="w-4 h-4" />
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-
-        {/* Feature Banner */}
-        <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="w-8 h-8 text-sky-600" />
-            <div>
-              <h4 className="font-semibold text-slate-900">Cam kết hàng chính hãng 100%</h4>
-              <p className="text-sm text-slate-500">Bảo hành 1 đổi 1 nhanh chóng, tư vấn cấu hình nhiệt tình qua Zalo & Hotline.</p>
+              <Link
+                href="/products?featured=true"
+                className="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors"
+              >
+                <span>Xem thêm</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 4. Promotional Banner Strip */}
+        <section className="rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-zinc-900 via-cyan-950/30 to-zinc-900 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg shadow-cyan-950/20">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-semibold">
+              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+              Chốt Đơn Liền Tay • Tư Vấn 1-1
+            </div>
+            <h3 className="text-2xl font-extrabold text-white">
+              Cần Tư Vấn Cấu Hình Gaming Setup Chuẩn Pro?
+            </h3>
+            <p className="text-sm text-zinc-400 max-w-xl">
+              Đội ngũ kỹ thuật viên của CaoTrí Gear sẵn sàng hỗ trợ bạn chọn chuột, bàn phím cơ phù hợp với form tay và sở thích cá nhân qua Zalo ngay!
+            </p>
           </div>
-          <Button variant="outline">Xem chính sách bảo hành</Button>
-        </div>
+          <div className="flex items-center gap-3">
+            <a
+              href={settings.zalo || "https://zalo.me/0987654321"}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="neon" size="lg" className="gap-2">
+                Chat Zalo Tư Vấn Ngay
+              </Button>
+            </a>
+          </div>
+        </section>
+
+        {/* 5. New Arrivals Section */}
+        {newProducts.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <div>
+                <h3 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-cyan-400" />
+                  Hàng Mới Về
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Cập nhật liên tục các siêu phẩm gear công nghệ vừa cập bến
+                </p>
+              </div>
+              <Link
+                href="/products"
+                className="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors"
+              >
+                <span>Xem tất cả</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {newProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
+
+      {/* Footer */}
+      <StorefrontFooter settings={settings} />
     </div>
   );
 }
