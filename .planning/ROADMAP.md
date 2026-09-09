@@ -16,96 +16,127 @@ Hệ thống Website bán linh kiện và Gaming Gear được phát triển the
 ## Phase Details
 
 ### Phase 1: Project Scaffolding, Theme & Database Setup
+
 **Goal**: Khởi tạo nền tảng mã nguồn Next.js App Router, thiết lập phong cách giao diện gaming hiện đại và cấu hình cơ sở dữ liệu quan hệ PostgreSQL với Prisma.
 **Depends on**: Nothing (first phase)
 **Requirements**: FOUND-01, FOUND-02, FOUND-03
 **Success Criteria** (what must be TRUE):
+
   1. Dự án Next.js 14/15 khởi chạy thành công với TypeScript và Tailwind CSS.
   2. Database PostgreSQL kết nối thông suốt qua Prisma ORM với đầy đủ bảng: Users, Categories, Products, Orders, OrderItems, Banners, SiteSettings.
   3. Lệnh Seed Data chạy thành công, nạp sẵn danh mục phụ kiện gaming (Chuột, Phím, Tai nghe, Lót chuột, Màn hình) và tài khoản quản trị ban đầu.
-**Plans**: TBD
+
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Khởi tạo Next.js App Router, TypeScript, Tailwind CSS và thiết kế theme gaming.
-- [ ] 01-02: Thiết lập Prisma ORM, cấu hình Schema quan hệ đầy đủ và chạy migration ban đầu.
-- [ ] 01-03: Viết script Seed Data nạp danh mục, sản phẩm demo và tài khoản admin mặc định.
+**Wave 1**
+
+- [ ] 01-01: Khởi tạo Next.js App Router, TypeScript, Tailwind CSS và thiết kế theme Clean Tech Minimalist.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 01-02: Thiết lập Prisma ORM, cấu hình Schema quan hệ đầy đủ (SQLite dev) và tạo singleton client.
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 01-03: Viết script Seed Data nạp 6 danh mục, 15-20 sản phẩm demo và tài khoản admin/staff mặc định.
 
 ### Phase 2: Authentication & Admin RBAC
+
 **Goal**: Xây dựng hệ thống xác thực bảo mật và phân quyền vai trò (Admin / Staff) cho phân hệ quản trị.
 **Depends on**: Phase 1
 **Requirements**: AUTH-01, AUTH-02, AUTH-03
 **Success Criteria** (what must be TRUE):
+
   1. Người dùng có thể đăng nhập an toàn vào `/admin/login` với email và mật khẩu được mã hóa bcrypt.
   2. Toàn bộ các route `/admin/*` được bảo vệ bằng Middleware; truy cập không hợp lệ sẽ bị chuyển hướng về login.
   3. Phân quyền hoạt động chuẩn xác: Admin có toàn quyền, Staff chỉ có quyền xem/sửa đơn hàng và cập nhật sản phẩm.
+
 **Plans**: TBD
 
 Plans:
+
 - [ ] 02-01: Triển khai NextAuth/Auth.js với credentials provider (bcrypt) và session JWT.
 - [ ] 02-02: Xây dựng Middleware bảo vệ `/admin/*` và khung layout Admin Dashboard responsive.
 - [ ] 02-03: Cài đặt phân quyền RBAC (Role-Based Access Control) cho Admin và Staff.
 
 ### Phase 3: Admin Catalog & Content Management
+
 **Goal**: Cung cấp công cụ quản trị mạnh mẽ để thêm, sửa, xóa danh mục, sản phẩm với thư viện ảnh, quản lý banner slider và nội dung hotline/zalo.
 **Depends on**: Phase 2
 **Requirements**: ADMIN-01, ADMIN-02, ADMIN-03, ADMIN-04, ADMIN-05
 **Success Criteria** (what must be TRUE):
+
   1. Admin/Staff có thể thực hiện CRUD danh mục sản phẩm (tên, slug, ảnh đại diện).
   2. Admin/Staff có thể thêm, sửa, xóa sản phẩm với nhiều hình ảnh, cấu hình giá niêm yết, giá sale, thông số kỹ thuật (specs) và toggle "Nổi bật".
   3. Hình ảnh sản phẩm và banner được tải lên và lưu trữ tối ưu qua Cloudinary/Storage CDN.
   4. Quản trị viên có thể thay đổi banner trang chủ và cấu hình SĐT Hotline, link Zalo OA, link Facebook Fanpage.
+
 **Plans**: TBD
 
 Plans:
+
 - [ ] 03-01: Xây dựng module CRUD Danh mục sản phẩm (Categories).
 - [ ] 03-02: Xây dựng module CRUD Sản phẩm (Products) kèm tích hợp upload nhiều hình ảnh.
 - [ ] 03-03: Xây dựng module Quản lý Banner trang chủ và Cấu hình thông tin liên hệ của cửa hàng.
 
 ### Phase 4: Storefront Discovery & Browsing Experience
+
 **Goal**: Xây dựng giao diện cửa hàng trực tuyến hiện đại, tối ưu tốc độ và trải nghiệm tìm kiếm, lọc sản phẩm cho game thủ.
 **Depends on**: Phase 3
 **Requirements**: STORE-01, STORE-02, STORE-03, STORE-04, STORE-05, STORE-06
 **Success Criteria** (what must be TRUE):
+
   1. Trang chủ hiển thị banner slider động, lưới danh mục sản phẩm, khối sản phẩm nổi bật và sản phẩm mới về.
   2. Khách hàng có thể lọc danh sách sản phẩm theo danh mục và theo các khoảng giá ngân sách linh hoạt.
   3. Khách hàng có thể tìm kiếm sản phẩm theo từ khóa tên và sắp xếp theo giá tăng/giảm.
   4. Trang chi tiết sản phẩm hiển thị thư viện ảnh chất lượng cao, thông số kỹ thuật rõ ràng và trạng thái còn hàng.
   5. Floating contact dock (Hotline, Zalo, Messenger) luôn hiển thị ở góc màn hình.
+
 **Plans**: TBD
 
 Plans:
+
 - [ ] 04-01: Xây dựng Header, Footer, Hero Banner Slider và cấu trúc Trang chủ Storefront.
 - [ ] 04-02: Xây dựng Trang danh mục sản phẩm kết hợp Thanh tìm kiếm, Bộ lọc khoảng giá và Sắp xếp.
 - [ ] 04-03: Xây dựng Trang chi tiết sản phẩm (Gallery ảnh, thông số kỹ thuật, giá bán) và Floating Quick-Contact dock.
 
 ### Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow
+
 **Goal**: Cung cấp giỏ hàng mượt mà, form đặt hàng nhanh và luồng chuyển tiếp chốt đơn tiện lợi qua Zalo/Facebook.
 **Depends on**: Phase 4
 **Requirements**: CART-01, CART-02, CART-03, CART-04, CART-05, CART-06
 **Success Criteria** (what must be TRUE):
+
   1. Khách hàng có thể thêm/xóa sản phẩm, điều chỉnh số lượng trong giỏ hàng; dữ liệu giỏ hàng đồng bộ mượt mà không bị lỗi hydration.
   2. Khách hàng có thể đặt hàng nhanh qua form Họ tên, SĐT, Địa chỉ, Ghi chú với xác thực hợp lệ (Zod).
   3. Đơn hàng được lưu vào Database với mã định danh duy nhất (`#DH-xxxxxx`).
   4. Màn hình xác nhận hiển thị nút "Chốt đơn qua Zalo" và "Chat Facebook" mở ứng dụng chat với tin nhắn soạn sẵn nội dung đơn hàng.
+
 **Plans**: TBD
 
 Plans:
+
 - [ ] 05-01: Triển khai Zustand Cart Store lưu LocalStorage an toàn không lỗi Hydration và giao diện Giỏ hàng.
 - [ ] 05-02: Xây dựng Form Checkout đặt hàng nhanh và Server Action lưu Order vào Database.
 - [ ] 05-03: Xây dựng Trang Order Success với bộ nút 1-click chuyển tiếp Zalo, Facebook Messenger và sao chép đơn hàng.
 
 ### Phase 6: Admin Order Fulfillment & Dashboard Analytics
+
 **Goal**: Hoàn thiện quy trình xử lý đơn hàng cho Admin/Staff, Dashboard báo cáo và nghiệm thu tổng thể dự án.
 **Depends on**: Phase 5
 **Requirements**: ORDER-01, ORDER-02, ORDER-03, ORDER-04
 **Success Criteria** (what must be TRUE):
+
   1. Bảng điều khiển Dashboard hiển thị trực quan các thẻ số liệu: Tổng số đơn, doanh số dự tính, tổng sản phẩm và biểu đồ tóm tắt.
   2. Danh sách đơn hàng trong trang quản trị cho phép lọc theo trạng thái và tìm kiếm theo mã đơn hoặc SĐT.
   3. Chi tiết đơn hàng hiển thị đầy đủ thông tin khách nhận, danh sách linh kiện đặt mua và cho phép cập nhật trạng thái đơn (Mới -> Đã liên hệ -> Đang giao -> Hoàn thành -> Hủy).
   4. Toàn bộ hệ thống được kiểm thử end-to-end từ lúc khách đặt hàng đến khi admin cập nhật hoàn tất.
+
 **Plans**: TBD
 
 Plans:
+
 - [ ] 06-01: Xây dựng Dashboard Analytics thống kê đơn hàng và doanh số.
 - [ ] 06-02: Xây dựng module Quản trị Đơn hàng (Danh sách, lọc trạng thái, xem chi tiết và cập nhật tiến độ).
 - [ ] 06-03: Kiểm thử toàn diện end-to-end, tối ưu SEO, kiểm tra responsive và nghiệm thu v1.0.
