@@ -1,0 +1,212 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { Phone, MessageSquare, Store, MapPin, Mail, Save, Loader2, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { updateSettings } from "@/app/actions/setting";
+
+interface SettingsFormProps {
+  initialSettings: Record<string, string>;
+}
+
+export function SettingsForm({ initialSettings }: SettingsFormProps) {
+  const [formData, setFormData] = useState<Record<string, string>>({
+    hotline: initialSettings.hotline || "",
+    zalo: initialSettings.zalo || "",
+    facebook: initialSettings.facebook || "",
+    shop_name: initialSettings.shop_name || "Cao Trí Gaming Gear",
+    address: initialSettings.address || "",
+    email: initialSettings.email || "",
+  });
+
+  const [isPending, startTransition] = useTransition();
+
+  const handleChange = (key: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    startTransition(async () => {
+      const res = await updateSettings(formData);
+      if (res.success) {
+        toast.success("Đã cập nhật cài đặt cửa hàng thành công!");
+      } else {
+        toast.error(res.error || "Không thể lưu cài đặt");
+      }
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
+      {/* Block 1: Kênh liên hệ & Chốt đơn */}
+      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b border-zinc-800">
+          <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <Phone className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-zinc-100">
+              Kênh liên hệ & Đặt hàng nhanh
+            </h2>
+            <p className="text-xs text-zinc-400">
+              Các thông tin này sẽ hiển thị trên nút chốt đơn giỏ hàng, footer và thanh header của khách hàng
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Hotline */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-cyan-400" />
+              Hotline tư vấn & Bán hàng <span className="text-rose-400">*</span>
+            </label>
+            <Input
+              value={formData.hotline}
+              onChange={(e) => handleChange("hotline", e.target.value)}
+              placeholder="VD: 0987.654.321"
+              disabled={isPending}
+              required
+            />
+            <p className="text-[11px] text-zinc-500 mt-1">
+              Số điện thoại khách hàng bấm gọi trực tiếp khi chọn phương thức Gọi Hotline
+            </p>
+          </div>
+
+          {/* Zalo OA */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+              <MessageSquare className="w-3.5 h-3.5 text-blue-400" />
+              Đường dẫn Zalo (OA hoặc Cá nhân) <span className="text-rose-400">*</span>
+            </label>
+            <Input
+              value={formData.zalo}
+              onChange={(e) => handleChange("zalo", e.target.value)}
+              placeholder="VD: https://zalo.me/0987654321"
+              disabled={isPending}
+              required
+            />
+            <p className="text-[11px] text-zinc-500 mt-1">
+              Khách hàng bấm vào sẽ mở chat Zalo để gửi danh sách đơn hàng
+            </p>
+          </div>
+
+          {/* Facebook */}
+          <div className="md:col-span-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-blue-400 fill-current" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+              Link Fanpage Facebook / Messenger
+            </label>
+            <Input
+              value={formData.facebook}
+              onChange={(e) => handleChange("facebook", e.target.value)}
+              placeholder="VD: https://facebook.com/caotrigear hoặc https://m.me/caotrigear"
+              disabled={isPending}
+            />
+            <p className="text-[11px] text-zinc-500 mt-1">
+              Liên kết mở Fanpage hoặc khung chat Messenger của shop
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Block 2: Thông tin cửa hàng */}
+      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b border-zinc-800">
+          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <Store className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-zinc-100">
+              Thông tin cửa hàng & Showroom
+            </h2>
+            <p className="text-xs text-zinc-400">
+              Thông tin nhận diện thương hiệu và địa chỉ bảo hành hiển thị tại chân trang
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Shop name */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+              <Store className="w-3.5 h-3.5 text-zinc-400" />
+              Tên cửa hàng / Thương hiệu
+            </label>
+            <Input
+              value={formData.shop_name}
+              onChange={(e) => handleChange("shop_name", e.target.value)}
+              placeholder="Cao Trí Gaming Gear"
+              disabled={isPending}
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-zinc-400" />
+              Email liên hệ & Hỗ trợ kỹ thuật
+            </label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              placeholder="contact@caotri.vn"
+              disabled={isPending}
+            />
+          </div>
+
+          {/* Address */}
+          <div className="md:col-span-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-zinc-400" />
+              Địa chỉ showroom / Điểm bảo hành
+            </label>
+            <Input
+              value={formData.address}
+              onChange={(e) => handleChange("address", e.target.value)}
+              placeholder="123 Đường Công Nghệ, Quận Cầu Giấy, TP. Hà Nội"
+              disabled={isPending}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Security alert for ADMIN only */}
+      <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-800/40 flex items-center gap-3 text-xs text-cyan-300">
+        <ShieldCheck className="w-5 h-5 flex-shrink-0 text-cyan-400" />
+        <span>
+          Tính năng cấu hình cài đặt này được phân quyền nghiêm ngặt dành riêng cho vai trò <strong>ADMIN</strong>. Tài khoản Staff không có quyền lưu thay đổi.
+        </span>
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex items-center justify-end">
+        <Button
+          type="submit"
+          variant="neon"
+          disabled={isPending}
+          className="min-w-[150px] gap-2"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Đang lưu...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              Lưu cài đặt
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
+  );
+}
