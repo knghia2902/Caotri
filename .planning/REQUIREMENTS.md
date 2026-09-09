@@ -7,9 +7,9 @@
 
 ### Foundation & Data Architecture (FOUND)
 
-- [ ] **FOUND-01**: Khởi tạo dự án Next.js (App Router, TypeScript, Tailwind CSS) với cấu hình responsive và dark/gaming theme.
-- [ ] **FOUND-02**: Thiết lập Prisma ORM kết nối cơ sở dữ liệu PostgreSQL (Supabase) với đầy đủ schema (User, Category, Product, Order, OrderItem, Banner, SiteSetting).
-- [ ] **FOUND-03**: Tạo kịch bản Seed Data phong phú cho các ngành hàng gaming gear mẫu (Chuột, Bàn phím cơ, Tai nghe, Lót chuột, Màn hình gaming) và tài khoản quản trị mẫu.
+- [x] **FOUND-01**: Khởi tạo dự án Next.js (App Router, TypeScript, Tailwind CSS) với cấu hình responsive và dark/gaming theme.
+- [x] **FOUND-02**: Thiết lập Prisma ORM kết nối cơ sở dữ liệu PostgreSQL (Supabase) với đầy đủ schema (User, Category, Product, Order, OrderItem, Banner, SiteSetting).
+- [x] **FOUND-03**: Tạo kịch bản Seed Data phong phú cho các ngành hàng gaming gear mẫu (Chuột, Bàn phím cơ, Tai nghe, Lót chuột, Màn hình gaming) và tài khoản quản trị mẫu.
 
 ### Authentication & RBAC (AUTH)
 
@@ -79,9 +79,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 1 | Pending |
-| FOUND-02 | Phase 1 | Pending |
-| FOUND-03 | Phase 1 | Pending |
+| FOUND-01 | Phase 1 | Complete |
+| FOUND-02 | Phase 1 | Complete |
+| FOUND-03 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 2 | Pending |
 | AUTH-03 | Phase 2 | Pending |
@@ -108,6 +108,7 @@
 | ORDER-04 | Phase 6 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 26 total
 - Mapped to phases: 26
 - Unmapped: 0 ✓

@@ -6,7 +6,7 @@ Hệ thống Website bán linh kiện và Gaming Gear được phát triển the
 
 ## Phases
 
-- [ ] **Phase 1: Project Scaffolding, Theme & Database Setup** - Khởi tạo Next.js, cấu hình Tailwind gaming theme, tạo Prisma schema quan hệ và seed dữ liệu mẫu phong phú.
+- [x] **Phase 1: Project Scaffolding, Theme & Database Setup** - Khởi tạo Next.js, cấu hình Tailwind gaming theme, tạo Prisma schema quan hệ và seed dữ liệu mẫu phong phú. (completed 2026-09-09)
 - [ ] **Phase 2: Authentication & Admin RBAC** - Đăng nhập quản trị an toàn, Next.js Middleware bảo vệ route `/admin/*`, phân quyền 2 cấp độ Admin và Staff.
 - [ ] **Phase 3: Admin Catalog & Content Management** - Quản lý CRUD Danh mục, Sản phẩm (nhiều ảnh, giá, specs), upload ảnh qua CDN, quản lý Banner slider và thông tin liên hệ.
 - [ ] **Phase 4: Storefront Discovery & Browsing Experience** - Trang chủ hấp dẫn, danh mục gear, tìm kiếm theo tên, bộ lọc theo tầm giá, trang chi tiết sản phẩm và dock liên hệ nhanh.
@@ -31,15 +31,15 @@ Hệ thống Website bán linh kiện và Gaming Gear được phát triển the
 Plans:
 **Wave 1**
 
-- [ ] 01-01: Khởi tạo Next.js App Router, TypeScript, Tailwind CSS và thiết kế theme Clean Tech Minimalist.
+- [x] 01-01: Khởi tạo Next.js App Router, TypeScript, Tailwind CSS và thiết kế theme Clean Tech Minimalist.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02: Thiết lập Prisma ORM, cấu hình Schema quan hệ đầy đủ (SQLite dev) và tạo singleton client.
+- [x] 01-02: Thiết lập Prisma ORM, cấu hình Schema quan hệ đầy đủ (SQLite dev) và tạo singleton client.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-03: Viết script Seed Data nạp 6 danh mục, 15-20 sản phẩm demo và tài khoản admin/staff mặc định.
+- [x] 01-03: Viết script Seed Data nạp 6 danh mục, 15-20 sản phẩm demo và tài khoản admin/staff mặc định.
 
 ### Phase 2: Authentication & Admin RBAC
 
@@ -148,7 +148,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Scaffolding, Theme & Database Setup | 0/3 | Not started | - |
+| 1. Project Scaffolding, Theme & Database Setup | 3/3 | Complete    | 2026-09-09 |
 | 2. Authentication & Admin RBAC | 0/3 | Not started | - |
 | 3. Admin Catalog & Content Management | 0/3 | Not started | - |
 | 4. Storefront Discovery & Browsing Experience | 0/3 | Not started | - |

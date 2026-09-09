@@ -19,7 +19,7 @@ Trải nghiệm mua hàng nhanh chóng, mượt mà: khách hàng dễ dàng tì
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] **Foundation & Data Architecture**: Khởi tạo dự án Next.js 15 App Router, TypeScript, Tailwind Clean Tech theme, Prisma ORM với 7 models quan hệ và nạp Seed Data 6 danh mục, 17 sản phẩm gaming thực tế. (*Validated in Phase 1: Project Scaffolding, Theme & Database Setup*)
 
 ### Active
 
@@ -58,10 +58,10 @@ Trải nghiệm mua hàng nhanh chóng, mượt mà: khách hàng dễ dàng tì
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Next.js Fullstack (App Router) | Hiệu năng cao, SEO tốt cho trang bán hàng, API routes tích hợp sẵn | — Pending |
+| Next.js Fullstack (App Router) | Hiệu năng cao, SEO tốt cho trang bán hàng, API routes tích hợp sẵn | ✓ Validated in Phase 1 |
+| Prisma ORM Schema & SQLite Dev | Type-safe quan hệ 7 models, tương thích Postgres | ✓ Validated in Phase 1 |
 | Đặt hàng lưu DB + điều hướng Zalo/FB | Đảm bảo Admin lưu vết và thống kê được đơn hàng, đồng thời tối ưu tỷ lệ chốt đơn của khách qua Zalo/FB | — Pending |
-| Prisma + PostgreSQL | Hệ quản trị cơ sở dữ liệu quan hệ mạnh mẽ, Type-safe với TypeScript | — Pending |
-| Phân quyền Admin & Staff | Đảm bảo an toàn phân cấp, nhân viên chỉ truy cập phần việc được giao | — Pending |
+| Phân quyền Admin & Staff | Đảm bảo an toàn phân cấp, nhân viên chỉ truy cập phần việc được giao | — Pending (Phase 2) |
 
 ## Evolution
 
@@ -81,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-09-09 after initialization*
+*Last updated: 2026-09-09 after Phase 1 completion*
