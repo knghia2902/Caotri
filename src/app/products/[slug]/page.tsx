@@ -178,7 +178,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               <ProductActions
                 productId={product.id}
                 productName={product.name}
+                slug={product.slug}
                 price={product.price}
+                originalPrice={product.originalPrice}
+                image={imageList[0] || ""}
                 inStock={product.inStock}
                 zaloUrl={settings.zalo}
               />

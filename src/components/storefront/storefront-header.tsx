@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InstantSearch } from "@/components/storefront/instant-search";
+import { useCartHydrated } from "@/stores/cart-store";
 
 export interface CategoryHeaderItem {
   id: string;
@@ -34,8 +35,9 @@ export function StorefrontHeader({
   hotline = "0987.654.321",
   searchSlot,
 }: StorefrontHeaderProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { totalItems } = useCartHydrated();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#E7E7E3] bg-[#FFFFFF]">
@@ -148,9 +150,11 @@ export function StorefrontHeader({
             >
               <ShoppingBag className="w-5 h-5 stroke-[1.5px]" />
             </Button>
-            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#111] text-white text-[10px] font-bold flex items-center justify-center">
-              0
-            </span>
+            {totalItems > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-[#111] text-white text-[10px] font-bold flex items-center justify-center">
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
           </Link>
 
           {/* Mobile hamburger */}

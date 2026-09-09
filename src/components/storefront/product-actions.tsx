@@ -5,10 +5,16 @@ import { toast } from "sonner";
 import { ShoppingCart, MessageSquare, Plus, Minus, CheckCircle, XCircle } from "lucide-react";
 import { formatVND } from "@/lib/utils";
 
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/stores/cart-store";
+
 interface ProductActionsProps {
   productId: string;
   productName: string;
+  slug?: string;
   price: number;
+  originalPrice?: number | null;
+  image?: string;
   inStock: boolean;
   zaloUrl?: string;
 }
@@ -16,10 +22,15 @@ interface ProductActionsProps {
 export function ProductActions({
   productId,
   productName,
+  slug = "",
   price,
+  originalPrice,
+  image = "",
   inStock,
   zaloUrl = "https://zalo.me/0987654321",
 }: ProductActionsProps) {
+  const router = useRouter();
+  const addItem = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
 
   const increase = () => setQuantity((q) => Math.min(q + 1, 99));
@@ -30,8 +41,25 @@ export function ProductActions({
       toast.error("Sản phẩm hiện đang tạm hết hàng!");
       return;
     }
-    toast.success(`Đã thêm ${quantity} x ${productName} vào giỏ hàng!`, {
+
+    addItem(
+      {
+        id: productId,
+        name: productName,
+        slug,
+        price,
+        originalPrice,
+        image,
+      },
+      quantity
+    );
+
+    toast.success(`Đã thêm ${quantity}x "${productName}" vào giỏ hàng!`, {
       description: `Tổng tiền: ${formatVND(price * quantity)}`,
+      action: {
+        label: "Xem giỏ hàng",
+        onClick: () => router.push("/cart"),
+      },
     });
   };
 
