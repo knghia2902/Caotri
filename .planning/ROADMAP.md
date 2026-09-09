@@ -52,13 +52,17 @@ Plans:
   2. Toàn bộ các route `/admin/*` được bảo vệ bằng Middleware; truy cập không hợp lệ sẽ bị chuyển hướng về login.
   3. Phân quyền hoạt động chuẩn xác: Admin có toàn quyền, Staff chỉ có quyền xem/sửa đơn hàng và cập nhật sản phẩm.
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
+**Wave 1**
+- [ ] 02-01: Cài đặt jose, xây dựng core auth library và server actions (login/logout/getCurrentUser) kèm test script.
 
-- [ ] 02-01: Triển khai NextAuth/Auth.js với credentials provider (bcrypt) và session JWT.
-- [ ] 02-02: Xây dựng Middleware bảo vệ `/admin/*` và khung layout Admin Dashboard responsive.
-- [ ] 02-03: Cài đặt phân quyền RBAC (Role-Based Access Control) cho Admin và Staff.
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 02-02: Thiết lập Edge Middleware bảo vệ `/admin/*` và xây dựng trang đăng nhập `/admin/login` Split Screen 2 cột kèm nút demo quick-fill.
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 02-03: Xây dựng Admin Layout, Collapsible Sidebar, Top Header và helper requireRole phân quyền 2 lớp (ADMIN/STAFF).
 
 ### Phase 3: Admin Catalog & Content Management
 
