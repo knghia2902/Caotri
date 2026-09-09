@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-current_phase_name: Admin Catalog & Content Management
-status: complete
-stopped_at: Phase 3 executed and verified
-last_updated: "2026-09-09T13:20:00.000Z"
+current_phase: 4
+current_phase_name: Storefront Discovery & Browsing Experience
+status: ready_to_plan
+stopped_at: Phase 4 context gathered
+last_updated: "2026-09-09T13:26:00.000Z"
 last_activity: 2026-09-09
-last_activity_desc: Phase 3 execution complete (3 plans, 17/17 automated tests passed)
+last_activity_desc: Phase 4 discussion complete (Theme, Hero Slider, Price Range Slider, Instant Search, Detail Page, Floating Contact Dock)
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 9
   completed_plans: 9
-  percent: 100
+  percent: 50
 ---
 
 # Project State
@@ -24,16 +24,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-09-09)
 
 **Core value:** Trải nghiệm mua hàng nhanh chóng, mượt mà: khách dễ dàng tìm kiếm, lọc sản phẩm theo nhu cầu và lên đơn tiện lợi chốt qua Zalo/Facebook; đồng thời Admin quản lý kho hàng, đơn hàng trực quan và phân quyền rõ ràng.
-**Current focus:** Phase 3 complete — Ready for Phase 4 (Storefront Discovery & Browsing Experience)
+**Current focus:** Phase 4: Storefront Discovery & Browsing Experience (ready to plan)
 
 ## Current Position
 
-Phase: 3 of 6 (Admin Catalog & Content Management)
-Plan: 3/3 plans completed
-Status: Complete
-Last activity: 2026-09-09 — Phase 3 execution & verification complete
+Phase: 4 of 6 (Storefront Discovery & Browsing Experience)
+Plan: Ready to plan
+Status: Context gathered
+Last activity: 2026-09-09 — Phase 4 discussion complete
 
-Progress: [██████████] 100%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -49,13 +49,15 @@ Progress: [██████████] 100%
 
 ### Decisions
 
-- [Cloudflare Pages Constraint]: Toàn bộ ảnh sản phẩm (`Product.images`) và banner (`Banner.imageUrl`) lưu dưới dạng chuỗi URL CDN trực tiếp và JSON trong CSDL, tuyệt đối không lưu local disk (`public/uploads`).
-- [Specs Presets]: Tự động nhận diện danh mục và nạp mẫu gợi ý thông số kỹ thuật tiêu chuẩn cho 5 ngành hàng chính.
-- [Quick-Toggle 1-Click]: Bảng sản phẩm và banner hỗ trợ thay đổi trạng thái Nổi bật / Tồn kho / Kích hoạt tức thì với Optimistic UI.
-- [RBAC Defense-in-Depth]: Cài đặt cửa hàng (`/admin/settings`) được bảo vệ nghiêm ngặt chỉ dành cho `ADMIN`, chặn `STAFF`.
+- [Storefront Theme]: Áp dụng Dark Gaming Sleek (`zinc-950`, viền `zinc-800`, neon cyan accents) đồng bộ hoàn toàn với phong cách Admin Dashboard.
+- [Hero Banner Slider]: Toàn chiều rộng, tự động chuyển slide sau 5s (pause khi hover), nút điều hướng và chấm tròn indicator, lấy banner `isActive: true` từ CSDL.
+- [Price Range Slider]: Thanh trượt 2 đầu kéo lọc giá min-max linh hoạt kèm ô nhập trực tiếp.
+- [Instant Search Popover]: Khung kết quả nhanh xổ xuống trên Header khi gõ từ khóa tìm kiếm (ảnh, tên, giá, danh mục).
+- [Product Detail Page]: Bố cục 2 cột (Gallery ảnh cuộn thumbnail bên trái, thông tin mua hàng & tư vấn Zalo bên phải, Tabs mô tả & Bảng Specs kẻ sọc Clean Tech phía dưới).
+- [Floating Quick-Contact Dock]: 3 nút tròn tách biệt xếp dọc ở góc phải dưới (Zalo chat, Facebook Messenger, Gọi Hotline) có hiệu ứng lan tỏa sóng (Pulse), nạp dữ liệu từ `SiteSetting`.
 
 ### Session Continuity
 
-Last session: 2026-09-09T13:20:00.000Z
-Stopped at: Phase 3 execution completed & verified
-Resume file: .planning/phases/03-admin-catalog-content-management/03-VERIFICATION.md
+Last session: 2026-09-09T13:26:00.000Z
+Stopped at: Phase 4 context gathered
+Resume file: .planning/phases/04-storefront-discovery-browsing-experience/04-CONTEXT.md
