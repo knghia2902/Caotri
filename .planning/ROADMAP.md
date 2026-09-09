@@ -9,7 +9,7 @@ Hệ thống Website bán linh kiện và Gaming Gear được phát triển the
 - [x] **Phase 1: Project Scaffolding, Theme & Database Setup** - Khởi tạo Next.js, cấu hình Tailwind gaming theme, tạo Prisma schema quan hệ và seed dữ liệu mẫu phong phú. (completed 2026-09-09)
 - [x] **Phase 2: Authentication & Admin RBAC** - Đăng nhập quản trị an toàn, Next.js Middleware bảo vệ route `/admin/*`, phân quyền 2 cấp độ Admin và Staff. (completed 2026-09-09)
 - [x] **Phase 3: Admin Catalog & Content Management** - Quản lý CRUD Danh mục, Sản phẩm (nhiều ảnh, giá, specs), upload ảnh qua CDN, quản lý Banner slider và thông tin liên hệ. (completed 2026-09-09)
-- [ ] **Phase 4: Storefront Discovery & Browsing Experience** - Trang chủ hấp dẫn, danh mục gear, tìm kiếm theo tên, bộ lọc theo tầm giá, trang chi tiết sản phẩm và dock liên hệ nhanh.
+- [x] **Phase 4: Storefront Discovery & Browsing Experience** - Trang chủ hấp dẫn, danh mục gear, tìm kiếm theo tên, bộ lọc theo tầm giá, trang chi tiết sản phẩm và dock liên hệ nhanh. (completed 2026-09-09)
 - [ ] **Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow** - Giỏ hàng không lỗi hydration, form đặt hàng nhanh guest checkout, tạo mã đơn hàng và nút 1-click chuyển tiếp chat Zalo/FB.
 - [ ] **Phase 6: Admin Order Fulfillment & Dashboard Analytics** - Quản lý trạng thái đơn hàng (Mới -> Đã liên hệ -> Giao hàng -> Hoàn thành), thống kê doanh số & đơn hàng tại Dashboard, nghiệm thu dự án.
 
@@ -105,16 +105,16 @@ Plans:
   5. Floating contact dock (Hotline, Zalo, Messenger) luôn hiển thị ở góc màn hình.
 
 **Plans**: 3 plans
-
+ 
 Plans:
 **Wave 1**
-- [ ] 04-01: Storefront Shell (Header, Footer Dark Gaming), Hero Banner Slider tự động chuyển slide, ProductCard và Trang chủ hoàn chỉnh.
+- [x] 04-01: Storefront Shell (Header, Footer Dark Gaming), Hero Banner Slider tự động chuyển slide, ProductCard và Trang chủ hoàn chỉnh.
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 04-02: Instant Search Popover trên Header, Trang duyệt sản phẩm kết hợp Thanh trượt giá kép (Price Range Slider) và Trang danh mục.
+- [x] 04-02: Instant Search Popover trên Header, Trang duyệt sản phẩm kết hợp Thanh trượt giá kép (Price Range Slider) và Trang danh mục.
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 04-03: Trang Chi tiết Sản phẩm (Showcase Gallery ảnh, Tabs Mô tả & Bảng Specs kẻ sọc), Floating Quick-Contact Dock (Hotline/Zalo/FB) và script kiểm thử storefront.
+- [x] 04-03: Trang Chi tiết Sản phẩm (Showcase Gallery ảnh, Tabs Mô tả & Bảng Specs kẻ sọc), Floating Quick-Contact Dock (Hotline/Zalo/FB) và script kiểm thử storefront.
 
 ### Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow
 
@@ -166,7 +166,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Project Scaffolding, Theme & Database Setup | 3/3 | Complete    | 2026-09-09 |
 | 2. Authentication & Admin RBAC | 3/3 | Complete    | 2026-09-09 |
 | 3. Admin Catalog & Content Management | 3/3 | Complete    | 2026-09-09 |
-| 4. Storefront Discovery & Browsing Experience | 0/3 | Not started | - |
+| 4. Storefront Discovery & Browsing Experience | 3/3 | Complete    | 2026-09-09 |
 | 5. Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow | 0/3 | Not started | - |
 | 6. Admin Order Fulfillment & Dashboard Analytics | 0/3 | Not started | - |
 
