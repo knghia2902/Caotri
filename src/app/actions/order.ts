@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export const checkoutItemSchema = z.object({
   productId: z.string().min(1, "Thiếu mã sản phẩm"),
@@ -37,6 +39,44 @@ export interface CreateOrderResult {
   error?: string;
 }
 
+export interface OrderActionResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+export const updateOrderStatusSchema = z.object({
+  orderId: z.string().min(1, "Thiếu mã đơn hàng"),
+  status: z.enum(["PENDING", "CONTACTED", "SHIPPING", "COMPLETED", "CANCELLED"]),
+  cancelReason: z.string().max(500, "Lý do hủy tối đa 500 ký tự").optional(),
+});
+
+export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
+
+export const updateOrderNotesSchema = z.object({
+  orderId: z.string().min(1, "Thiếu mã đơn hàng"),
+  adminNotes: z.string().max(2000, "Ghi chú tối đa 2000 ký tự"),
+});
+
+export type UpdateOrderNotesInput = z.infer<typeof updateOrderNotesSchema>;
+
+export function getStatusLabel(status: string): string {
+  switch (status) {
+    case "PENDING":
+      return "Chờ xử lý";
+    case "CONTACTED":
+      return "Đã liên hệ";
+    case "SHIPPING":
+      return "Đang giao";
+    case "COMPLETED":
+      return "Hoàn thành";
+    case "CANCELLED":
+      return "Đã hủy";
+    default:
+      return status;
+  }
+}
+
 /**
  * Sinh mã đơn hàng ngẫu nhiên duy nhất dạng DH-XXXXXX (ví dụ: DH-849201)
  */
@@ -50,7 +90,7 @@ function generateOrderNumber(): string {
 }
 
 /**
- * Server Action xử lý tạo đơn hàng
+ * Server Action xử lý tạo đơn hàng từ Storefront Checkout
  */
 export async function createOrderAction(
   input: CheckoutInput
@@ -117,6 +157,117 @@ export async function createOrderAction(
     return {
       success: false,
       error: err instanceof Error ? err.message : "Đã có lỗi xảy ra khi tạo đơn hàng!",
+    };
+  }
+}
+
+/**
+ * Server Action cập nhật trạng thái đơn hàng (ADMIN và STAFF)
+ */
+export async function updateOrderStatusAction(
+  input: UpdateOrderStatusInput
+): Promise<OrderActionResult> {
+  try {
+    // Kiểm tra phân quyền: Cả ADMIN và STAFF đều có quyền xử lý đơn hàng
+    const session = await requireRole(["ADMIN", "STAFF"]);
+
+    const validated = updateOrderStatusSchema.parse(input);
+
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: validated.orderId },
+    });
+
+    if (!existingOrder) {
+      return { success: false, error: "Đơn hàng không tồn tại trong hệ thống" };
+    }
+
+    let adminNotesUpdate = existingOrder.adminNotes || "";
+    if (validated.status === "CANCELLED" && validated.cancelReason) {
+      const timestamp = new Date().toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      const cancelLog = `[HỦY ĐƠN lúc ${timestamp} bởi ${session.name}]: ${validated.cancelReason.trim()}`;
+      adminNotesUpdate = adminNotesUpdate ? `${cancelLog}\n${adminNotesUpdate}` : cancelLog;
+    }
+
+    await prisma.order.update({
+      where: { id: validated.orderId },
+      data: {
+        status: validated.status,
+        adminNotes: adminNotesUpdate || undefined,
+      },
+    });
+
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders/${validated.orderId}`);
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      message: `Đã cập nhật trạng thái đơn sang "${getStatusLabel(validated.status)}"`,
+    };
+  } catch (err: unknown) {
+    console.error("Lỗi khi cập nhật trạng thái đơn hàng:", err);
+    if (err instanceof z.ZodError) {
+      return {
+        success: false,
+        error: err.issues.map((e) => e.message).join(", "),
+      };
+    }
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Đã có lỗi xảy ra khi cập nhật trạng thái!",
+    };
+  }
+}
+
+/**
+ * Server Action cập nhật ghi chú nội bộ của nhân viên (ADMIN và STAFF)
+ */
+export async function updateOrderNotesAction(
+  input: UpdateOrderNotesInput
+): Promise<OrderActionResult> {
+  try {
+    await requireRole(["ADMIN", "STAFF"]);
+
+    const validated = updateOrderNotesSchema.parse(input);
+
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: validated.orderId },
+    });
+
+    if (!existingOrder) {
+      return { success: false, error: "Đơn hàng không tồn tại" };
+    }
+
+    await prisma.order.update({
+      where: { id: validated.orderId },
+      data: {
+        adminNotes: validated.adminNotes.trim(),
+      },
+    });
+
+    revalidatePath(`/admin/orders/${validated.orderId}`);
+
+    return {
+      success: true,
+      message: "Đã lưu ghi chú nội bộ thành công",
+    };
+  } catch (err: unknown) {
+    console.error("Lỗi khi cập nhật ghi chú đơn hàng:", err);
+    if (err instanceof z.ZodError) {
+      return {
+        success: false,
+        error: err.issues.map((e) => e.message).join(", "),
+      };
+    }
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Đã có lỗi xảy ra khi lưu ghi chú!",
     };
   }
 }
