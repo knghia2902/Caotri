@@ -98,8 +98,8 @@ export function ImageGalleryEditor({
 
       {/* Gallery Grid */}
       {images.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-dashed border-[#E7E7E3] bg-[#111111]/40 text-[#74746E]">
-          <ImageIcon className="w-10 h-10 mb-2 text-zinc-700" />
+        <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-dashed border-[#E7E7E3] bg-[#F7F7F5] text-[#74746E]">
+          <ImageIcon className="w-10 h-10 mb-2 text-zinc-400" />
           <p className="text-xs">Chưa có hình ảnh nào. Dán URL để thêm ảnh sản phẩm.</p>
         </div>
       ) : (
@@ -109,7 +109,7 @@ export function ImageGalleryEditor({
             return (
               <div
                 key={url + idx}
-                className={`group relative rounded-xl overflow-hidden border bg-[#111111] transition-all ${
+                className={`group relative rounded-xl overflow-hidden border bg-white transition-all ${
                   isMain
                     ? "border-[#111] ring-2 ring-cyan-500/30"
                     : "border-[#E7E7E3] hover:border-[#D5D5D0]"

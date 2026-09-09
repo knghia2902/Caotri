@@ -121,12 +121,12 @@ export function SpecsEditor({
 
       {/* Specs rows table */}
       {entries.length === 0 ? (
-        <div className="p-6 text-center rounded-xl border border-dashed border-[#E7E7E3] bg-[#111111]/40 text-[#74746E] text-xs">
+        <div className="p-6 text-center rounded-xl border border-dashed border-[#E7E7E3] bg-[#F7F7F5] text-[#74746E] text-xs">
           Chưa có thông số kỹ thuật nào. Bấm &quot;Nạp mẫu gợi ý&quot; hoặc &quot;Thêm dòng&quot; để thiết lập thông số cho sản phẩm.
         </div>
       ) : (
-        <div className="rounded-xl border border-[#E7E7E3] overflow-hidden bg-[#111111]/60 divide-y divide-zinc-800/60">
-          <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-white/80 text-[11px] font-semibold uppercase tracking-wider text-[#74746E]">
+        <div className="rounded-xl border border-[#E7E7E3] overflow-hidden bg-[#F7F7F5] divide-y divide-[#E7E7E3]">
+          <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-white text-[11px] font-semibold uppercase tracking-wider text-[#74746E] border-b border-[#E7E7E3]">
             <div className="col-span-5 sm:col-span-4">Tên thông số (Key)</div>
             <div className="col-span-6 sm:col-span-7">Giá trị (Value)</div>
             <div className="col-span-1 text-right">Xóa</div>

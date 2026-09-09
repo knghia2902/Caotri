@@ -274,7 +274,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 placeholder="Mô tả các tính năng nổi bật, trải nghiệm sử dụng, chế độ bảo hành..."
                 rows={5}
                 disabled={isPending}
-                className="w-full rounded-lg bg-[#111111] border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0 focus:border-[#111] transition-all resize-y"
+                className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all resize-y"
               />
             </div>
           </div>
@@ -318,7 +318,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
                 disabled={isPending}
-                className="w-full h-10 rounded-lg bg-[#111111] border border-[#E7E7E3] px-3 text-sm text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
+                className="w-full h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-sm text-[#111] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] cursor-pointer"
                 required
               >
                 {categories.map((c) => (
@@ -386,7 +386,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             </h2>
 
             {/* Tồn kho */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#111111]/60 border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={inStock}
@@ -405,7 +405,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             </label>
 
             {/* Nổi bật */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#111111]/60 border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={isFeatured}
@@ -424,7 +424,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             </label>
 
             {/* Mới về */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#111111]/60 border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={isNew}

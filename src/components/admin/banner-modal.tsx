@@ -192,7 +192,7 @@ export function BannerModal({
             </div>
 
             <div className="flex flex-col justify-end">
-              <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#111111] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+              <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
                 <input
                   type="checkbox"
                   checked={isActive}
