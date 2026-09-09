@@ -181,7 +181,7 @@ export function AdminSidebar({
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden lg:block shrink-0 transition-all duration-300 ease-in-out h-screen sticky top-0 z-30",
+          "hidden lg:block shrink-0 transition-all duration-300 ease-in-out h-screen sticky top-0 z-30 print:hidden",
           isCollapsed ? "w-20" : "w-[220px]"
         )}
       >
@@ -191,7 +191,7 @@ export function AdminSidebar({
       {/* Mobile Drawer Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden fade-in duration-200"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden fade-in duration-200 print:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -199,7 +199,7 @@ export function AdminSidebar({
       {/* Mobile Drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 w-[220px] z-50 lg:hidden transition-transform duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 w-[220px] z-50 lg:hidden transition-transform duration-300 ease-in-out print:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { getStatusLabel } from "@/lib/utils";
 
 export const checkoutItemSchema = z.object({
   productId: z.string().min(1, "Thiếu mã sản phẩm"),
@@ -59,23 +60,6 @@ export const updateOrderNotesSchema = z.object({
 });
 
 export type UpdateOrderNotesInput = z.infer<typeof updateOrderNotesSchema>;
-
-export function getStatusLabel(status: string): string {
-  switch (status) {
-    case "PENDING":
-      return "Chờ xử lý";
-    case "CONTACTED":
-      return "Đã liên hệ";
-    case "SHIPPING":
-      return "Đang giao";
-    case "COMPLETED":
-      return "Hoàn thành";
-    case "CANCELLED":
-      return "Đã hủy";
-    default:
-      return status;
-  }
-}
 
 /**
  * Sinh mã đơn hàng ngẫu nhiên duy nhất dạng DH-XXXXXX (ví dụ: DH-849201)
