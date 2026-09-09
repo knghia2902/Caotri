@@ -5,6 +5,7 @@ import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { ProductCard } from "@/components/storefront/product-card";
 import { CatalogFilter } from "@/components/storefront/catalog-filter";
+import { CatalogSortSelect } from "@/components/storefront/catalog-sort-select";
 import { Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -127,23 +128,7 @@ export default async function CategoryPage({
 
           <div className="flex items-center gap-3">
             <span className="text-sm text-[#74746E]">Sắp xếp theo</span>
-            <form method="GET" className="inline-block">
-              {minPrice && <input type="hidden" name="minPrice" value={minPrice} />}
-              {maxPrice && <input type="hidden" name="maxPrice" value={maxPrice} />}
-              {inStockOnly && <input type="hidden" name="inStock" value="true" />}
-              <select
-                name="sort"
-                defaultValue={sort}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(e: any) => e.target.form.submit()}
-                className="h-10 rounded-lg bg-white border border-[#D5D5D0] px-3 pr-8 text-sm text-[#111] focus:outline-none focus:border-[#111]"
-              >
-                <option value="newest">Mới nhất</option>
-                <option value="featured">Sản phẩm nổi bật</option>
-                <option value="price_asc">Giá tăng dần</option>
-                <option value="price_desc">Giá giảm dần</option>
-              </select>
-            </form>
+            <CatalogSortSelect currentSort={sort} />
           </div>
         </div>
 
