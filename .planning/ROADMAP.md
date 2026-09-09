@@ -10,7 +10,7 @@ Hệ thống Website bán linh kiện và Gaming Gear được phát triển the
 - [x] **Phase 2: Authentication & Admin RBAC** - Đăng nhập quản trị an toàn, Next.js Middleware bảo vệ route `/admin/*`, phân quyền 2 cấp độ Admin và Staff. (completed 2026-09-09)
 - [x] **Phase 3: Admin Catalog & Content Management** - Quản lý CRUD Danh mục, Sản phẩm (nhiều ảnh, giá, specs), upload ảnh qua CDN, quản lý Banner slider và thông tin liên hệ. (completed 2026-09-09)
 - [x] **Phase 4: Storefront Discovery & Browsing Experience** - Trang chủ hấp dẫn, danh mục gear, tìm kiếm theo tên, bộ lọc theo tầm giá, trang chi tiết sản phẩm và dock liên hệ nhanh. (completed 2026-09-09)
-- [ ] **Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow** - Giỏ hàng không lỗi hydration, form đặt hàng nhanh guest checkout, tạo mã đơn hàng và nút 1-click chuyển tiếp chat Zalo/FB.
+- [x] **Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow** - Giỏ hàng không lỗi hydration, form đặt hàng nhanh guest checkout, tạo mã đơn hàng và nút 1-click chuyển tiếp chat Zalo/FB. (completed 2026-09-09)
 - [ ] **Phase 6: Admin Order Fulfillment & Dashboard Analytics** - Quản lý trạng thái đơn hàng (Mới -> Đã liên hệ -> Giao hàng -> Hoàn thành), thống kê doanh số & đơn hàng tại Dashboard, nghiệm thu dự án.
 
 ## Phase Details
@@ -132,9 +132,9 @@ Plans:
 
 Plans:
 
-- [ ] 05-01: Triển khai Zustand Cart Store lưu LocalStorage an toàn không lỗi Hydration và giao diện Giỏ hàng.
-- [ ] 05-02: Xây dựng Form Checkout đặt hàng nhanh và Server Action lưu Order vào Database.
-- [ ] 05-03: Xây dựng Trang Order Success với bộ nút 1-click chuyển tiếp Zalo, Facebook Messenger và sao chép đơn hàng.
+- [x] 05-01: Triển khai Zustand Cart Store lưu LocalStorage an toàn không lỗi Hydration và giao diện Giỏ hàng.
+- [x] 05-02: Xây dựng Form Checkout đặt hàng nhanh và Server Action lưu Order vào Database.
+- [x] 05-03: Xây dựng Trang Order Success với bộ nút 1-click chuyển tiếp Zalo, Facebook Messenger và sao chép đơn hàng.
 
 ### Phase 6: Admin Order Fulfillment & Dashboard Analytics
 
@@ -167,7 +167,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Authentication & Admin RBAC | 3/3 | Complete    | 2026-09-09 |
 | 3. Admin Catalog & Content Management | 3/3 | Complete    | 2026-09-09 |
 | 4. Storefront Discovery & Browsing Experience | 3/3 | Complete    | 2026-09-09 |
-| 5. Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow | 0/3 | Not started | - |
+| 5. Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow | 3/3 | Complete    | 2026-09-09 |
 | 6. Admin Order Fulfillment & Dashboard Analytics | 0/3 | Not started | - |
 
 ---
