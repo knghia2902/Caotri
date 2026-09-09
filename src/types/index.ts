@@ -1,4 +1,13 @@
 export type Role = "ADMIN" | "STAFF";
+export type UserRole = Role;
+
+export interface SessionPayload {
+  userId: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  expiresAt?: Date;
+}
 
 export type OrderStatus =
   | "PENDING"
