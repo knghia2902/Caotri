@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { InstantSearch } from "@/components/storefront/instant-search";
 
 export interface CategoryHeaderItem {
   id: string;
@@ -124,17 +125,9 @@ export function StorefrontHeader({
           </div>
         </nav>
 
-        {/* Search Slot (InstantSearch component will plug here) */}
+        {/* Search Slot */}
         <div className="flex-1 max-w-md hidden md:block">
-          {searchSlot || (
-            <Link
-              href="/products"
-              className="flex items-center gap-2 w-full h-10 px-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-xs text-zinc-500 hover:border-zinc-700 hover:text-zinc-400 transition-colors"
-            >
-              <Search className="w-4 h-4 text-zinc-500" />
-              <span>Tìm kiếm chuột, phím cơ, tai nghe...</span>
-            </Link>
-          )}
+          {searchSlot || <InstantSearch />}
         </div>
 
         {/* Right actions: Hotline & Cart */}
@@ -178,16 +171,7 @@ export function StorefrontHeader({
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-zinc-800 bg-zinc-950 px-4 py-4 space-y-4 animate-in slide-in-from-top duration-200">
           <div className="md:hidden">
-            {searchSlot || (
-              <Link
-                href="/products"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 w-full h-10 px-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-500"
-              >
-                <Search className="w-4 h-4" />
-                <span>Tìm kiếm gear...</span>
-              </Link>
-            )}
+            {searchSlot || <InstantSearch />}
           </div>
 
           <div className="space-y-1">
