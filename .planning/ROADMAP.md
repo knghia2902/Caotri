@@ -148,13 +148,17 @@ Plans:
   3. Chi tiết đơn hàng hiển thị đầy đủ thông tin khách nhận, danh sách linh kiện đặt mua và cho phép cập nhật trạng thái đơn (Mới -> Đã liên hệ -> Đang giao -> Hoàn thành -> Hủy).
   4. Toàn bộ hệ thống được kiểm thử end-to-end từ lúc khách đặt hàng đến khi admin cập nhật hoàn tất.
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
+**Wave 1**
+- [ ] 06-01: Cập nhật Schema CSDL (adminNotes), Xây dựng Module Doanh thu & Trang Dashboard (/admin) với Stat Cards và Biểu đồ thanh SVG 7 ngày.
 
-- [ ] 06-01: Xây dựng Dashboard Analytics thống kê đơn hàng và doanh số.
-- [ ] 06-02: Xây dựng module Quản trị Đơn hàng (Danh sách, lọc trạng thái, xem chi tiết và cập nhật tiến độ).
-- [ ] 06-03: Kiểm thử toàn diện end-to-end, tối ưu SEO, kiểm tra responsive và nghiệm thu v1.0.
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06-02: Xây dựng Server Action updateOrderStatusAction và Trang Quản lý Đơn hàng (/admin/orders) với Tabs lọc số lượng realtime, tìm kiếm, phân trang và đổi trạng thái nhanh.
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06-03: Xây dựng Trang Chi tiết Đơn hàng (/admin/orders/[id]) với bộ nút 1-Click (Gọi điện, Chat Zalo), Staff Notes, Bản in phiếu giao hàng print-friendly và Kịch bản kiểm thử tự động toàn diện.
 
 ## Progress
 
