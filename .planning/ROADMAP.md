@@ -104,13 +104,17 @@ Plans:
   4. Trang chi tiết sản phẩm hiển thị thư viện ảnh chất lượng cao, thông số kỹ thuật rõ ràng và trạng thái còn hàng.
   5. Floating contact dock (Hotline, Zalo, Messenger) luôn hiển thị ở góc màn hình.
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
+**Wave 1**
+- [ ] 04-01: Storefront Shell (Header, Footer Dark Gaming), Hero Banner Slider tự động chuyển slide, ProductCard và Trang chủ hoàn chỉnh.
 
-- [ ] 04-01: Xây dựng Header, Footer, Hero Banner Slider và cấu trúc Trang chủ Storefront.
-- [ ] 04-02: Xây dựng Trang danh mục sản phẩm kết hợp Thanh tìm kiếm, Bộ lọc khoảng giá và Sắp xếp.
-- [ ] 04-03: Xây dựng Trang chi tiết sản phẩm (Gallery ảnh, thông số kỹ thuật, giá bán) và Floating Quick-Contact dock.
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 04-02: Instant Search Popover trên Header, Trang duyệt sản phẩm kết hợp Thanh trượt giá kép (Price Range Slider) và Trang danh mục.
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 04-03: Trang Chi tiết Sản phẩm (Showcase Gallery ảnh, Tabs Mô tả & Bảng Specs kẻ sọc), Floating Quick-Contact Dock (Hotline/Zalo/FB) và script kiểm thử storefront.
 
 ### Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow
 
