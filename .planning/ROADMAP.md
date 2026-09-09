@@ -7,7 +7,7 @@ Hệ thống Website bán linh kiện và Gaming Gear được phát triển the
 ## Phases
 
 - [x] **Phase 1: Project Scaffolding, Theme & Database Setup** - Khởi tạo Next.js, cấu hình Tailwind gaming theme, tạo Prisma schema quan hệ và seed dữ liệu mẫu phong phú. (completed 2026-09-09)
-- [ ] **Phase 2: Authentication & Admin RBAC** - Đăng nhập quản trị an toàn, Next.js Middleware bảo vệ route `/admin/*`, phân quyền 2 cấp độ Admin và Staff.
+- [x] **Phase 2: Authentication & Admin RBAC** - Đăng nhập quản trị an toàn, Next.js Middleware bảo vệ route `/admin/*`, phân quyền 2 cấp độ Admin và Staff. (completed 2026-09-09)
 - [ ] **Phase 3: Admin Catalog & Content Management** - Quản lý CRUD Danh mục, Sản phẩm (nhiều ảnh, giá, specs), upload ảnh qua CDN, quản lý Banner slider và thông tin liên hệ.
 - [ ] **Phase 4: Storefront Discovery & Browsing Experience** - Trang chủ hấp dẫn, danh mục gear, tìm kiếm theo tên, bộ lọc theo tầm giá, trang chi tiết sản phẩm và dock liên hệ nhanh.
 - [ ] **Phase 5: Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow** - Giỏ hàng không lỗi hydration, form đặt hàng nhanh guest checkout, tạo mã đơn hàng và nút 1-click chuyển tiếp chat Zalo/FB.
@@ -56,13 +56,16 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 02-01: Cài đặt jose, xây dựng core auth library và server actions (login/logout/getCurrentUser) kèm test script.
+
+- [x] 02-01: Cài đặt jose, xây dựng core auth library và server actions (login/logout/getCurrentUser) kèm test script.
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 02-02: Thiết lập Edge Middleware bảo vệ `/admin/*` và xây dựng trang đăng nhập `/admin/login` Split Screen 2 cột kèm nút demo quick-fill.
+
+- [x] 02-02: Thiết lập Edge Middleware bảo vệ `/admin/*` và xây dựng trang đăng nhập `/admin/login` Split Screen 2 cột kèm nút demo quick-fill.
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 02-03: Xây dựng Admin Layout, Collapsible Sidebar, Top Header và helper requireRole phân quyền 2 lớp (ADMIN/STAFF).
+
+- [x] 02-03: Xây dựng Admin Layout, Collapsible Sidebar, Top Header và helper requireRole phân quyền 2 lớp (ADMIN/STAFF).
 
 ### Phase 3: Admin Catalog & Content Management
 
@@ -153,7 +156,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Project Scaffolding, Theme & Database Setup | 3/3 | Complete    | 2026-09-09 |
-| 2. Authentication & Admin RBAC | 0/3 | Not started | - |
+| 2. Authentication & Admin RBAC | 3/3 | Complete    | 2026-09-09 |
 | 3. Admin Catalog & Content Management | 0/3 | Not started | - |
 | 4. Storefront Discovery & Browsing Experience | 0/3 | Not started | - |
 | 5. Shopping Cart, Checkout & 1-Click Zalo/FB Order Flow | 0/3 | Not started | - |

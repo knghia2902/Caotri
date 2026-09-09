@@ -13,9 +13,9 @@
 
 ### Authentication & RBAC (AUTH)
 
-- [ ] **AUTH-01**: Admin và nhân viên (Staff) có thể đăng nhập bằng Email và Mật khẩu được mã hóa an toàn (bcrypt).
-- [ ] **AUTH-02**: Duy trì phiên đăng nhập bảo mật bằng Token/Session và tự động bảo vệ tất cả các route `/admin/*` qua Next.js Middleware.
-- [ ] **AUTH-03**: Phân quyền chi tiết: Tài khoản `ADMIN` có toàn quyền hệ thống (bao gồm quản lý người dùng, banner); tài khoản `STAFF` bị giới hạn ở quyền xử lý đơn hàng và cập nhật sản phẩm.
+- [x] **AUTH-01**: Admin và nhân viên (Staff) có thể đăng nhập bằng Email và Mật khẩu được mã hóa an toàn (bcrypt).
+- [x] **AUTH-02**: Duy trì phiên đăng nhập bảo mật bằng Token/Session và tự động bảo vệ tất cả các route `/admin/*` qua Next.js Middleware.
+- [x] **AUTH-03**: Phân quyền chi tiết: Tài khoản `ADMIN` có toàn quyền hệ thống (bao gồm quản lý người dùng, banner); tài khoản `STAFF` bị giới hạn ở quyền xử lý đơn hàng và cập nhật sản phẩm.
 
 ### Admin Catalog & Content Management (ADMIN)
 
@@ -82,9 +82,9 @@
 | FOUND-01 | Phase 1 | Complete |
 | FOUND-02 | Phase 1 | Complete |
 | FOUND-03 | Phase 1 | Complete |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
+| AUTH-02 | Phase 2 | Complete |
+| AUTH-03 | Phase 2 | Complete |
 | ADMIN-01 | Phase 3 | Pending |
 | ADMIN-02 | Phase 3 | Pending |
 | ADMIN-03 | Phase 3 | Pending |

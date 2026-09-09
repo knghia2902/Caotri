@@ -20,6 +20,7 @@ Trải nghiệm mua hàng nhanh chóng, mượt mà: khách hàng dễ dàng tì
 ### Validated
 
 - [x] **Foundation & Data Architecture**: Khởi tạo dự án Next.js 15 App Router, TypeScript, Tailwind Clean Tech theme, Prisma ORM với 7 models quan hệ và nạp Seed Data 6 danh mục, 17 sản phẩm gaming thực tế. (*Validated in Phase 1: Project Scaffolding, Theme & Database Setup*)
+- [x] **Admin Authentication & RBAC**: Hệ thống xác thực Custom JWT với `jose` và HTTP-only cookie 7 ngày, bảo vệ toàn bộ `/admin/*` qua Edge Middleware, trang `/admin/login` Split Screen, Collapsible Sidebar, Top Header và phân quyền 2 lớp Admin/Staff. (*Validated in Phase 2: Authentication & Admin RBAC*)
 
 ### Active
 
@@ -34,7 +35,6 @@ Trải nghiệm mua hàng nhanh chóng, mượt mà: khách hàng dễ dàng tì
 - [ ] **Admin - Quản lý đơn hàng**: Danh sách đơn hàng, xem chi tiết thông tin khách hàng và sản phẩm đặt, cập nhật trạng thái đơn (Chờ xử lý, Đã liên hệ, Đang giao, Đã hoàn thành, Đã hủy).
 - [ ] **Admin - Quản lý danh mục**: Tạo, sửa, xóa danh mục sản phẩm, sắp xếp thứ tự hiển thị.
 - [ ] **Admin - Quản lý Banner & Nội dung**: Quản lý hình ảnh banner trang chủ, cấu hình thông tin liên hệ (Hotline, link Zalo OA, Fanpage Facebook).
-- [ ] **Admin - Phân quyền tài khoản**: Đăng nhập xác thực, phân quyền vai trò Admin (toàn quyền hệ thống) và Staff/Nhân viên (xử lý đơn hàng, cập nhật sản phẩm).
 
 ### Out of Scope
 
@@ -60,8 +60,8 @@ Trải nghiệm mua hàng nhanh chóng, mượt mà: khách hàng dễ dàng tì
 |----------|-----------|---------|
 | Next.js Fullstack (App Router) | Hiệu năng cao, SEO tốt cho trang bán hàng, API routes tích hợp sẵn | ✓ Validated in Phase 1 |
 | Prisma ORM Schema & SQLite Dev | Type-safe quan hệ 7 models, tương thích Postgres | ✓ Validated in Phase 1 |
-| Đặt hàng lưu DB + điều hướng Zalo/FB | Đảm bảo Admin lưu vết và thống kê được đơn hàng, đồng thời tối ưu tỷ lệ chốt đơn của khách qua Zalo/FB | — Pending |
-| Phân quyền Admin & Staff | Đảm bảo an toàn phân cấp, nhân viên chỉ truy cập phần việc được giao | — Pending (Phase 2) |
+| Custom JWT Session (jose) & RBAC 2 Lớp | Bảo mật cao, siêu nhẹ trên Edge Middleware, tương thích 100% Next.js 15 & React 19 | ✓ Validated in Phase 2 |
+| Đặt hàng lưu DB + điều hướng Zalo/FB | Đảm bảo Admin lưu vết và thống kê được đơn hàng, đồng thời tối ưu tỷ lệ chốt đơn của khách qua Zalo/FB | — Pending (Phase 5) |
 
 ## Evolution
 
@@ -81,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-09-09 after Phase 1 completion*
+*Last updated: 2026-09-09 after Phase 2 completion*
