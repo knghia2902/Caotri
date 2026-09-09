@@ -79,13 +79,17 @@ Plans:
   3. Hình ảnh sản phẩm và banner được tải lên và lưu trữ tối ưu qua Cloudinary/Storage CDN.
   4. Quản trị viên có thể thay đổi banner trang chủ và cấu hình SĐT Hotline, link Zalo OA, link Facebook Fanpage.
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
+**Wave 1**
+- [ ] 03-01: Tiện ích slugify tiếng Việt, Server Actions Category và trang quản lý Danh mục dạng bảng + modal dialog.
 
-- [ ] 03-01: Xây dựng module CRUD Danh mục sản phẩm (Categories).
-- [ ] 03-02: Xây dựng module CRUD Sản phẩm (Products) kèm tích hợp upload nhiều hình ảnh.
-- [ ] 03-03: Xây dựng module Quản lý Banner trang chủ và Cấu hình thông tin liên hệ của cửa hàng.
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 03-02: Quản lý Sản phẩm toàn diện (Multiple Images Gallery CDN, Dynamic Tech Specs Presets, Bảng sản phẩm có Quick-Toggle và trang form new/edit).
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 03-03: Quản lý Banners trang chủ dạng Card Grid, trang Cài đặt Cửa hàng (Hotline/Zalo/FB) và script kiểm thử catalog tự động.
 
 ### Phase 4: Storefront Discovery & Browsing Experience
 
