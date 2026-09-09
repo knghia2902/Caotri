@@ -14,3 +14,5 @@ export function formatPrice(price: number | string | bigint | null | undefined):
     currency: "VND",
   }).format(num);
 }
+
+export const formatVND = formatPrice;

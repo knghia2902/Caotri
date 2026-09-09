@@ -1,20 +1,24 @@
 import Link from "next/link";
 import { Gamepad2, Phone, Mail, MapPin, ShieldCheck, Truck, RefreshCw, MessageSquare } from "lucide-react";
+import { QuickContactDock } from "./quick-contact-dock";
 
 interface StorefrontFooterProps {
   settings?: Record<string, string>;
 }
 
 export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
-  const shopName = settings.shop_name || "Cao Trí Gaming Gear";
+  const shopName = settings.shopName || settings.shop_name || "Cao Trí Gaming Gear";
   const hotline = settings.hotline || "0987.654.321";
-  const zalo = settings.zalo || "https://zalo.me/0987654321";
-  const facebook = settings.facebook || "https://facebook.com";
+  const zalo = settings.zaloUrl || settings.zalo || "https://zalo.me/0987654321";
+  const facebook = settings.facebookUrl || settings.facebook || "https://facebook.com";
   const address = settings.address || "123 Đường Công Nghệ, Q. Cầu Giấy, Hà Nội";
   const email = settings.email || "support@caotri.vn";
 
   return (
     <footer className="border-t border-zinc-800/80 bg-zinc-950 text-zinc-400 text-sm">
+      {/* Floating Quick Contact Dock */}
+      <QuickContactDock hotline={hotline} zalo={zalo} facebook={facebook} />
+
       {/* 3 Values Banner */}
       <div className="border-b border-zinc-900 bg-zinc-950/60">
         <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
