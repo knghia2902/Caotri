@@ -82,7 +82,7 @@ export function InstantSearch() {
           }}
           onKeyDown={handleKeyDown}
           placeholder="Tìm sản phẩm..."
-          className="w-full bg-white border border-[#D5D5D0] h-11 rounded-lg px-3.5 pl-10 pr-9 text-sm text-[#111] placeholder:text-[#A3A39D] focus:border-[#111] focus:outline-none transition-all"
+          className="w-full bg-white border border-[#D5D5D0] h-10 rounded-xl px-3.5 pl-10 pr-9 text-sm text-[#111] placeholder:text-[#A3A39D] focus:border-[#111] focus:outline-none transition-all"
         />
         {isPending ? (
           <Loader2 className="w-4 h-4 absolute right-3 text-[#A3A39D] animate-spin" />
