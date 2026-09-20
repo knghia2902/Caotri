@@ -197,8 +197,8 @@ export default async function OrderSuccessPage({ params }: SuccessPageProps) {
               price: i.price,
               quantity: i.quantity,
             }))}
-            zaloUrl={settings.zalo}
-            facebookUrl={settings.facebook}
+            zaloUrl={settings.zalo || settings.zaloUrl}
+            facebookUrl={settings.facebook || settings.facebookUrl}
             hotline={settings.hotline}
           />
         </div>

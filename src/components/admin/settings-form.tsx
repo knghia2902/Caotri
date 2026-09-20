@@ -14,9 +14,9 @@ interface SettingsFormProps {
 export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const [formData, setFormData] = useState<Record<string, string>>({
     hotline: initialSettings.hotline || "",
-    zalo: initialSettings.zalo || "",
-    facebook: initialSettings.facebook || "",
-    shop_name: initialSettings.shop_name || "Cao Trí Gaming Gear",
+    zalo: initialSettings.zalo || initialSettings.zaloUrl || "",
+    facebook: initialSettings.facebook || initialSettings.facebookUrl || "",
+    shop_name: initialSettings.shop_name || initialSettings.shopName || "Cao Trí Gaming Gear",
     address: initialSettings.address || "",
     email: initialSettings.email || "",
   });

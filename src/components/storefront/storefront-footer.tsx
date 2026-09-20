@@ -7,10 +7,10 @@ interface StorefrontFooterProps {
 }
 
 export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
-  const shopName = settings.shopName || settings.shop_name || "Cao Trí Gaming Gear";
+  const shopName = settings.shop_name || settings.shopName || "Cao Trí Gaming Gear";
   const hotline = settings.hotline || "0987.654.321";
-  const zalo = settings.zaloUrl || settings.zalo || "https://zalo.me/0987654321";
-  const facebook = settings.facebookUrl || settings.facebook || "https://facebook.com";
+  const zalo = settings.zalo || settings.zaloUrl || "https://zalo.me/0987654321";
+  const facebook = settings.facebook || settings.facebookUrl || "https://facebook.com";
   const address = settings.address || "123 Đường Công Nghệ, Q. Cầu Giấy, Hà Nội";
   const email = settings.email || "support@caotri.vn";
 

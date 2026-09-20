@@ -20,6 +20,8 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
@@ -183,7 +185,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 originalPrice={product.originalPrice}
                 image={imageList[0] || ""}
                 inStock={product.inStock}
-                zaloUrl={settings.zalo}
+                zaloUrl={settings.zalo || settings.zaloUrl}
               />
             </div>
 
