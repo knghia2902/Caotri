@@ -199,3 +199,80 @@ export async function changePasswordAction(
     };
   }
 }
+
+export interface UpdateProfileResult {
+  success: boolean;
+  error?: string;
+  message?: string;
+  name?: string;
+  email?: string;
+}
+
+/**
+ * Server Action cập nhật hồ sơ cá nhân quản trị viên
+ */
+export async function updateProfileAction(
+  prevState: any,
+  formData: FormData
+): Promise<UpdateProfileResult> {
+  const session = await getCurrentSession();
+  if (!session) {
+    return {
+      success: false,
+      error: "Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.",
+    };
+  }
+
+  const name = formData.get("name")?.toString().trim();
+  const email = formData.get("email")?.toString().trim().toLowerCase();
+
+  if (!name || !email) {
+    return {
+      success: false,
+      error: "Vui lòng nhập đầy đủ họ tên và email.",
+    };
+  }
+
+  try {
+    // Kiểm tra trùng lặp email với tài khoản khác
+    if (email !== session.email.toLowerCase()) {
+      const existing = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existing && existing.id !== session.userId) {
+        return {
+          success: false,
+          error: "Email này đã được sử dụng bởi tài khoản khác trong hệ thống.",
+        };
+      }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: session.userId },
+      data: { name, email },
+    });
+
+    // Cập nhật lại session JWT cookie
+    const token = await signJWT({
+      userId: updatedUser.id,
+      email: updatedUser.email,
+      name: updatedUser.name,
+      role: updatedUser.role as UserRole,
+    });
+    await setSessionCookie(token);
+
+    return {
+      success: true,
+      message: "Cập nhật hồ sơ thành công!",
+      name: updatedUser.name,
+      email: updatedUser.email,
+    };
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return {
+      success: false,
+      error: "Không thể cập nhật hồ sơ. Vui lòng thử lại sau.",
+    };
+  }
+}
+
