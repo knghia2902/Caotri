@@ -118,9 +118,9 @@ export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
               </span>
             </li>
             <li>
-              <Link href="/admin" className="hover:text-white transition-colors">
-                Khu vực Quản trị (Admin)
-              </Link>
+              <span className="hover:text-white transition-colors cursor-pointer">
+                Chính sách bảo mật thông tin
+              </span>
             </li>
           </ul>
         </div>

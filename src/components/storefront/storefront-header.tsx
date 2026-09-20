@@ -10,7 +10,6 @@ import {
   Menu,
   X,
   Layers,
-  Shield,
   ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,14 +51,10 @@ export function StorefrontHeader({
               <Phone className="w-3 h-3" /> Hotline: {hotline}
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="hover:text-[#111] transition-colors flex items-center gap-1"
-            >
-              <Shield className="w-3 h-3" />
-              <span>Quản trị viên</span>
-            </Link>
+          <div className="hidden sm:flex items-center gap-3 text-xs text-[#74746E]">
+            <span>Đổi trả 1 đổi 1</span>
+            <span className="text-[#D5D5D0]">•</span>
+            <span>Giao hàng toàn quốc</span>
           </div>
         </div>
       </div>
