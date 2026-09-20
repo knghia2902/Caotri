@@ -19,7 +19,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
-import { formatVND, getStatusLabel } from "@/lib/utils";
+import { formatVND, getStatusLabel, normalizeImageUrl } from "@/lib/utils";
 import { OrderStatus } from "@/types";
 import {
   updateOrderStatusAction,
@@ -167,10 +167,10 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
     if (item.product?.images) {
       try {
         const parsed = JSON.parse(item.product.images);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
+        if (Array.isArray(parsed) && parsed.length > 0) return normalizeImageUrl(parsed[0]);
       } catch {
         if (item.product.images.startsWith("http") || item.product.images.startsWith("/")) {
-          return item.product.images;
+          return normalizeImageUrl(item.product.images);
         }
       }
     }
@@ -280,6 +280,7 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                                   <img
                                     src={img}
                                     alt={item.productName}
+                                    referrerPolicy="no-referrer"
                                     className="w-full h-full object-contain p-1"
                                   />
                                 ) : (

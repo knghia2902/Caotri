@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { normalizeImageUrl } from "@/lib/utils";
 
 interface ProductGalleryViewerProps {
   images: string[];
@@ -10,7 +11,8 @@ interface ProductGalleryViewerProps {
 }
 
 export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProps) {
-  const displayImages = images.length > 0 ? images : ["/placeholder-gear.svg"];
+  const normalizedImages = (images || []).map((img) => normalizeImageUrl(img)).filter(Boolean);
+  const displayImages = normalizedImages.length > 0 ? normalizedImages : ["/placeholder-gear.svg"];
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [hasError, setHasError] = useState<Record<number, boolean>>({});
 
@@ -36,6 +38,7 @@ export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProp
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-contain p-4 sm:p-6"
+          referrerPolicy="no-referrer"
           onError={() => setHasError((prev) => ({ ...prev, [selectedIndex]: true }))}
         />
 
@@ -95,6 +98,7 @@ export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProp
                   fill
                   sizes="80px"
                   className="object-contain p-2"
+                  referrerPolicy="no-referrer"
                   onError={() => setHasError((prev) => ({ ...prev, [idx]: true }))}
                 />
               </button>

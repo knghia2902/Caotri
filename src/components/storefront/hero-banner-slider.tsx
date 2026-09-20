@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { normalizeImageUrl } from "@/lib/utils";
 
 export interface HeroBannerItem {
   id: string;
@@ -62,8 +63,9 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={b.imageUrl}
+            src={normalizeImageUrl(b.imageUrl)}
             alt={b.title}
+            referrerPolicy="no-referrer"
             className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src =

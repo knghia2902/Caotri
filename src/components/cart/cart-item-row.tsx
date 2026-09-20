@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Plus, Minus, Trash2 } from "lucide-react";
 import { type CartItem, useCartStore } from "@/stores/cart-store";
-import { formatVND } from "@/lib/utils";
+import { formatVND, normalizeImageUrl } from "@/lib/utils";
 
 interface CartItemRowProps {
   item: CartItem;
@@ -22,8 +22,9 @@ export function CartItemRow({ item }: CartItemRowProps) {
         <div className="relative w-20 h-20 bg-[#F3F3F1] rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center p-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={item.image || fallbackImage}
+            src={normalizeImageUrl(item.image) || fallbackImage}
             alt={item.name}
+            referrerPolicy="no-referrer"
             className="w-full h-full object-contain"
             onError={(e) => {
               (e.target as HTMLImageElement).src = fallbackImage;

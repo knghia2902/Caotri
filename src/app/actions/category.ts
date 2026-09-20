@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
+import { normalizeImageUrl } from "@/lib/utils";
 
 export interface CategoryFormData {
   name: string;
@@ -46,7 +47,7 @@ export async function createCategory(data: CategoryFormData) {
         name: data.name.trim(),
         slug: finalSlug,
         description: data.description?.trim() || null,
-        imageUrl: data.imageUrl?.trim() || null,
+        imageUrl: data.imageUrl?.trim() ? normalizeImageUrl(data.imageUrl.trim()) : null,
         orderIndex: Number(data.orderIndex) || 0,
       },
     });
@@ -104,7 +105,7 @@ export async function updateCategory(id: string, data: CategoryFormData) {
         name: data.name.trim(),
         slug: finalSlug,
         description: data.description?.trim() || null,
-        imageUrl: data.imageUrl?.trim() || null,
+        imageUrl: data.imageUrl?.trim() ? normalizeImageUrl(data.imageUrl.trim()) : null,
         orderIndex: Number(data.orderIndex) || 0,
       },
     });

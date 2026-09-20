@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, X, Loader2, ArrowRight, Package } from "lucide-react";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, normalizeImageUrl } from "@/lib/utils";
 import { searchProductsAction, type SearchProductResult } from "@/app/actions/search";
 
 export function InstantSearch() {
@@ -114,7 +114,7 @@ export function InstantSearch() {
                 let firstImg = "";
                 try {
                   const arr = JSON.parse(product.images || "[]");
-                  firstImg = arr[0] || "";
+                  firstImg = normalizeImageUrl(arr[0] || "");
                 } catch {
                   firstImg = "";
                 }
@@ -133,6 +133,7 @@ export function InstantSearch() {
                         <img
                           src={firstImg}
                           alt={product.name}
+                          referrerPolicy="no-referrer"
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = "none";

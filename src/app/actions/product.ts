@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
+import { normalizeImageUrl } from "@/lib/utils";
 
 export interface ProductFormData {
   name: string;
@@ -52,9 +53,9 @@ export async function createProduct(data: ProductFormData) {
       };
     }
 
-    // Làm sạch mảng images
+    // Làm sạch và chuẩn hóa mảng images (hỗ trợ Google Drive, Dropbox...)
     const cleanImages = (data.images || [])
-      .map((url) => url.trim())
+      .map((url) => normalizeImageUrl(url.trim()))
       .filter((url) => url.length > 0);
 
     // Làm sạch specs
@@ -134,8 +135,9 @@ export async function updateProduct(id: string, data: ProductFormData) {
       }
     }
 
+    // Làm sạch và chuẩn hóa mảng images (hỗ trợ Google Drive, Dropbox...)
     const cleanImages = (data.images || [])
-      .map((url) => url.trim())
+      .map((url) => normalizeImageUrl(url.trim()))
       .filter((url) => url.length > 0);
 
     const cleanSpecs: Record<string, string> = {};

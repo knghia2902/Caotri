@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, normalizeImageUrl } from "@/lib/utils";
 import {
   deleteProduct,
   toggleProductFeatured,
@@ -274,7 +274,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   } catch {
                     imageList = [];
                   }
-                  const firstImage = imageList[0];
+                  const firstImage = normalizeImageUrl(imageList[0]);
 
                   return (
                     <tr
@@ -289,6 +289,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             <img
                               src={firstImage}
                               alt={product.name}
+                              referrerPolicy="no-referrer"
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).src =

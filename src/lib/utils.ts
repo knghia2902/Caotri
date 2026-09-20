@@ -33,3 +33,34 @@ export function getStatusLabel(status: string): string {
       return status;
   }
 }
+
+/**
+ * Tự động chuẩn hóa và chuyển đổi các link chia sẻ đám mây (Google Drive, Dropbox...)
+ * thành link ảnh CDN trực tiếp để hiển thị mượt mà trên website
+ */
+export function normalizeImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  let cleanUrl = url.trim();
+
+  // 1. Google Drive share link -> Google UserContent direct image CDN
+  if (cleanUrl.includes("drive.google.com") || cleanUrl.includes("docs.google.com")) {
+    const match =
+      cleanUrl.match(/\/d\/([a-zA-Z0-9_-]{20,})/) ||
+      cleanUrl.match(/[?&]id=([a-zA-Z0-9_-]{20,})/);
+    if (match && match[1]) {
+      return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    }
+  }
+
+  // 2. Dropbox share link -> direct download link
+  if (cleanUrl.includes("dropbox.com")) {
+    cleanUrl = cleanUrl.replace(/[?&]dl=0/, "?raw=1");
+    if (!cleanUrl.includes("raw=1") && !cleanUrl.includes("dl=1")) {
+      cleanUrl += cleanUrl.includes("?") ? "&raw=1" : "?raw=1";
+    }
+    return cleanUrl;
+  }
+
+  return cleanUrl;
+}
+

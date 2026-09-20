@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createBanner, updateBanner, type BannerFormData } from "@/app/actions/banner";
+import { normalizeImageUrl } from "@/lib/utils";
 
 export interface BannerModalData {
   id?: string;
@@ -69,9 +70,10 @@ export function BannerModal({
     }
 
     startTransition(async () => {
+      const normalizedImageUrl = normalizeImageUrl(imageUrl.trim());
       const payload: BannerFormData = {
         title: title.trim(),
-        imageUrl: imageUrl.trim(),
+        imageUrl: normalizedImageUrl,
         linkUrl: linkUrl.trim() || undefined,
         orderIndex: Number(orderIndex) || 0,
         isActive,
@@ -136,21 +138,25 @@ export function BannerModal({
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-              URL Hình ảnh Banner (Khuyên dùng tỉ lệ 16:9 hoặc 21:9) <span className="text-[#D94A4A]">*</span>
+              URL Hình ảnh Banner (Hỗ trợ Google Drive, Unsplash, Imgur...) <span className="text-[#D94A4A]">*</span>
             </label>
             <Input
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://images.unsplash.com/... hoặc Cloudflare CDN"
+              placeholder="Dán link ảnh hoặc link Google Drive (Bật 'Bất kỳ ai có liên kết')"
               disabled={isPending}
               required
             />
+            <p className="text-[11px] text-[#74746E] mt-1">
+              💡 Hỗ trợ dán link Google Drive chia sẻ (hệ thống tự động chuyển đổi sang ảnh banner).
+            </p>
             {imageUrl && (
               <div className="mt-2 relative rounded-lg bg-[#111111] border border-[#E7E7E3] overflow-hidden aspect-[16/7] flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={imageUrl}
+                  src={normalizeImageUrl(imageUrl)}
                   alt="Banner preview"
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src =

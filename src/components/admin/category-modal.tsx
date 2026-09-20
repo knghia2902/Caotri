@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { slugify } from "@/lib/slugify";
+import { normalizeImageUrl } from "@/lib/utils";
 import { createCategory, updateCategory } from "@/app/actions/category";
 
 export interface CategoryModalData {
@@ -85,7 +86,7 @@ export function CategoryModal({
         name: name.trim(),
         slug: slug.trim(),
         description: description.trim() || undefined,
-        imageUrl: imageUrl.trim() || undefined,
+        imageUrl: imageUrl.trim() ? normalizeImageUrl(imageUrl.trim()) : undefined,
         orderIndex: Number(orderIndex) || 0,
       };
 
@@ -184,17 +185,21 @@ export function CategoryModal({
             <Input
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://images.unsplash.com/... hoặc Cloudinary URL"
+              placeholder="Dán link ảnh hoặc link Google Drive (Bật 'Bất kỳ ai có liên kết')"
               disabled={isPending}
               className="h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
             />
+            <p className="text-[11px] text-[#74746E] mt-1">
+              💡 Hỗ trợ link ảnh trực tiếp hoặc link chia sẻ Google Drive
+            </p>
             {imageUrl && (
               <div className="mt-2 flex items-center gap-3 p-2 rounded-lg bg-[#FAFAFA] border border-[#E7E7E3]">
                 <div className="w-12 h-12 rounded bg-white overflow-hidden flex items-center justify-center border border-[#E7E7E3] flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={imageUrl}
+                    src={normalizeImageUrl(imageUrl)}
                     alt="Preview"
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = "none";

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { normalizeImageUrl } from "@/lib/utils";
 
 export interface BannerFormData {
   title: string;
@@ -26,7 +27,7 @@ export async function createBanner(data: BannerFormData) {
     const banner = await prisma.banner.create({
       data: {
         title: data.title.trim(),
-        imageUrl: data.imageUrl.trim(),
+        imageUrl: normalizeImageUrl(data.imageUrl.trim()),
         linkUrl: data.linkUrl?.trim() || null,
         orderIndex: Number(data.orderIndex) || 0,
         isActive: data.isActive ?? true,
@@ -57,7 +58,7 @@ export async function updateBanner(id: string, data: BannerFormData) {
       where: { id },
       data: {
         title: data.title.trim(),
-        imageUrl: data.imageUrl.trim(),
+        imageUrl: normalizeImageUrl(data.imageUrl.trim()),
         linkUrl: data.linkUrl?.trim() || null,
         orderIndex: Number(data.orderIndex) || 0,
         isActive: data.isActive ?? true,

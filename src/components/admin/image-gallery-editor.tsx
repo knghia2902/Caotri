@@ -5,6 +5,7 @@ import { Plus, Trash2, Star, Image as ImageIcon, ArrowUp, ArrowDown } from "luci
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { normalizeImageUrl } from "@/lib/utils";
 
 interface ImageGalleryEditorProps {
   images: string[];
@@ -21,13 +22,15 @@ export function ImageGalleryEditor({
 
   const handleAddImage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const url = newUrl.trim();
-    if (!url) return;
+    const raw = newUrl.trim();
+    if (!raw) return;
 
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    if (!raw.startsWith("http://") && !raw.startsWith("https://")) {
       toast.error("Vui lòng nhập đường dẫn URL hợp lệ (bắt đầu bằng http:// hoặc https://)");
       return;
     }
+
+    const url = normalizeImageUrl(raw);
 
     if (images.includes(url)) {
       toast.error("Hình ảnh này đã có trong bộ sưu tập");
@@ -36,7 +39,12 @@ export function ImageGalleryEditor({
 
     onChange([...images, url]);
     setNewUrl("");
-    toast.success("Đã thêm ảnh vào bộ sưu tập");
+
+    if (raw.includes("drive.google.com") || raw.includes("docs.google.com")) {
+      toast.success("Đã tự động chuyển đổi link Google Drive thành link ảnh trực tiếp!");
+    } else {
+      toast.success("Đã thêm ảnh vào bộ sưu tập");
+    }
   };
 
   const handleRemoveImage = (index: number) => {
@@ -70,7 +78,7 @@ export function ImageGalleryEditor({
           <Input
             value={newUrl}
             onChange={(e) => setNewUrl(e.target.value)}
-            placeholder="Dán URL ảnh (Cloudflare R2, Cloudinary, Imgur, Supabase, Unsplash...)"
+            placeholder="Dán link ảnh (Google Drive, Imgur, Postimages, Cloudinary, Unsplash...)"
             disabled={disabled}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -92,15 +100,20 @@ export function ImageGalleryEditor({
         </Button>
       </div>
 
-      <p className="text-[11px] text-[#74746E]">
-        💡 Hệ thống hỗ trợ CDN trực tiếp không tốn dung lượng ổ đĩa hosting. Ảnh đầu tiên sẽ là ảnh đại diện chính của sản phẩm.
-      </p>
+      <div className="text-[11px] text-[#74746E] space-y-1 bg-[#F7F7F5] p-2.5 rounded-lg border border-[#E7E7E3]">
+        <p>
+          💡 <strong>Hỗ trợ link Google Drive:</strong> Tải ảnh lên Google Drive &rarr; chọn <em>Chia sẻ</em> &rarr; chuyển thành <em>Bất kỳ ai có đường liên kết</em> &rarr; Dán link vào đây, hệ thống sẽ tự động tối ưu hiển thị.
+        </p>
+        <p className="text-[10px] text-[#A3A39D]">
+          Hệ thống cũng hỗ trợ ảnh từ Imgur, Postimages.org, Unsplash, Cloudinary. Ảnh đầu tiên sẽ là ảnh đại diện chính của sản phẩm.
+        </p>
+      </div>
 
       {/* Gallery Grid */}
       {images.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-dashed border-[#E7E7E3] bg-[#F7F7F5] text-[#74746E]">
           <ImageIcon className="w-10 h-10 mb-2 text-zinc-400" />
-          <p className="text-xs">Chưa có hình ảnh nào. Dán URL để thêm ảnh sản phẩm.</p>
+          <p className="text-xs">Chưa có hình ảnh nào. Dán link ảnh để thêm vào bộ sưu tập.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -119,8 +132,9 @@ export function ImageGalleryEditor({
                 <div className="aspect-square w-full relative overflow-hidden bg-white flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={url}
+                    src={normalizeImageUrl(url)}
                     alt={`Sản phẩm ảnh ${idx + 1}`}
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover transition-transform group-hover:scale-105"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =

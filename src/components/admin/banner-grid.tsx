@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BannerModal, type BannerModalData } from "@/components/admin/banner-modal";
 import { deleteBanner, toggleBannerActive } from "@/app/actions/banner";
+import { normalizeImageUrl } from "@/lib/utils";
 
 export interface BannerItem {
   id: string;
@@ -148,8 +149,9 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
               <div className="relative aspect-[16/8] w-full bg-[#111111] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={banner.imageUrl}
+                  src={normalizeImageUrl(banner.imageUrl)}
                   alt={banner.title}
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src =

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, normalizeImageUrl } from "@/lib/utils";
 
 export interface StorefrontProduct {
   id: string;
@@ -33,9 +33,10 @@ export function ProductCard({ product }: ProductCardProps) {
       return [];
     }
   })();
-  const mainImage =
-    imageList[0] ||
-    "https://placehold.co/400x400/F3F3F1/A3A39D?text=No+Image";
+  const rawImage = imageList[0];
+  const mainImage = rawImage
+    ? normalizeImageUrl(rawImage)
+    : "https://placehold.co/400x400/F3F3F1/A3A39D?text=No+Image";
 
   return (
     <Link href={`/products/${product.slug}`} className="group flex flex-col gap-3">
@@ -45,6 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <img
           src={mainImage}
           alt={product.name}
+          referrerPolicy="no-referrer"
           className="w-full h-full object-contain"
           onError={(e) => {
             (e.target as HTMLImageElement).src =
