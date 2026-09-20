@@ -182,7 +182,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       <div className="p-4 rounded-xl bg-cyan-950/20 border border-[#D5D5D0] flex items-center gap-3 text-xs text-[#111]">
         <ShieldCheck className="w-5 h-5 flex-shrink-0 text-[#111]" />
         <span>
-          Tính năng cấu hình cài đặt này được phân quyền nghiêm ngặt dành riêng cho vai trò <strong>ADMIN</strong>. Tài khoản Staff không có quyền lưu thay đổi.
+          Tính năng cấu hình cài đặt này được phân quyền nghiêm ngặt dành riêng cho Quản trị viên (<strong>ADMIN</strong>).
         </span>
       </div>
 

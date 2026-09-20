@@ -93,3 +93,104 @@ export async function logoutAction(): Promise<void> {
 export async function getCurrentUserAction(): Promise<SessionPayload | null> {
   return getCurrentSession();
 }
+
+export interface ChangePasswordResult {
+  success: boolean;
+  error?: string;
+  message?: string;
+}
+
+/**
+ * Server Action xử lý đổi mật khẩu tài khoản quản trị
+ */
+export async function changePasswordAction(
+  prevState: any,
+  formData: FormData
+): Promise<ChangePasswordResult> {
+  const emailInput = formData.get("email")?.toString().trim().toLowerCase();
+  const currentPassword = formData.get("currentPassword")?.toString();
+  const newPassword = formData.get("newPassword")?.toString();
+  const confirmPassword = formData.get("confirmPassword")?.toString();
+
+  // Nếu không truyền email (trường hợp đổi pass trong admin dashboard), lấy từ session hiện tại
+  let email = emailInput;
+  if (!email) {
+    const session = await getCurrentSession();
+    if (session?.email) {
+      email = session.email.toLowerCase();
+    }
+  }
+
+  if (!email) {
+    return {
+      success: false,
+      error: "Vui lòng cung cấp email tài khoản quản trị cần đổi mật khẩu",
+    };
+  }
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return {
+      success: false,
+      error: "Vui lòng điền đầy đủ mật khẩu hiện tại, mật khẩu mới và xác nhận mật khẩu",
+    };
+  }
+
+  if (newPassword.length < 6) {
+    return {
+      success: false,
+      error: "Mật khẩu mới phải có ít nhất 6 ký tự",
+    };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return {
+      success: false,
+      error: "Mật khẩu xác nhận không trùng khớp với mật khẩu mới",
+    };
+  }
+
+  if (currentPassword === newPassword) {
+    return {
+      success: false,
+      error: "Mật khẩu mới không được trùng với mật khẩu hiện tại",
+    };
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: `Không tìm thấy tài khoản quản trị ứng với email: ${email}`,
+      };
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return {
+        success: false,
+        error: "Mật khẩu hiện tại không chính xác",
+      };
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedNewPassword },
+    });
+
+    return {
+      success: true,
+      message: "Đổi mật khẩu thành công! Bạn có thể sử dụng mật khẩu mới ngay bây giờ.",
+    };
+  } catch (error) {
+    console.error("Change password action error:", error);
+    return {
+      success: false,
+      error: "Có lỗi xảy ra trong quá trình đổi mật khẩu. Vui lòng thử lại sau.",
+    };
+  }
+}
