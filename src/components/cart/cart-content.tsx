@@ -89,7 +89,7 @@ export function CartContent() {
 
           <div className="divide-y divide-[#E7E7E3]">
             {items.map((item) => (
-              <CartItemRow key={item.id} item={item} />
+              item?.id ? <CartItemRow key={item.id} item={item} /> : null
             ))}
           </div>
         </div>

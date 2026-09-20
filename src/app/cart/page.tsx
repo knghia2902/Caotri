@@ -7,7 +7,7 @@ import {
   getStorefrontSettings,
 } from "@/lib/storefront-data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Giỏ hàng & Đặt hàng | CaoTri Gaming Gear",

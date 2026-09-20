@@ -29,6 +29,11 @@ export default function ErrorBoundary({
           <p className="text-xs text-[#74746E]">
             Phiên làm việc vừa được cập nhật hoặc kết nối tạm thời bị gián đoạn. Vui lòng tải lại trang để đồng bộ phiên bản mới nhất.
           </p>
+          {error?.digest && (
+            <p className="text-[11px] font-mono text-[#A3A39D] pt-1">
+              Mã theo dõi: {error.digest}
+            </p>
+          )}
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <Button
@@ -44,15 +49,23 @@ export default function ErrorBoundary({
             <RefreshCw className="w-3.5 h-3.5" />
             Tải lại trang
           </Button>
-          <Link href="/">
-            <Button
-              variant="outline"
-              className="h-10 border-[#E7E7E3] hover:bg-[#F7F7F5] gap-2 text-xs font-medium w-full"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Về trang chủ
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                try {
+                  localStorage.removeItem("caotri_cart_storage");
+                } catch (_) {}
+                window.location.href = "/";
+              } else {
+                reset();
+              }
+            }}
+            className="h-10 border-[#E7E7E3] hover:bg-[#F7F7F5] gap-2 text-xs font-medium"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Về trang chủ
+          </Button>
         </div>
       </div>
     </div>

@@ -28,26 +28,28 @@ export const useCartStore = create<CartStore>()(
       items: [],
 
       addItem: (product, quantity = 1) => {
-        const qty = Math.max(1, quantity);
+        if (!product || !product.id) return;
+        const qty = Math.max(1, Number(quantity) || 1);
         set((state) => {
-          const existingIndex = state.items.findIndex((item) => item.id === product.id);
+          const currentItems = Array.isArray(state.items) ? state.items.filter(Boolean) : [];
+          const existingIndex = currentItems.findIndex((item) => item?.id === product.id);
           if (existingIndex > -1) {
-            const updatedItems = [...state.items];
+            const updatedItems = [...currentItems];
             updatedItems[existingIndex] = {
               ...updatedItems[existingIndex],
-              quantity: updatedItems[existingIndex].quantity + qty,
+              quantity: (Number(updatedItems[existingIndex].quantity) || 0) + qty,
             };
             return { items: updatedItems };
           }
           return {
-            items: [...state.items, { ...product, quantity: qty }],
+            items: [...currentItems, { ...product, quantity: qty }],
           };
         });
       },
 
       removeItem: (productId: string) => {
         set((state) => ({
-          items: state.items.filter((item) => item.id !== productId),
+          items: (Array.isArray(state.items) ? state.items : []).filter((item) => item && item.id !== productId),
         }));
       },
 
@@ -57,9 +59,9 @@ export const useCartStore = create<CartStore>()(
           return;
         }
         set((state) => ({
-          items: state.items.map((item) =>
-            item.id === productId ? { ...item, quantity } : item
-          ),
+          items: (Array.isArray(state.items) ? state.items : []).map((item) =>
+            item && item.id === productId ? { ...item, quantity } : item
+          ).filter(Boolean),
         }));
       },
 
@@ -68,11 +70,13 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotalItems: () => {
-        return get().items.reduce((total, item) => total + item.quantity, 0);
+        const list = Array.isArray(get().items) ? get().items : [];
+        return list.reduce((total, item) => total + (Number(item?.quantity) || 0), 0);
       },
 
       getTotalPrice: () => {
-        return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
+        const list = Array.isArray(get().items) ? get().items : [];
+        return list.reduce((total, item) => total + (Number(item?.price) || 0) * (Number(item?.quantity) || 1), 0);
       },
     }),
     {
@@ -101,10 +105,15 @@ export function useCartHydrated() {
     setIsHydrated(true);
   }, []);
 
+  const safeItems = Array.isArray(cart.items)
+    ? cart.items.filter((item): item is CartItem => !!(item && item.id))
+    : [];
+
   return {
     ...cart,
+    items: safeItems,
     isHydrated,
-    totalItems: isHydrated ? cart.getTotalItems() : 0,
-    totalPrice: isHydrated ? cart.getTotalPrice() : 0,
+    totalItems: isHydrated ? (typeof cart.getTotalItems === "function" ? cart.getTotalItems() : 0) : 0,
+    totalPrice: isHydrated ? (typeof cart.getTotalPrice === "function" ? cart.getTotalPrice() : 0) : 0,
   };
 }
