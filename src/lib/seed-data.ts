@@ -434,7 +434,7 @@ export const initialBanners = [
   },
   {
     title: "Asus ROG Swift OLED 240Hz - Trải nghiệm hình ảnh chân thực",
-    imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=1200&auto=format&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600&auto=format&fit=crop",
     linkUrl: "/products/asus-rog-swift-oled-pg27aqdm-gaming-monitor",
     orderIndex: 3,
     isActive: true,

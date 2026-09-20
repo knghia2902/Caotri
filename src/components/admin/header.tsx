@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { SessionPayload } from "@/types";
-import { Badge } from "@/components/ui/badge";
 import { logoutAction } from "@/app/actions/auth";
+import { ProfileModal } from "./profile-modal";
 import {
   Menu,
   ExternalLink,
@@ -25,10 +26,15 @@ const pathTitles: Record<string, string> = {
   "/admin/categories": "Quản lý Danh mục",
   "/admin/banners": "Quản lý Banners",
   "/admin/settings": "Cài đặt Cửa hàng",
+  "/admin/profile": "Hồ sơ cá nhân",
 };
 
 export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
   const pathname = usePathname();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const displayName =
+    session.name === "Quản trị viên CaoTri" ? "Admin" : session.name || "Admin";
 
   // Tìm tiêu đề breadcrumb tương ứng với route hiện tại
   const currentTitle =
@@ -74,27 +80,27 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
           <ExternalLink className="w-3.5 h-3.5" />
         </Link>
 
-        {/* User profile & Role Badge */}
+        {/* User profile & Avatar Button */}
         <div className="flex items-center gap-2.5 pl-2 sm:pl-3 border-l border-[#E7E7E3]">
-          <div className="w-8 h-8 rounded-full bg-[#FAFAFA] border border-[#E7E7E3] flex items-center justify-center text-[#74746E] shrink-0">
-            <User className="w-4 h-4" />
-          </div>
-
-          <div className="hidden md:flex flex-col text-left leading-tight">
-            <span className="text-xs font-semibold text-[#111] truncate max-w-[120px]">
-              {session.name}
-            </span>
-            <span className="text-[10px] text-[#74746E] truncate max-w-[120px]">
-              {session.email}
-            </span>
-          </div>
-
-          <Badge
-            variant={session.role === "ADMIN" ? "default" : "secondary"}
-            className="text-[10px] uppercase font-bold tracking-wider py-0.5 px-2 bg-[#111] text-white hover:bg-[#111]"
+          <button
+            type="button"
+            onClick={() => setIsProfileOpen(true)}
+            className="flex items-center gap-2.5 p-1 -m-1 rounded-xl hover:bg-[#F4F4F2] transition-all group text-left cursor-pointer"
+            title="Nhấp vào avatar để xem hồ sơ và đổi mật khẩu"
           >
-            {session.role}
-          </Badge>
+            <div className="w-8 h-8 rounded-full bg-[#FAFAFA] border border-[#E7E7E3] group-hover:border-[#111] group-hover:bg-white flex items-center justify-center text-[#74746E] group-hover:text-[#111] shrink-0 transition-all shadow-2xs">
+              <User className="w-4 h-4" />
+            </div>
+
+            <div className="hidden md:flex flex-col text-left leading-tight">
+              <span className="text-xs font-semibold text-[#111] group-hover:text-black truncate max-w-[120px]">
+                {displayName}
+              </span>
+              <span className="text-[10px] text-[#74746E] truncate max-w-[120px]">
+                {session.email}
+              </span>
+            </div>
+          </button>
 
           {/* Nút Đăng xuất */}
           <form action={logoutAction}>
@@ -109,6 +115,13 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
           </form>
         </div>
       </div>
+
+      {/* Modal Hồ sơ cá nhân & Đổi mật khẩu */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        session={session}
+      />
     </header>
   );
 }

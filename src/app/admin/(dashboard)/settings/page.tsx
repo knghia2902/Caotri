@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/auth";
 import { SettingsForm } from "@/components/admin/settings-form";
-import { ChangePasswordCard } from "@/components/admin/change-password-card";
 import { Sliders } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -33,18 +32,15 @@ export default async function SettingsPage() {
           </span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
-          Cài đặt Cửa hàng & Bảo mật
+          Cài đặt Cửa hàng
         </h1>
         <p className="text-sm text-zinc-400 mt-1">
-          Thiết lập thông tin liên hệ Hotline, Zalo OA, Fanpage Facebook và đổi mật khẩu quản trị viên
+          Thiết lập thông tin liên hệ Hotline, Zalo OA, Fanpage Facebook và địa chỉ cửa hàng
         </p>
       </div>
 
       {/* Settings Form */}
       <SettingsForm initialSettings={settingsMap} />
-
-      {/* Đổi mật khẩu tài khoản Admin */}
-      <ChangePasswordCard userEmail={session?.email || "admin@caotri.vn"} />
     </div>
   );
 }

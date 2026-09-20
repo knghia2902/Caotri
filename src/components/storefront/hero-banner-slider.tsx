@@ -49,7 +49,7 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
 
   const content = (
     <div
-      className="group relative w-full rounded-md overflow-hidden bg-[#F7F7F5] min-h-[400px] aspect-[16/8] sm:aspect-[21/9] md:aspect-[24/9]"
+      className="group relative w-full rounded-xl overflow-hidden bg-[#F7F7F5] aspect-[16/7] sm:aspect-[21/9] lg:aspect-[24/9] max-h-[460px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -69,7 +69,7 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
             loading={idx === 0 ? "eager" : "lazy"}
             fetchPriority={idx === 0 ? "high" : "auto"}
             decoding="async"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
                 "https://placehold.co/1200x500/F3F3F1/74746E?text=CaoTri+Gaming+Gear";
