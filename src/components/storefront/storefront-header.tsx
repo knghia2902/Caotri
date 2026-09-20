@@ -40,25 +40,6 @@ export function StorefrontHeader({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#E7E7E3] bg-[#FFFFFF]">
-      {/* Top micro bar */}
-      <div className="border-b border-[#E7E7E3] bg-[#FAFAFA] px-4 py-1.5 text-xs text-[#74746E]">
-        <div className="max-w-[1360px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline">
-              ⚡ Gaming Gear & Phụ kiện công nghệ chính hãng 100%
-            </span>
-            <span className="text-[#111] font-medium flex items-center gap-1">
-              <Phone className="w-3 h-3" /> Hotline: {hotline}
-            </span>
-          </div>
-          <div className="hidden sm:flex items-center gap-3 text-xs text-[#74746E]">
-            <span>Đổi trả 1 đổi 1</span>
-            <span className="text-[#D5D5D0]">•</span>
-            <span>Giao hàng toàn quốc</span>
-          </div>
-        </div>
-      </div>
-
       {/* Main navigation bar */}
       <div className="max-w-[1360px] mx-auto px-4 h-[72px] flex items-center justify-between gap-4">
         {/* Left Section: Brand Logo & Desktop Nav */}
