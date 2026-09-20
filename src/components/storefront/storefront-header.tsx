@@ -66,6 +66,7 @@ export function StorefrontHeader({
             </Link>
             <Link
               href="/products"
+              prefetch={false}
               className="hover:text-[#74746E] transition-colors py-1"
             >
               Tất cả sản phẩm
@@ -120,7 +121,7 @@ export function StorefrontHeader({
           </a>
 
           {/* Cart Icon */}
-          <Link href="/cart" className="relative inline-flex items-center justify-center">
+          <Link href="/cart" prefetch={false} className="relative inline-flex items-center justify-center">
             <Button
               variant="outline"
               className="h-10 w-10 p-0 rounded-xl border-[#D5D5D0] hover:border-[#111] bg-white text-[#111]"

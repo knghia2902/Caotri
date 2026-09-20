@@ -15,10 +15,19 @@ export const metadata: Metadata = {
 };
 
 export default async function CartPage() {
-  const [categories, settings] = await Promise.all([
-    getStorefrontCategories(),
-    getStorefrontSettings(),
-  ]);
+  let categories: any[] = [];
+  let settings: Record<string, string> = {};
+
+  try {
+    const [fetchedCategories, fetchedSettings] = await Promise.all([
+      getStorefrontCategories(),
+      getStorefrontSettings(),
+    ]);
+    categories = fetchedCategories || [];
+    settings = fetchedSettings || {};
+  } catch (error) {
+    console.error("CartPage data load error:", error);
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">

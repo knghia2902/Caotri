@@ -77,7 +77,15 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: "caotri_cart_storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() =>
+        typeof window !== "undefined"
+          ? window.localStorage
+          : {
+              getItem: () => null,
+              setItem: () => {},
+              removeItem: () => {},
+            }
+      ),
     }
   )
 );
