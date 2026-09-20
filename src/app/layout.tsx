@@ -27,22 +27,49 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               if (typeof window !== "undefined") {
+                try {
+                  var _ce = console.error;
+                  console.error = function() {
+                    for (var i = 0; i < arguments.length; i++) {
+                      var a = arguments[i];
+                      var str = (a && (a.message || a.stack || String(a))) || "";
+                      if (str.indexOf("startTime") !== -1 || str.indexOf("reportAllChanges") !== -1) return;
+                    }
+                    _ce.apply(console, arguments);
+                  };
+                } catch (_) {}
+
                 window.addEventListener("error", function(e) {
-                  if (e && (
-                    (e.message && e.message.indexOf("startTime") !== -1) ||
-                    (e.error && e.error.stack && e.error.stack.indexOf("reportAllChanges") !== -1)
-                  )) {
+                  var msg = (e && (e.message || (e.error && (e.error.message || e.error.stack)))) || "";
+                  if (msg.indexOf("startTime") !== -1 || msg.indexOf("reportAllChanges") !== -1) {
                     e.stopImmediatePropagation();
                     e.preventDefault();
                     return true;
                   }
                 }, true);
+
                 window.addEventListener("unhandledrejection", function(e) {
-                  if (e && e.reason && e.reason.message && e.reason.message.indexOf("startTime") !== -1) {
+                  var msg = (e && e.reason && (e.reason.message || e.reason.stack || String(e.reason))) || "";
+                  if (msg.indexOf("startTime") !== -1 || msg.indexOf("reportAllChanges") !== -1) {
                     e.stopImmediatePropagation();
                     e.preventDefault();
                   }
                 }, true);
+
+                try {
+                  if (typeof PerformanceObserverEntryList !== "undefined") {
+                    var p = PerformanceObserverEntryList.prototype;
+                    ["getEntries", "getEntriesByType", "getEntriesByName"].forEach(function(m) {
+                      if (p[m]) {
+                        var orig = p[m];
+                        p[m] = function() {
+                          var list = orig.apply(this, arguments);
+                          return (list || []).filter(Boolean);
+                        };
+                      }
+                    });
+                  }
+                } catch (_) {}
               }
             `,
           }}
