@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { normalizeImageUrl } from "@/lib/utils";
+import { invalidateStorefrontCache } from "@/lib/storefront-data";
 
 export interface BannerFormData {
   title: string;
@@ -34,6 +35,7 @@ export async function createBanner(data: BannerFormData) {
       },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/banners");
     revalidatePath("/");
 
@@ -65,6 +67,7 @@ export async function updateBanner(id: string, data: BannerFormData) {
       },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/banners");
     revalidatePath("/");
 
@@ -82,6 +85,7 @@ export async function deleteBanner(id: string) {
       where: { id },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/banners");
     revalidatePath("/");
 
@@ -101,6 +105,7 @@ export async function toggleBannerActive(id: string, currentStatus: boolean) {
       data: { isActive: newStatus },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/banners");
     revalidatePath("/");
 

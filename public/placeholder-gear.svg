@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <rect width="400" height="400" fill="#F3F3F1"/>
+  <g transform="translate(150, 150)" stroke="#A3A39D" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="15" width="90" height="60" rx="8" />
+    <path d="M25 45h50M25 30h10M50 30h25M35 60h30" />
+  </g>
+  <text x="200" y="270" text-anchor="middle" fill="#74746E" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="500">CaoTri Gaming Gear</text>
+</svg>

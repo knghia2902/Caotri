@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { normalizeImageUrl } from "@/lib/utils";
+import { invalidateStorefrontCache } from "@/lib/storefront-data";
 
 export interface ProductFormData {
   name: string;
@@ -84,6 +85,7 @@ export async function createProduct(data: ProductFormData) {
       },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/products");
     revalidatePath("/admin/categories");
     revalidatePath("/");
@@ -166,6 +168,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
       },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/products");
     revalidatePath(`/admin/products/${id}/edit`);
     revalidatePath("/admin/categories");
@@ -185,6 +188,7 @@ export async function deleteProduct(id: string) {
       where: { id },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/products");
     revalidatePath("/admin/categories");
     revalidatePath("/");
@@ -205,6 +209,7 @@ export async function toggleProductFeatured(id: string, currentStatus: boolean) 
       data: { isFeatured: newStatus },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/products");
     revalidatePath("/");
 
@@ -224,6 +229,7 @@ export async function toggleProductInStock(id: string, currentStatus: boolean) {
       data: { inStock: newStatus },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/products");
     revalidatePath("/");
 

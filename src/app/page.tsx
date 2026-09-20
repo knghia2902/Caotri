@@ -1,56 +1,29 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { HeroBannerSlider } from "@/components/storefront/hero-banner-slider";
 import { CategoryRibbon } from "@/components/storefront/category-ribbon";
 import { ProductCard } from "@/components/storefront/product-card";
+import {
+  getStorefrontBanners,
+  getStorefrontCategories,
+  getFeaturedProducts,
+  getNewProducts,
+  getStorefrontSettings,
+} from "@/lib/storefront-data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function HomePage() {
-  // Nạp đồng thời dữ liệu từ CSDL Prisma
-  const [banners, categories, featuredProducts, newProducts, settingsRecords] =
+  // Nạp đồng thời dữ liệu từ cache tốc độ cao
+  const [banners, categories, featuredProducts, newProducts, settings] =
     await Promise.all([
-      prisma.banner.findMany({
-        where: { isActive: true },
-        orderBy: { orderIndex: "asc" },
-      }),
-      prisma.category.findMany({
-        orderBy: { orderIndex: "asc" },
-        include: {
-          _count: {
-            select: { products: true },
-          },
-        },
-      }),
-      prisma.product.findMany({
-        where: { isFeatured: true },
-        take: 8,
-        orderBy: { createdAt: "desc" },
-        include: {
-          category: {
-            select: { id: true, name: true, slug: true },
-          },
-        },
-      }),
-      prisma.product.findMany({
-        where: { isNew: true },
-        take: 8,
-        orderBy: { createdAt: "desc" },
-        include: {
-          category: {
-            select: { id: true, name: true, slug: true },
-          },
-        },
-      }),
-      prisma.siteSetting.findMany(),
+      getStorefrontBanners(),
+      getStorefrontCategories(),
+      getFeaturedProducts(8),
+      getNewProducts(8),
+      getStorefrontSettings(),
     ]);
-
-  const settings: Record<string, string> = {};
-  for (const s of settingsRecords) {
-    settings[s.key] = s.value;
-  }
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col">

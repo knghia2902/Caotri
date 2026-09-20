@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
+import { invalidateStorefrontCache } from "@/lib/storefront-data";
 
 export async function updateSettings(data: Record<string, string>) {
   try {
@@ -28,6 +29,7 @@ export async function updateSettings(data: Record<string, string>) {
 
     await prisma.$transaction(updates);
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/settings");
     revalidatePath("/");
     revalidatePath("/cart");

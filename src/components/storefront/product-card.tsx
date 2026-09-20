@@ -47,6 +47,8 @@ export function ProductCard({ product }: ProductCardProps) {
           src={mainImage}
           alt={product.name}
           referrerPolicy="no-referrer"
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-contain"
           onError={(e) => {
             (e.target as HTMLImageElement).src =

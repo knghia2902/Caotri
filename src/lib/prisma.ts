@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaD1 } from "@prisma/adapter-d1";
 
 let localPrisma: PrismaClient | null = null;
+let cachedD1Prisma: PrismaClient | null = null;
+let lastDbBinding: any = null;
 
 function getLocalPrisma(): PrismaClient {
   if (!localPrisma) {
@@ -26,8 +28,12 @@ export function getDbClient(): PrismaClient {
     const { getCloudflareContext } = require("@opennextjs/cloudflare");
     const ctx = getCloudflareContext();
     if (ctx?.env?.DB) {
-      const adapter = new PrismaD1(ctx.env.DB);
-      return new PrismaClient({ adapter });
+      if (!cachedD1Prisma || lastDbBinding !== ctx.env.DB) {
+        lastDbBinding = ctx.env.DB;
+        const adapter = new PrismaD1(ctx.env.DB);
+        cachedD1Prisma = new PrismaClient({ adapter });
+      }
+      return cachedD1Prisma;
     }
   } catch {
     // Fallback to local SQLite during build / local development

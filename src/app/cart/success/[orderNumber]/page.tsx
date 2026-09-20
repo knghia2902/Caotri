@@ -8,6 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { OrderSuccessActions } from "@/components/cart/order-success-actions";
+import {
+  getStorefrontCategories,
+  getStorefrontSettings,
+} from "@/lib/storefront-data";
 
 export const dynamic = "force-dynamic";
 
@@ -40,19 +44,11 @@ export default async function OrderSuccessPage({ params }: SuccessPageProps) {
     notFound();
   }
 
-  // 2. Nạp cấu hình danh mục và settings
-  const [categories, settingsList] = await Promise.all([
-    prisma.category.findMany({
-      orderBy: { orderIndex: "asc" },
-      select: { id: true, name: true, slug: true },
-    }),
-    prisma.siteSetting.findMany(),
+  // 2. Nạp cấu hình danh mục và settings từ cache
+  const [categories, settings] = await Promise.all([
+    getStorefrontCategories(),
+    getStorefrontSettings(),
   ]);
-
-  const settings: Record<string, string> = {};
-  settingsList.forEach((s) => {
-    settings[s.key] = s.value;
-  });
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">

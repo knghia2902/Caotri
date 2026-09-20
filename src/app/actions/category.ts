@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { normalizeImageUrl } from "@/lib/utils";
+import { invalidateStorefrontCache } from "@/lib/storefront-data";
 
 export interface CategoryFormData {
   name: string;
@@ -52,6 +53,7 @@ export async function createCategory(data: CategoryFormData) {
       },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products");
     revalidatePath("/");
@@ -110,6 +112,7 @@ export async function updateCategory(id: string, data: CategoryFormData) {
       },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products");
     revalidatePath("/");
@@ -140,6 +143,7 @@ export async function deleteCategory(id: string) {
       where: { id },
     });
 
+    invalidateStorefrontCache();
     revalidatePath("/admin/categories");
     revalidatePath("/admin/products");
     revalidatePath("/");

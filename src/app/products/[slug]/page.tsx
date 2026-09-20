@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -10,6 +11,10 @@ import { ProductActions } from "@/components/storefront/product-actions";
 import { ProductTabs } from "@/components/storefront/product-tabs";
 import { ProductCard } from "@/components/storefront/product-card";
 import {
+  getStorefrontCategories,
+  getStorefrontSettings,
+} from "@/lib/storefront-data";
+import {
   ShieldCheck,
   Truck,
   RotateCcw,
@@ -20,16 +25,23 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+// Deduplicate product lookup between generateMetadata and ProductDetailPage
+const getProduct = cache(async (slug: string) => {
+  return prisma.product.findUnique({
+    where: { slug },
+    include: {
+      category: true,
+    },
+  });
+});
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    select: { name: true, description: true },
-  });
+  const product = await getProduct(slug);
 
   if (!product) {
     return {
@@ -46,23 +58,16 @@ export async function generateMetadata({
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { slug } = await params;
 
-  // 1. Nạp chi tiết sản phẩm
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: {
-      category: true,
-    },
-  });
+  // 1. Nạp chi tiết sản phẩm (sử dụng cache deduplication với generateMetadata)
+  const product = await getProduct(slug);
 
   if (!product) {
     notFound();
   }
 
   // 2. Nạp dữ liệu bổ trợ song song (Categories, Related Products, Settings)
-  const [categories, relatedProducts, settingsList] = await Promise.all([
-    prisma.category.findMany({
-      orderBy: { orderIndex: "asc" },
-    }),
+  const [categories, relatedProducts, settings] = await Promise.all([
+    getStorefrontCategories(),
     prisma.product.findMany({
       where: {
         categoryId: product.categoryId,
@@ -74,13 +79,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       take: 4,
       orderBy: { createdAt: "desc" },
     }),
-    prisma.siteSetting.findMany(),
+    getStorefrontSettings(),
   ]);
-
-  const settings: Record<string, string> = {};
-  settingsList.forEach((s) => {
-    settings[s.key] = s.value;
-  });
 
   // Parse mảng ảnh an toàn
   let imageList: string[] = [];

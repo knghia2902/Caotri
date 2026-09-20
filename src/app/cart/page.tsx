@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
 import { StorefrontHeader } from "@/components/storefront/storefront-header";
 import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { CartContent } from "@/components/cart/cart-content";
+import {
+  getStorefrontCategories,
+  getStorefrontSettings,
+} from "@/lib/storefront-data";
 
 export const dynamic = "force-dynamic";
 
@@ -12,18 +15,10 @@ export const metadata: Metadata = {
 };
 
 export default async function CartPage() {
-  const [categories, settingsList] = await Promise.all([
-    prisma.category.findMany({
-      orderBy: { orderIndex: "asc" },
-      select: { id: true, name: true, slug: true },
-    }),
-    prisma.siteSetting.findMany(),
+  const [categories, settings] = await Promise.all([
+    getStorefrontCategories(),
+    getStorefrontSettings(),
   ]);
-
-  const settings: Record<string, string> = {};
-  settingsList.forEach((s) => {
-    settings[s.key] = s.value;
-  });
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">

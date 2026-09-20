@@ -6,9 +6,13 @@ import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { ProductCard } from "@/components/storefront/product-card";
 import { CatalogFilter } from "@/components/storefront/catalog-filter";
 import { CatalogSortSelect } from "@/components/storefront/catalog-sort-select";
+import {
+  getStorefrontCategories,
+  getStorefrontSettings,
+} from "@/lib/storefront-data";
 import { Package } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface CategoryPageProps {
   params: Promise<{
@@ -34,10 +38,19 @@ export default async function CategoryPage({
   const inStockOnly = sParams.inStock === "true";
   const sort = sParams.sort || "newest";
 
-  // Tìm danh mục
-  const currentCategory = await prisma.category.findUnique({
-    where: { slug },
-  });
+  // Nạp danh mục và cấu hình từ cache
+  const [categories, settings] = await Promise.all([
+    getStorefrontCategories(),
+    getStorefrontSettings(),
+  ]);
+
+  // Tìm danh mục hiện tại từ cache trước
+  let currentCategory = categories.find((c) => c.slug === slug);
+  if (!currentCategory) {
+    currentCategory = await prisma.category.findUnique({
+      where: { slug },
+    }) || undefined;
+  }
 
   if (!currentCategory) {
     notFound();
@@ -67,29 +80,16 @@ export default async function CategoryPage({
     orderBy = [{ isFeatured: "desc" }, { createdAt: "desc" }];
   }
 
-  const [products, categories, settingsRecords] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      orderBy,
-      include: {
-        category: {
-          select: { id: true, name: true, slug: true },
-        },
+  // Nạp sản phẩm cho danh mục
+  const products = await prisma.product.findMany({
+    where,
+    orderBy,
+    include: {
+      category: {
+        select: { id: true, name: true, slug: true },
       },
-    }),
-    prisma.category.findMany({
-      orderBy: { orderIndex: "asc" },
-      include: {
-        _count: { select: { products: true } },
-      },
-    }),
-    prisma.siteSetting.findMany(),
-  ]);
-
-  const settings: Record<string, string> = {};
-  for (const s of settingsRecords) {
-    settings[s.key] = s.value;
-  }
+    },
+  });
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">

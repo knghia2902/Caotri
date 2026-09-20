@@ -5,6 +5,10 @@ import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { ProductCard } from "@/components/storefront/product-card";
 import { CatalogFilter } from "@/components/storefront/catalog-filter";
 import { CatalogSortSelect } from "@/components/storefront/catalog-sort-select";
+import {
+  getStorefrontCategories,
+  getStorefrontSettings,
+} from "@/lib/storefront-data";
 import { ChevronRight, Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -65,8 +69,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     orderBy = [{ isFeatured: "desc" }, { createdAt: "desc" }];
   }
 
-  // Nạp dữ liệu
-  const [products, categories, settingsRecords] = await Promise.all([
+  // Nạp dữ liệu song song (categories và settings lấy từ cache tốc độ cao)
+  const [products, categories, settings] = await Promise.all([
     prisma.product.findMany({
       where,
       orderBy,
@@ -76,19 +80,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         },
       },
     }),
-    prisma.category.findMany({
-      orderBy: { orderIndex: "asc" },
-      include: {
-        _count: { select: { products: true } },
-      },
-    }),
-    prisma.siteSetting.findMany(),
+    getStorefrontCategories(),
+    getStorefrontSettings(),
   ]);
-
-  const settings: Record<string, string> = {};
-  for (const s of settingsRecords) {
-    settings[s.key] = s.value;
-  }
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">

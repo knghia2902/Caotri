@@ -66,6 +66,9 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
             src={normalizeImageUrl(b.imageUrl)}
             alt={b.title}
             referrerPolicy="no-referrer"
+            loading={idx === 0 ? "eager" : "lazy"}
+            fetchPriority={idx === 0 ? "high" : "auto"}
+            decoding="async"
             className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
