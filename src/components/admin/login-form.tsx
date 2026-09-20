@@ -126,23 +126,13 @@ export function LoginForm() {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Đang xác thực bảo mật...
+              Đang đăng nhập...
             </>
           ) : (
-            <>
-              Đăng nhập Quản trị
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </>
+            "Đăng nhập"
           )}
         </Button>
       </form>
-
-      {/* Support note */}
-      <div className="pt-4 border-t border-[#E7E7E3] text-center">
-        <p className="text-xs text-[#74746E] leading-relaxed">
-          Quên thông tin truy cập? Vui lòng liên hệ bộ phận kỹ thuật hoặc quản trị viên cấp cao của hệ thống.
-        </p>
-      </div>
     </div>
   );
 }
