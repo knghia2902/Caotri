@@ -146,7 +146,7 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
                 className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-[#111] hover:bg-[#F4F4F2] transition-colors text-left cursor-pointer"
               >
                 <UserPen className="w-4 h-4 text-[#74746E]" />
-                <span>1. Chỉnh sửa hồ sơ</span>
+                <span>Chỉnh sửa hồ sơ</span>
               </button>
 
               {/* Mục 2: Đổi mật khẩu */}
@@ -159,7 +159,7 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
                 className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-[#111] hover:bg-[#F4F4F2] transition-colors text-left cursor-pointer"
               >
                 <KeyRound className="w-4 h-4 text-[#74746E]" />
-                <span>2. Đổi mật khẩu</span>
+                <span>Đổi mật khẩu</span>
               </button>
 
               <div className="my-1 border-t border-[#E7E7E3]" />
@@ -171,7 +171,7 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
                   className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer"
                 >
                   <LogOut className="w-4 h-4 text-red-500" />
-                  <span>3. Đăng xuất</span>
+                  <span>Đăng xuất</span>
                 </button>
               </form>
             </div>

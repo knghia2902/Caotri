@@ -23,6 +23,30 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://placehold.co" />
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== "undefined") {
+                window.addEventListener("error", function(e) {
+                  if (e && (
+                    (e.message && e.message.indexOf("startTime") !== -1) ||
+                    (e.error && e.error.stack && e.error.stack.indexOf("reportAllChanges") !== -1)
+                  )) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    return true;
+                  }
+                }, true);
+                window.addEventListener("unhandledrejection", function(e) {
+                  if (e && e.reason && e.reason.message && e.reason.message.indexOf("startTime") !== -1) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                  }
+                }, true);
+              }
+            `,
+          }}
+        />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
