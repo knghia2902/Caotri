@@ -15,5 +15,12 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "nguyenlecaotri"
     }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "caotri-db",
+      "database_id": "79b44069-038c-4e37-a87d-53cb37447b8e"
+    }
   ]
 }
