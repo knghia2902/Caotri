@@ -37,3 +37,7 @@ dev.db-journal
 *.sqlite
 *.sqlite-journal
 scratch_cf.yml
+
+# cloudflare / opennext
+.open-next/
+.wrangler/
