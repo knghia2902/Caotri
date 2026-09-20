@@ -84,11 +84,6 @@ export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
               </Link>
             </li>
             <li>
-              <Link href="/category/tai-nghe-gaming" className="hover:text-white transition-colors">
-                Tai nghe Gaming 7.1
-              </Link>
-            </li>
-            <li>
               <Link href="/category/man-hinh-gaming" className="hover:text-white transition-colors">
                 Màn hình Gaming
               </Link>
@@ -104,22 +99,22 @@ export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
           <ul className="space-y-3">
             <li>
               <span className="hover:text-white transition-colors cursor-pointer">
-                Hướng dẫn đặt hàng & Chốt Zalo
+                Hướng dẫn đặt hàng
               </span>
             </li>
             <li>
               <span className="hover:text-white transition-colors cursor-pointer">
-                Chính sách bảo hành 1 đổi 1
+                Chính sách bảo hành
               </span>
             </li>
             <li>
               <span className="hover:text-white transition-colors cursor-pointer">
-                Phương thức thanh toán & Giao hàng
+                Phương thức thanh toán
               </span>
             </li>
             <li>
               <span className="hover:text-white transition-colors cursor-pointer">
-                Chính sách bảo mật thông tin
+                Chính sách bảo mật
               </span>
             </li>
           </ul>
@@ -154,7 +149,7 @@ export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
       {/* Bottom Bar */}
       <div className="border-t border-[#3A3A36] bg-[#111111] py-4 px-4 text-center text-sm text-[#74746E]">
         <div className="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 {shopName}. Xây dựng trên nền tảng Next.js 15 App Router & Prisma.</p>
+          <p>© 2026 {shopName}. Tất cả các quyền được bảo lưu.</p>
           <p className="text-sm">
             Tối ưu trải nghiệm mua sắm Gaming Gear đỉnh cao.
           </p>

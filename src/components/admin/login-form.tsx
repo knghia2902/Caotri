@@ -58,7 +58,7 @@ export function LoginForm() {
             htmlFor="admin-email"
             className="block text-xs font-semibold uppercase tracking-wider text-[#555]"
           >
-            Email quản trị
+            Tài khoản
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#888]">
@@ -67,9 +67,9 @@ export function LoginForm() {
             <Input
               id="admin-email"
               name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="name@domain.com"
+              type="text"
+              autoComplete="username"
+              placeholder="admin hoặc email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
