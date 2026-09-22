@@ -49,7 +49,7 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
 
   const content = (
     <div
-      className="group relative w-full rounded-xl overflow-hidden bg-[#F7F7F5] aspect-[16/7] sm:aspect-[21/9] lg:aspect-[24/9] max-h-[460px]"
+      className="group relative w-full rounded-2xl overflow-hidden bg-[#111] aspect-[16/9] sm:aspect-[21/9] lg:aspect-[21/9] max-h-[440px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -77,13 +77,13 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
           />
 
           {/* Banner Title Caption */}
-          <div className="absolute bottom-8 left-8 z-20 max-w-xl">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#111] bg-white/90 backdrop-blur-sm px-4 py-2 rounded-md mb-4 inline-block">
+          <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 z-20 max-w-xl">
+            <h2 className="text-base sm:text-xl md:text-2xl font-semibold text-[#111] bg-white/95 backdrop-blur-md px-4 py-2 rounded-xl mb-3 inline-block shadow-sm">
               {b.title}
             </h2>
             {b.linkUrl && (
               <div>
-                <span className="inline-flex items-center justify-center bg-[#111] text-white h-11 px-[18px] rounded-lg text-sm font-medium">
+                <span className="inline-flex items-center justify-center bg-[#111] text-white h-10 px-5 rounded-lg text-xs sm:text-sm font-medium hover:bg-black transition-colors shadow-sm">
                   Xem ngay
                 </span>
               </div>

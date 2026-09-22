@@ -427,7 +427,7 @@ export const initialBanners = [
   },
   {
     title: "Keychron Q1 Pro - Đẳng cấp bàn phím cơ Custom nhôm CNC",
-    imageUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?q=80&w=1200&auto=format&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1742198865450-cf9ce4335a33?q=80&w=1600&auto=format&fit=crop",
     linkUrl: "/products/keychron-q1-pro-wireless-custom-keyboard",
     orderIndex: 2,
     isActive: true,
