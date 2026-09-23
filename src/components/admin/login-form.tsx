@@ -23,15 +23,15 @@ export function LoginForm() {
     setError(null);
     setIsLoading(true);
 
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-
     try {
-      const result = await loginAction(null, formData);
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const result = await res.json();
       if (result.success) {
-        router.push(redirectUrl);
-        router.refresh();
+        window.location.href = redirectUrl;
       } else {
         setError(result.error || "Tài khoản hoặc mật khẩu không chính xác.");
       }

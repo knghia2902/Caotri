@@ -45,9 +45,10 @@ export async function verifyJWT(token: string): Promise<SessionPayload | null> {
  */
 export async function setSessionCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
+  const isHttps = process.env.NEXTAUTH_URL?.startsWith("https://") ?? false;
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isHttps,
     sameSite: "lax",
     path: "/",
     maxAge: 7 * 24 * 60 * 60, // 7 ngày (giây)
