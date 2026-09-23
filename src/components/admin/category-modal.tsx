@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { slugify } from "@/lib/slugify";
 import { normalizeImageUrl } from "@/lib/utils";
 import { createCategory, updateCategory } from "@/app/actions/category";
+import { ImageUploader } from "@/components/admin/image-uploader";
 
 export interface CategoryModalData {
   id?: string;
@@ -179,18 +180,27 @@ export function CategoryModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-              URL Hình ảnh / Icon đại diện
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
+                Hình ảnh / Icon đại diện
+              </label>
+              <ImageUploader
+                compact={true}
+                multiple={false}
+                buttonText="Tải ảnh từ máy"
+                onUploadSuccess={(urls) => setImageUrl(urls[0])}
+                disabled={isPending}
+              />
+            </div>
             <Input
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Dán link ảnh hoặc link Google Drive (Bật 'Bất kỳ ai có liên kết')"
+              placeholder="Dán link ảnh hoặc bấm 'Tải ảnh từ máy' để lưu vào VPS"
               disabled={isPending}
               className="h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
             />
             <p className="text-[11px] text-[#74746E] mt-1">
-              💡 Hỗ trợ link ảnh trực tiếp hoặc link chia sẻ Google Drive
+              💡 Bấm <strong>Tải ảnh từ máy</strong> để lưu trực tiếp lên VPS hoặc dán link Google Drive/Unsplash.
             </p>
             {imageUrl && (
               <div className="mt-2 flex items-center gap-3 p-2 rounded-lg bg-[#FAFAFA] border border-[#E7E7E3]">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createBanner, updateBanner, type BannerFormData } from "@/app/actions/banner";
 import { normalizeImageUrl } from "@/lib/utils";
+import { ImageUploader } from "@/components/admin/image-uploader";
 
 export interface BannerModalData {
   id?: string;
@@ -137,18 +138,27 @@ export function BannerModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-              URL Hình ảnh Banner (Hỗ trợ Google Drive, Unsplash, Imgur...) <span className="text-[#D94A4A]">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
+                Hình ảnh Banner <span className="text-[#D94A4A]">*</span>
+              </label>
+              <ImageUploader
+                compact={true}
+                multiple={false}
+                buttonText="Tải ảnh từ máy"
+                onUploadSuccess={(urls) => setImageUrl(urls[0])}
+                disabled={isPending}
+              />
+            </div>
             <Input
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Dán link ảnh hoặc link Google Drive (Bật 'Bất kỳ ai có liên kết')"
+              placeholder="Dán link ảnh hoặc bấm 'Tải ảnh từ máy' để lưu vào VPS"
               disabled={isPending}
               required
             />
             <p className="text-[11px] text-[#74746E] mt-1">
-              💡 Hỗ trợ dán link Google Drive chia sẻ (hệ thống tự động chuyển đổi sang ảnh banner).
+              💡 Bấm <strong>Tải ảnh từ máy</strong> để lưu trực tiếp lên VPS hoặc dán link Google Drive/Unsplash.
             </p>
             {imageUrl && (
               <div className="mt-2 relative rounded-lg bg-[#111111] border border-[#E7E7E3] overflow-hidden aspect-[16/7] flex items-center justify-center">

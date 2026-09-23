@@ -41,3 +41,7 @@ scratch_cf.yml
 # cloudflare / opennext
 .open-next/
 .wrangler/
+
+# uploaded files
+/public/uploads/*
+!/public/uploads/.gitkeep
