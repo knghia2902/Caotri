@@ -41,10 +41,10 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 
 function getCategoryIcon(slug: string) {
   if (CATEGORY_ICONS[slug]) return CATEGORY_ICONS[slug];
+  if (slug.includes("lot-chuot") || slug.includes("mousepad")) return <Square className="w-4 h-4 stroke-[1.75px]" />;
   if (slug.includes("tai-nghe") || slug.includes("audio")) return <Headphones className="w-4 h-4 stroke-[1.75px]" />;
   if (slug.includes("chuot")) return <Mouse className="w-4 h-4 stroke-[1.75px]" />;
   if (slug.includes("ban-phim")) return <Keyboard className="w-4 h-4 stroke-[1.75px]" />;
-  if (slug.includes("lot-chuot") || slug.includes("mousepad")) return <Square className="w-4 h-4 stroke-[1.75px]" />;
   if (slug.includes("man-hinh") || slug.includes("gia-do")) return <Monitor className="w-4 h-4 stroke-[1.75px]" />;
   return <Layers className="w-4 h-4 stroke-[1.75px]" />;
 }
@@ -112,15 +112,15 @@ export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
       onMouseEnter={handleMouseEnterTrigger}
       onMouseLeave={handleMouseLeaveTrigger}
     >
-      {/* Trigger Button */}
+      {/* Trigger Button - Thêm khung theo yêu cầu */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        className={`flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg text-sm font-semibold transition-all duration-150 focus:outline-none ${
+        className={`flex items-center gap-2 h-10 px-3.5 rounded-xl border transition-all duration-150 focus:outline-none text-sm font-medium ${
           isOpen
-            ? "bg-[#F3F3F1] text-[#111]"
-            : "text-[#111] hover:text-[#74746E] hover:bg-[#F7F7F5]"
+            ? "border-[#111] bg-[#FAFAFA] text-[#111] shadow-sm"
+            : "border-[#D5D5D0] bg-white text-[#111] hover:border-[#111]"
         }`}
       >
         <Layers className="w-4 h-4 stroke-[1.75px] text-[#111]" />
@@ -192,8 +192,8 @@ export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
               </div>
             </div>
 
-            {/* Right Area: Mega Sub-menu Panels (Styled identically to user screenshot) */}
-            <div className="flex-1 p-7 bg-white min-h-[380px] flex flex-col justify-between">
+            {/* Right Area: Mega Sub-menu Panels */}
+            <div className="flex-1 p-7 bg-white">
               {activeConfig ? (
                 <div className="space-y-6">
                   {/* Top Bar: Title & "Xem tất cả >" link */}
@@ -262,16 +262,6 @@ export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
                   </Link>
                 </div>
               )}
-
-              {/* Bottom Quick Help / Zalo Consultation Notice */}
-              <div className="pt-4 mt-6 border-t border-[#F0F0EE] flex items-center justify-between text-xs text-[#74746E]">
-                <span>
-                  🔥 Cần tìm gear theo yêu cầu riêng? Liên hệ ngay để nhận tư vấn trực tiếp.
-                </span>
-                <span className="font-medium text-[#111]">
-                  Giao nhanh toàn quốc • Bảo hành chính hãng
-                </span>
-              </div>
             </div>
           </div>
         </div>

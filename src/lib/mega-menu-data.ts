@@ -103,8 +103,12 @@ export function getMegaMenuConfig(slug: string, customTitle?: string): CategoryM
     };
   }
 
-  // 2. CHUỘT GAMING
-  if (normSlug.includes("chuot")) {
+  // 2. CHUỘT GAMING (Loại trừ lót chuột / mousepad)
+  if (
+    (normSlug.includes("chuot") || normSlug.includes("mouse")) &&
+    !normSlug.includes("lot-chuot") &&
+    !normSlug.includes("pad")
+  ) {
     const baseSlug = slug;
     return {
       slug: baseSlug,
