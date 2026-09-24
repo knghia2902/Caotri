@@ -14,12 +14,6 @@ import {
   getStorefrontCategories,
   getStorefrontSettings,
 } from "@/lib/storefront-data";
-import {
-  ShieldCheck,
-  Truck,
-  RotateCcw,
-  Headphones,
-} from "lucide-react";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -187,26 +181,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 inStock={product.inStock}
                 zaloUrl={settings.zalo || settings.zaloUrl}
               />
-            </div>
-
-            {/* Hộp Cam Kết Dịch Vụ Khách Hàng (Assurance Box) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-[#E7E7E3]">
-              <div className="flex flex-col items-center text-center gap-2">
-                <ShieldCheck className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
-                <span className="text-xs text-[#555550]">Chính hãng 100%</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2">
-                <RotateCcw className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
-                <span className="text-xs text-[#555550]">Bảo hành 1 đổi 1</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2">
-                <Truck className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
-                <span className="text-xs text-[#555550]">Giao hàng toàn quốc</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2">
-                <Headphones className="w-6 h-6 text-[#74746E]" strokeWidth={1.5} />
-                <span className="text-xs text-[#555550]">Hỗ trợ 24/7</span>
-              </div>
             </div>
           </div>
         </div>
