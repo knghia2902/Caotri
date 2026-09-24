@@ -39,12 +39,12 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: "Không tìm thấy sản phẩm | CaoTri Gear",
+      title: "Không tìm thấy sản phẩm | TringuyenGear",
     };
   }
 
   return {
-    title: `${product.name} | CaoTri Gaming Gear`,
+    title: `${product.name} | TringuyenGear`,
     description: product.description ? product.description.slice(0, 160) : "Sản phẩm gaming gear chính hãng",
   };
 }
@@ -95,7 +95,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col">
-      <StorefrontHeader categories={categories} hotline={settings.hotline} />
+      <StorefrontHeader
+        categories={categories}
+        hotline={settings.hotline}
+        logoUrl={settings.logo_url || settings.logoUrl}
+        shopName={settings.shop_name || settings.shopName}
+      />
 
       <main className="flex-1 max-w-[1360px] mx-auto w-full px-4 sm:px-8 py-8 space-y-12">
         {/* Breadcrumb Navigation */}

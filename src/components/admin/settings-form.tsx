@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Phone, MessageSquare, Store, MapPin, Mail, Save, Loader2, ShieldCheck } from "lucide-react";
+import { Phone, MessageSquare, Store, MapPin, Mail, Save, Loader2, ShieldCheck, Image as ImageIcon, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateSettings } from "@/app/actions/setting";
+import { ImageUploader } from "@/components/admin/image-uploader";
 
 interface SettingsFormProps {
   initialSettings: Record<string, string>;
@@ -13,10 +14,11 @@ interface SettingsFormProps {
 
 export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const [formData, setFormData] = useState<Record<string, string>>({
+    logo_url: initialSettings.logo_url || initialSettings.logoUrl || initialSettings.logo || "/logo.png",
     hotline: initialSettings.hotline || "",
     zalo: initialSettings.zalo || initialSettings.zaloUrl || "",
     facebook: initialSettings.facebook || initialSettings.facebookUrl || "",
-    shop_name: initialSettings.shop_name || initialSettings.shopName || "Cao Trí Gaming Gear",
+    shop_name: initialSettings.shop_name || initialSettings.shopName || "TringuyenGear",
     address: initialSettings.address || "",
     email: initialSettings.email || "",
   });
@@ -33,7 +35,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     startTransition(async () => {
       const res = await updateSettings(formData);
       if (res.success) {
-        toast.success("Đã cập nhật cài đặt cửa hàng thành công!");
+        toast.success("Đã cập nhật cài đặt và logo cửa hàng thành công!");
       } else {
         toast.error(res.error || "Không thể lưu cài đặt");
       }
@@ -42,7 +44,78 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
-      {/* Block 1: Kênh liên hệ & Chốt đơn */}
+      {/* Block 1: Logo & Nhận diện thương hiệu */}
+      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
+          <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-[#111]/30 flex items-center justify-center text-[#111]">
+            <ImageIcon className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-[#111]">
+              Logo & Nhận diện thương hiệu
+            </h2>
+            <p className="text-xs text-[#74746E]">
+              Logo chính thức hiển thị trên Header, Footer, trang Đăng nhập và menu quản trị
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          {/* Logo Preview Box */}
+          <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-[#D5D5D0] bg-[#FAFAFA] flex items-center justify-center p-2 overflow-hidden flex-shrink-0 relative group shadow-xs">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={formData.logo_url || "/logo.png"}
+              alt="Logo Shop"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/logo.png";
+              }}
+            />
+          </div>
+
+          <div className="flex-1 space-y-3 w-full">
+            <div className="flex flex-wrap items-center gap-2">
+              <ImageUploader
+                compact={true}
+                multiple={false}
+                buttonText="Tải logo từ máy"
+                onUploadSuccess={(urls) => handleChange("logo_url", urls[0])}
+                disabled={isPending}
+              />
+              {formData.logo_url !== "/logo.png" && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => handleChange("logo_url", "/logo.png")}
+                  disabled={isPending}
+                  className="text-xs h-10 px-3 text-[#74746E] hover:text-[#111] gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Khôi phục logo mặc định
+                </Button>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
+                Đường dẫn URL Logo
+              </label>
+              <Input
+                value={formData.logo_url}
+                onChange={(e) => handleChange("logo_url", e.target.value)}
+                placeholder="/logo.png hoặc dán link ảnh logo"
+                disabled={isPending}
+              />
+              <p className="text-[11px] text-[#A3A39D]">
+                💡 Bấm <strong>Tải logo từ máy</strong> để lưu trực tiếp lên VPS hoặc nhập đường dẫn ảnh (hỗ trợ PNG trong suốt, WEBP, SVG, JPG).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Block 2: Kênh liên hệ & Chốt đơn */}
       <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
           <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-[#111]/30 flex items-center justify-center text-[#111]">
@@ -106,7 +179,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <Input
               value={formData.facebook}
               onChange={(e) => handleChange("facebook", e.target.value)}
-              placeholder="VD: https://facebook.com/caotrigear hoặc https://m.me/caotrigear"
+              placeholder="VD: https://facebook.com/tringuyengear hoặc https://m.me/tringuyengear"
               disabled={isPending}
             />
             <p className="text-[11px] text-[#74746E] mt-1">
@@ -116,7 +189,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         </div>
       </div>
 
-      {/* Block 2: Thông tin cửa hàng */}
+      {/* Block 3: Thông tin cửa hàng */}
       <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
           <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-[#21A366]">
@@ -142,7 +215,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <Input
               value={formData.shop_name}
               onChange={(e) => handleChange("shop_name", e.target.value)}
-              placeholder="Cao Trí Gaming Gear"
+              placeholder="TringuyenGear"
               disabled={isPending}
             />
           </div>
@@ -157,7 +230,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               type="email"
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
-              placeholder="contact@caotri.vn"
+              placeholder="contact@tringuyengear.vn"
               disabled={isPending}
             />
           </div>

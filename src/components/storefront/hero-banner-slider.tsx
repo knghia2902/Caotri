@@ -72,7 +72,7 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
             className="w-full h-full object-cover object-center"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
-                "https://placehold.co/1200x500/F3F3F1/74746E?text=CaoTri+Gaming+Gear";
+                "https://placehold.co/1200x500/F3F3F1/74746E?text=TringuyenGear";
             }}
           />
 

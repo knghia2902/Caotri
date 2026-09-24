@@ -24,8 +24,8 @@ export async function generateMetadata({
 }: SuccessPageProps): Promise<Metadata> {
   const { orderNumber } = await params;
   return {
-    title: `Đặt hàng thành công #${orderNumber} | CaoTri Gaming Gear`,
-    description: "Cảm ơn bạn đã đặt hàng tại CaoTri Gaming Gear.",
+    title: `Đặt hàng thành công #${orderNumber} | TringuyenGear`,
+    description: "Cảm ơn bạn đã đặt hàng tại TringuyenGear.",
   };
 }
 
@@ -52,7 +52,12 @@ export default async function OrderSuccessPage({ params }: SuccessPageProps) {
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">
-      <StorefrontHeader categories={categories} hotline={settings.hotline} />
+      <StorefrontHeader
+        categories={categories}
+        hotline={settings.hotline}
+        logoUrl={settings.logo_url || settings.logoUrl}
+        shopName={settings.shop_name || settings.shopName}
+      />
 
       <main className="flex-1 max-w-[840px] w-full mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
         {/* Success Card Header */}

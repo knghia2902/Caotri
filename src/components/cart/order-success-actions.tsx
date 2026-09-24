@@ -33,7 +33,7 @@ export function OrderSuccessActions({
   totalAmount,
   items,
   zaloUrl = "https://zalo.me/0987654321",
-  facebookUrl = "https://facebook.com/caotrigear",
+  facebookUrl = "https://facebook.com/tringuyengear",
   hotline = "0987.654.321",
 }: OrderSuccessActionsProps) {
   const [hasCopied, setHasCopied] = useState(false);
@@ -49,7 +49,7 @@ export function OrderSuccessActions({
 
     const notesStr = customerNotes?.trim() ? `\n- Ghi chú: ${customerNotes.trim()}` : "";
 
-    return `Xin chào CaoTrí Gear! Tôi muốn chốt đơn hàng vừa đặt trên website:
+    return `Xin chào TringuyenGear! Tôi muốn chốt đơn hàng vừa đặt trên website:
 - Mã đơn: #${orderNumber}
 - Khách hàng: ${customerName} - SĐT: ${customerPhone}
 - Địa chỉ nhận: ${customerAddress}${notesStr}

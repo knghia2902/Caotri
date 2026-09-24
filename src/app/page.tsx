@@ -31,6 +31,8 @@ export default async function HomePage() {
       <StorefrontHeader
         categories={categories}
         hotline={settings.hotline}
+        logoUrl={settings.logo_url || settings.logoUrl}
+        shopName={settings.shop_name || settings.shopName}
       />
 
       {/* Main Content */}

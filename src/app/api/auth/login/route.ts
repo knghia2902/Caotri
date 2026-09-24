@@ -19,13 +19,22 @@ export async function POST(req: Request) {
       );
     }
 
+    let user = null;
     if (email === "admin") {
-      email = "admin@caotri.vn";
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: "admin@tringuyengear.vn" },
+            { email: "admin@caotri.vn" },
+            { role: "ADMIN" },
+          ],
+        },
+      });
+    } else {
+      user = await prisma.user.findUnique({
+        where: { email },
+      });
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
 
     if (!user) {
       return NextResponse.json(

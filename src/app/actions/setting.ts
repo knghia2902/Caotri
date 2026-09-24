@@ -18,6 +18,8 @@ export async function updateSettings(data: Record<string, string>) {
     if (data.shopName !== undefined) mapped.shop_name = data.shopName;
     if (data.zaloUrl !== undefined) mapped.zalo = data.zaloUrl;
     if (data.facebookUrl !== undefined) mapped.facebook = data.facebookUrl;
+    if (data.logo_url !== undefined) mapped.logoUrl = data.logo_url;
+    if (data.logoUrl !== undefined) mapped.logo_url = data.logoUrl;
 
     const updates = Object.entries(mapped).map(([key, value]) =>
       prisma.siteSetting.upsert({

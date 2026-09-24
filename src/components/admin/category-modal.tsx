@@ -175,7 +175,7 @@ export function CategoryModal({
               className="h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
             />
             <p className="text-[11px] text-[#A3A39D] mt-1">
-              Đường dẫn thân thiện SEO (ví dụ: caotri.vn/category/{slug || "slug-mau"})
+              Đường dẫn thân thiện SEO (ví dụ: tringuyengear.vn/category/{slug || "slug-mau"})
             </p>
           </div>
 

@@ -93,7 +93,12 @@ export default async function CategoryPage({
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">
-      <StorefrontHeader categories={categories} hotline={settings.hotline} />
+      <StorefrontHeader
+        categories={categories}
+        hotline={settings.hotline}
+        logoUrl={settings.logo_url || settings.logoUrl}
+        shopName={settings.shop_name || settings.shopName}
+      />
 
       <main className="flex-1 w-full max-w-[1360px] mx-auto px-8 py-10 space-y-8">
         {/* Breadcrumbs */}

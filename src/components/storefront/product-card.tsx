@@ -52,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
           className="w-full h-full object-contain"
           onError={(e) => {
             (e.target as HTMLImageElement).src =
-              "https://placehold.co/400x400/F3F3F1/A3A39D?text=CaoTri+Gear";
+              "https://placehold.co/400x400/F3F3F1/A3A39D?text=TringuyenGear";
           }}
         />
 

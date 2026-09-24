@@ -26,12 +26,16 @@ export interface CategoryHeaderItem {
 interface StorefrontHeaderProps {
   categories?: CategoryHeaderItem[];
   hotline?: string;
+  logoUrl?: string;
+  shopName?: string;
   searchSlot?: React.ReactNode;
 }
 
 export function StorefrontHeader({
   categories = [],
   hotline = "0987.654.321",
+  logoUrl = "/logo.png",
+  shopName = "TringuyenGear",
   searchSlot,
 }: StorefrontHeaderProps) {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
@@ -46,12 +50,17 @@ export function StorefrontHeader({
         <div className="flex items-center gap-6 lg:gap-8 flex-shrink-0">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
-            <div className="w-10 h-10 flex items-center justify-center text-[#111]">
-              <Gamepad2 className="w-6 h-6 stroke-[1.5px]" />
+            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoUrl || "/logo.png"}
+                alt={shopName || "TringuyenGear"}
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <span className="font-semibold text-lg tracking-tight text-[#111]">
-                Caotri Gear
+                {shopName || "TringuyenGear"}
               </span>
             </div>
           </Link>

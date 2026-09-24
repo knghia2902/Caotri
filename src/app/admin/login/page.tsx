@@ -4,8 +4,8 @@ import { LoginForm } from "@/components/admin/login-form";
 import { ArrowLeft, Gamepad2, Shield } from "lucide-react";
 
 export const metadata = {
-  title: "Cổng Quản Trị | CaoTri Gaming Gear",
-  description: "Trang đăng nhập và bảo mật phân hệ quản trị CaoTri Gaming Gear",
+  title: "Cổng Quản Trị | TringuyenGear",
+  description: "Trang đăng nhập và bảo mật phân hệ quản trị TringuyenGear",
 };
 
 export default function AdminLoginPage() {
@@ -25,14 +25,15 @@ export default function AdminLoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-[420px]">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#111] text-white shadow-md mb-4 ring-4 ring-[#E7E7E3]/60">
-            <Gamepad2 className="w-6 h-6" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm mb-4 p-1.5 ring-4 ring-[#E7E7E3]/60 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="TringuyenGear" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-[#111]">
             Đăng nhập Quản trị
           </h1>
-          <p className="text-sm text-[#74746E] mt-1.5">
-            Cao Trí Gaming Gear
+          <p className="text-sm font-semibold text-[#555] mt-1.5">
+            TringuyenGear
           </p>
         </div>
 

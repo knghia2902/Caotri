@@ -13,7 +13,7 @@ export default async function AdminProfilePage() {
   }
 
   const displayName =
-    session.name === "Quản trị viên CaoTri" ? "Admin" : session.name || "Admin";
+    session.name === "Quản trị viên CaoTri" || session.name === "Quản trị viên TringuyenGear" ? "Admin" : session.name || "Admin";
 
   return (
     <div className="space-y-8 max-w-4xl">

@@ -18,14 +18,14 @@ interface EditProfileModalProps {
 export function EditProfileModal({ isOpen, onClose, session }: EditProfileModalProps) {
   const router = useRouter();
   const [name, setName] = useState(
-    session.name === "Quản trị viên CaoTri" ? "Admin" : session.name || "Admin"
+    session.name === "Quản trị viên CaoTri" || session.name === "Quản trị viên TringuyenGear" ? "Admin" : session.name || "Admin"
   );
   const [email, setEmail] = useState(session.email || "");
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (isOpen) {
-      setName(session.name === "Quản trị viên CaoTri" ? "Admin" : session.name || "Admin");
+      setName(session.name === "Quản trị viên CaoTri" || session.name === "Quản trị viên TringuyenGear" ? "Admin" : session.name || "Admin");
       setEmail(session.email || "");
     }
   }, [isOpen, session]);

@@ -7,12 +7,13 @@ interface StorefrontFooterProps {
 }
 
 export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
-  const shopName = settings.shop_name || settings.shopName || "Cao Trí Gaming Gear";
+  const logoUrl = settings.logo_url || settings.logoUrl || "/logo.png";
+  const shopName = settings.shop_name || settings.shopName || "TringuyenGear";
   const hotline = settings.hotline || "0987.654.321";
   const zalo = settings.zalo || settings.zaloUrl || "https://zalo.me/0987654321";
   const facebook = settings.facebook || settings.facebookUrl || "https://facebook.com";
   const address = settings.address || "123 Đường Công Nghệ, Q. Cầu Giấy, Hà Nội";
-  const email = settings.email || "support@caotri.vn";
+  const email = settings.email || "support@tringuyengear.vn";
 
   return (
     <footer className="bg-[#111111] text-[#A3A39D] text-sm">
@@ -24,11 +25,16 @@ export function StorefrontFooter({ settings = {} }: StorefrontFooterProps) {
         {/* Col 1: Shop Brand */}
         <div className="space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 flex items-center justify-center text-white">
-              <Gamepad2 className="w-6 h-6 stroke-[1.5px]" />
+            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 bg-white p-0.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoUrl}
+                alt={shopName}
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="font-semibold text-lg tracking-tight text-white">
-              Caotri Gear
+              {shopName}
             </span>
           </div>
           <p className="text-sm leading-relaxed">

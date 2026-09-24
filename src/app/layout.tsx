@@ -5,8 +5,13 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin", "vietnamese"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "CaoTri Gaming Gear & Phụ Kiện Công Nghệ",
-  description: "Cửa hàng chuyên cung cấp bàn phím cơ, chuột gaming, tai nghe và phụ kiện máy tính chính hãng chất lượng cao.",
+  title: "TringuyenGear - Gaming Gear & Phụ Kiện Công Nghệ Chính Hãng",
+  description: "TringuyenGear chuyên cung cấp bàn phím cơ, chuột gaming, tai nghe và phụ kiện máy tính chính hãng chất lượng cao.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

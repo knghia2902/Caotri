@@ -35,14 +35,23 @@ export async function loginAction(
   }
 
   // Hỗ trợ đăng nhập trực tiếp bằng tài khoản "admin" hoặc email
-  if (email === "admin") {
-    email = "admin@caotri.vn";
-  }
-
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    let user = null;
+    if (email === "admin") {
+      user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: "admin@tringuyengear.vn" },
+            { email: "admin@caotri.vn" },
+            { role: "ADMIN" },
+          ],
+        },
+      });
+    } else {
+      user = await prisma.user.findUnique({
+        where: { email },
+      });
+    }
 
     if (!user) {
       return {

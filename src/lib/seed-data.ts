@@ -442,10 +442,14 @@ export const initialBanners = [
 ];
 
 export const initialSiteSettings = [
-  { key: "shopName", value: "CaoTri Gaming Gear" },
+  { key: "shopName", value: "TringuyenGear" },
+  { key: "shop_name", value: "TringuyenGear" },
+  { key: "logoUrl", value: "/logo.png" },
+  { key: "logo_url", value: "/logo.png" },
   { key: "hotline", value: "0988.123.456" },
   { key: "zaloUrl", value: "https://zalo.me/0988123456" },
-  { key: "facebookUrl", value: "https://facebook.com/caotrigear" },
+  { key: "facebookUrl", value: "https://facebook.com/tringuyengear" },
+  { key: "email", value: "contact@tringuyengear.vn" },
   { key: "address", value: "Số 123 Đường Công Nghệ, Quận Cầu Giấy, TP. Hà Nội" },
   { key: "introText", value: "Chuyên cung cấp chuột gaming, bàn phím cơ, tai nghe máy tính chính hãng uy tín." },
 ];

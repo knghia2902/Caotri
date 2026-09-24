@@ -90,13 +90,14 @@ export function AdminSidebar({
         )}
       >
         <Link href="/admin" className="flex items-center gap-3 overflow-hidden">
-          <div className="w-8 h-8 rounded-lg border border-white/20 flex items-center justify-center text-white shrink-0">
-            <Gamepad2 className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-white flex items-center justify-center p-0.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="TringuyenGear" className="w-full h-full object-contain" />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col leading-none whitespace-nowrap">
               <span className="font-semibold text-base tracking-wide text-white">
-                Caotri Gear
+                TringuyenGear
               </span>
               <span className="text-[10px] text-white/50 tracking-wider mt-1 uppercase">
                 Admin Panel

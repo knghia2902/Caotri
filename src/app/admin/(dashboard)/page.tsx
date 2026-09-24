@@ -19,7 +19,7 @@ import { computeDailyRevenue } from "@/lib/order-analytics";
 import { RevenueBarChart } from "@/components/admin/revenue-bar-chart";
 
 export const metadata = {
-  title: "Dashboard Quản trị | CaoTri Gaming Gear",
+  title: "Dashboard Quản trị | TringuyenGear",
 };
 
 export default async function AdminDashboardPage() {
@@ -153,7 +153,7 @@ export default async function AdminDashboardPage() {
               Xin chào, {session?.name}!
             </h1>
             <p className="text-sm text-[#74746E] mt-1">
-              Hệ thống vận hành phân hệ thương mại điện tử CaoTri Gaming Gear.
+              Hệ thống vận hành phân hệ thương mại điện tử TringuyenGear.
             </p>
           </div>
 

@@ -498,10 +498,10 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
         {/* Print Header */}
         <div className="border-b-2 border-black pb-4 text-center space-y-1">
           <div className="text-base font-extrabold uppercase tracking-wide">
-            CAOTRI GAMING GEAR & TECH ACCESSORIES
+            TRINGUYENGEAR - GAMING GEAR & TECH ACCESSORIES
           </div>
           <div className="text-xs font-semibold">
-            Hotline: 0909.123.456 &bull; Website: caotri.vn
+            Hotline: 0987.654.321 &bull; Website: tringuyengear.vn
           </div>
           <div className="text-sm font-black uppercase mt-2">
             PHIẾU GIAO HÀNG & THU HỘ TIỀN (COD)

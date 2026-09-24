@@ -260,7 +260,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 disabled={isPending}
               />
               <p className="text-[11px] text-[#74746E] mt-1">
-                Đường dẫn tĩnh cho sản phẩm: caotri.vn/products/{slug || "slug-mau"}
+                Đường dẫn tĩnh cho sản phẩm: tringuyengear.vn/products/{slug || "slug-mau"}
               </p>
             </div>
 

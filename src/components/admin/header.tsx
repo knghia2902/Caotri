@@ -41,7 +41,7 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const displayName =
-    session.name === "Quản trị viên CaoTri" ? "Admin" : session.name || "Admin";
+    session.name === "Quản trị viên CaoTri" || session.name === "Quản trị viên TringuyenGear" ? "Admin" : session.name || "Admin";
 
   // Đóng dropdown khi click ra ngoài
   useEffect(() => {

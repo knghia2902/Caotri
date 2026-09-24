@@ -24,13 +24,13 @@ async function main() {
   console.log("🧹 Đã làm sạch các bảng dữ liệu.");
 
   // 2. Tạo tài khoản Admin & Staff
-  const adminPasswordHash = await bcrypt.hash("admin123@", 10);
+  const adminPasswordHash = await bcrypt.hash("admin", 10);
   const staffPasswordHash = await bcrypt.hash("staff123@", 10);
 
   const adminUser = await prisma.user.create({
     data: {
-      email: "admin@caotri.vn",
-      name: "Quản trị viên CaoTri",
+      email: "admin@tringuyengear.vn",
+      name: "Quản trị viên TringuyenGear",
       password: adminPasswordHash,
       role: "ADMIN",
     },
@@ -38,7 +38,7 @@ async function main() {
 
   const staffUser = await prisma.user.create({
     data: {
-      email: "staff@caotri.vn",
+      email: "staff@tringuyengear.vn",
       name: "Nhân viên Bán hàng",
       password: staffPasswordHash,
       role: "STAFF",
