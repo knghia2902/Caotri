@@ -124,7 +124,7 @@ export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
         }`}
       >
         <Layers className="w-4 h-4 stroke-[1.75px] text-[#111]" />
-        <span>Danh mục sản phẩm</span>
+        <span>Danh mục</span>
         <ChevronDown
           className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""

@@ -66,23 +66,8 @@ export function StorefrontHeader({
             </div>
           </Link>
 
-          {/* Desktop Nav Links with Mega Menu */}
-          <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-[#111]">
-            <Link
-              href="/"
-              className="hover:text-[#74746E] transition-colors py-1"
-            >
-              Trang chủ
-            </Link>
-            <Link
-              href="/products"
-              prefetch={false}
-              className="hover:text-[#74746E] transition-colors py-1"
-            >
-              Tất cả sản phẩm
-            </Link>
-
-            {/* Mega Menu Dropdown */}
+          {/* Desktop Nav: Chỉ để Danh mục trên header */}
+          <nav className="hidden lg:flex items-center text-sm font-medium text-[#111]">
             <MegaMenu categories={categories} />
           </nav>
         </div>
@@ -137,26 +122,9 @@ export function StorefrontHeader({
             {searchSlot || <InstantSearch />}
           </div>
 
-          <div className="space-y-1">
-            <Link
-              href="/"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-[#111] hover:bg-[#FAFAFA]"
-            >
-              Trang chủ
-            </Link>
-            <Link
-              href="/products"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-[#111] hover:bg-[#FAFAFA]"
-            >
-              Tất cả sản phẩm
-            </Link>
-          </div>
-
-          <div className="pt-2 border-t border-[#E7E7E3]">
-            <p className="px-3 text-xs font-semibold uppercase tracking-wider text-[#8E8E87] mb-2">
-              Danh mục & Nhóm sản phẩm
+          <div>
+            <p className="px-1 text-xs font-semibold uppercase tracking-wider text-[#8E8E87] mb-2">
+              Danh mục
             </p>
             <div className="space-y-1.5">
               {categories.map((cat) => {
