@@ -134,8 +134,8 @@ export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
 
       {/* Flyout Mega Menu Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 pt-2 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
-          <div className="flex bg-white rounded-2xl border border-[#E7E7E3] shadow-[0_20px_50px_rgba(0,0,0,0.12)] overflow-hidden min-w-[940px] max-w-[1040px]">
+        <div className="absolute top-full left-0 lg:-left-12 xl:left-0 pt-2 z-50 animate-in fade-in-0 zoom-in-95 duration-150">
+          <div className="flex bg-white rounded-2xl border border-[#E7E7E3] shadow-[0_20px_50px_rgba(0,0,0,0.12)] overflow-hidden min-w-[920px] max-w-[1040px]">
             {/* Left Column: Category navigation list */}
             <div className="w-[230px] bg-[#FAFAFA] border-r border-[#EBEBEB] p-2.5 space-y-1 shrink-0">
               <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#8E8E87]">
