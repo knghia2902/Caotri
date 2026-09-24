@@ -76,19 +76,6 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
             }}
           />
 
-          {/* Banner Title Caption */}
-          <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 z-20 max-w-xl">
-            <h2 className="text-base sm:text-xl md:text-2xl font-semibold text-[#111] bg-white/95 backdrop-blur-md px-4 py-2 rounded-xl mb-3 inline-block shadow-sm">
-              {b.title}
-            </h2>
-            {b.linkUrl && (
-              <div>
-                <span className="inline-flex items-center justify-center bg-[#111] text-white h-10 px-5 rounded-lg text-xs sm:text-sm font-medium hover:bg-black transition-colors shadow-sm">
-                  Xem ngay
-                </span>
-              </div>
-            )}
-          </div>
         </div>
       ))}
 
