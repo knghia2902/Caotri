@@ -13,6 +13,7 @@ import { ProductCard } from "@/components/storefront/product-card";
 import {
   getStorefrontCategories,
   getStorefrontSettings,
+  extractMegaMenuOverrides,
 } from "@/lib/storefront-data";
 
 interface ProductPageProps {
@@ -93,6 +94,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
       : null;
 
+  const megaMenuOverrides = extractMegaMenuOverrides(settings);
+
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col">
       <StorefrontHeader
@@ -100,6 +103,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         hotline={settings.hotline}
         logoUrl={settings.logo_url || settings.logoUrl}
         shopName={settings.shop_name || settings.shopName}
+        megaMenuOverrides={megaMenuOverrides}
       />
 
       <main className="flex-1 max-w-[1360px] mx-auto w-full px-4 sm:px-8 py-8 space-y-12">

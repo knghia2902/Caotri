@@ -48,6 +48,26 @@ export async function getStorefrontSettings(): Promise<Record<string, string>> {
 }
 
 /**
+ * Trích xuất cấu hình Mega Menu tùy chỉnh từ cài đặt website
+ */
+export function extractMegaMenuOverrides(
+  settings: Record<string, string>
+): Record<string, any> {
+  const overrides: Record<string, any> = {};
+  for (const [key, value] of Object.entries(settings)) {
+    if (key.startsWith("mega_menu_") && value) {
+      const slug = key.replace("mega_menu_", "");
+      try {
+        overrides[slug] = JSON.parse(value);
+      } catch (e) {
+        console.error("Invalid mega menu json in settings for key:", key, e);
+      }
+    }
+  }
+  return overrides;
+}
+
+/**
  * Lấy danh mục sản phẩm kèm số lượng sản phẩm
  */
 export async function getStorefrontCategories() {

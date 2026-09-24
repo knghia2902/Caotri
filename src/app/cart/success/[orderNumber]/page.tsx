@@ -11,6 +11,7 @@ import { OrderSuccessActions } from "@/components/cart/order-success-actions";
 import {
   getStorefrontCategories,
   getStorefrontSettings,
+  extractMegaMenuOverrides,
 } from "@/lib/storefront-data";
 
 export const dynamic = "force-dynamic";
@@ -50,6 +51,8 @@ export default async function OrderSuccessPage({ params }: SuccessPageProps) {
     getStorefrontSettings(),
   ]);
 
+  const megaMenuOverrides = extractMegaMenuOverrides(settings);
+
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">
       <StorefrontHeader
@@ -57,6 +60,7 @@ export default async function OrderSuccessPage({ params }: SuccessPageProps) {
         hotline={settings.hotline}
         logoUrl={settings.logo_url || settings.logoUrl}
         shopName={settings.shop_name || settings.shopName}
+        megaMenuOverrides={megaMenuOverrides}
       />
 
       <main className="flex-1 max-w-[840px] w-full mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">

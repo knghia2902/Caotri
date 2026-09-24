@@ -10,6 +10,7 @@ import {
   getFeaturedProducts,
   getNewProducts,
   getStorefrontSettings,
+  extractMegaMenuOverrides,
 } from "@/lib/storefront-data";
 
 export const revalidate = 60;
@@ -25,6 +26,8 @@ export default async function HomePage() {
       getStorefrontSettings(),
     ]);
 
+  const megaMenuOverrides = extractMegaMenuOverrides(settings);
+
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col">
       {/* Header */}
@@ -33,6 +36,7 @@ export default async function HomePage() {
         hotline={settings.hotline}
         logoUrl={settings.logo_url || settings.logoUrl}
         shopName={settings.shop_name || settings.shopName}
+        megaMenuOverrides={megaMenuOverrides}
       />
 
       {/* Main Content */}

@@ -26,6 +26,7 @@ interface StorefrontHeaderProps {
   logoUrl?: string;
   shopName?: string;
   searchSlot?: React.ReactNode;
+  megaMenuOverrides?: Record<string, any>;
 }
 
 export function StorefrontHeader({
@@ -34,6 +35,7 @@ export function StorefrontHeader({
   logoUrl = "/logo.png",
   shopName = "TringuyenGear",
   searchSlot,
+  megaMenuOverrides,
 }: StorefrontHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
@@ -47,8 +49,8 @@ export function StorefrontHeader({
     <header className="sticky top-0 z-50 w-full border-b border-[#E7E7E3] bg-[#FFFFFF]">
       {/* Main navigation bar */}
       <div className="max-w-[1360px] mx-auto px-4 h-[72px] flex items-center justify-between gap-4">
-        {/* Left Section: Brand Logo & Nút Danh mục liền mạch */}
-        <div className="flex items-center gap-3.5 lg:gap-5 flex-shrink-0">
+        {/* Left Section: Brand Logo - Dịch qua phải một chút theo yêu cầu */}
+        <div className="flex items-center pl-1 sm:pl-3 lg:pl-6 flex-shrink-0">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
@@ -65,20 +67,23 @@ export function StorefrontHeader({
               </span>
             </div>
           </Link>
-
-          {/* Desktop Nav: Nút Danh mục */}
-          <nav className="hidden lg:flex items-center text-sm font-medium text-[#111]">
-            <MegaMenu categories={categories} />
-          </nav>
         </div>
 
-        {/* Center Section: Search Slot rộng rãi, cân đối lấp đầy khoảng giữa */}
-        <div className="flex-1 max-w-2xl mx-2 lg:mx-6 hidden md:block">
-          {searchSlot || <InstantSearch />}
+        {/* Center: Cụm Danh mục đặt sát Thanh tìm kiếm, thanh tìm kiếm ngắn lại vừa vặn */}
+        <div className="flex-1 flex items-center justify-center gap-2.5 mx-2 lg:mx-4 hidden md:flex">
+          {/* Nút Danh mục sát ngay cạnh thanh tìm kiếm */}
+          <nav className="hidden lg:flex items-center text-sm font-medium text-[#111] flex-shrink-0">
+            <MegaMenu categories={categories} megaMenuOverrides={megaMenuOverrides} />
+          </nav>
+
+          {/* Thanh tìm kiếm ngắn lại (max-w-[460px]) */}
+          <div className="w-full max-w-[460px]">
+            {searchSlot || <InstantSearch />}
+          </div>
         </div>
 
         {/* Right Section: Actions: Hotline & Cart */}
-        <div className="flex items-center gap-2.5 flex-shrink-0">
+        <div className="flex items-center gap-2.5 pr-1 sm:pr-2 flex-shrink-0">
           {/* Hotline Quick Call */}
           <a
             href={`tel:${hotline.replace(/[^0-9]/g, "")}`}
@@ -128,7 +133,7 @@ export function StorefrontHeader({
             </p>
             <div className="space-y-1.5">
               {categories.map((cat) => {
-                const subConfig = getMegaMenuConfig(cat.slug);
+                const subConfig = getMegaMenuConfig(cat.slug, cat.name, megaMenuOverrides);
                 const isExpanded = expandedMobileCategory === cat.slug;
                 return (
                   <div key={cat.id} className="rounded-xl border border-[#EBEBEB] overflow-hidden bg-[#FAFAFA]">

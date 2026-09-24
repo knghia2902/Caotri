@@ -20,7 +20,19 @@ export interface CategoryMegaMenuConfig {
 }
 
 // Function to generate category mega menu based on the actual slug and category name
-export function getMegaMenuConfig(slug: string, customTitle?: string): CategoryMegaMenuConfig | undefined {
+export function getMegaMenuConfig(
+  slug: string,
+  customTitle?: string,
+  overrides?: Record<string, CategoryMegaMenuConfig>
+): CategoryMegaMenuConfig | undefined {
+  if (overrides) {
+    if (overrides[slug]) return overrides[slug];
+    const foundKey = Object.keys(overrides).find(
+      (k) => k.toLowerCase() === slug.toLowerCase()
+    );
+    if (foundKey && overrides[foundKey]) return overrides[foundKey];
+  }
+
   const normSlug = slug.toLowerCase();
 
   // 1. TAI NGHE / AUDIO

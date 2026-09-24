@@ -27,6 +27,7 @@ export interface CategoryHeaderItem {
 
 interface MegaMenuProps {
   categories: CategoryHeaderItem[];
+  megaMenuOverrides?: Record<string, CategoryMegaMenuConfig>;
   onNavigate?: () => void;
 }
 
@@ -49,7 +50,7 @@ function getCategoryIcon(slug: string) {
   return <Layers className="w-4 h-4 stroke-[1.75px]" />;
 }
 
-export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
+export function MegaMenu({ categories, megaMenuOverrides, onNavigate }: MegaMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSlug, setActiveSlug] = useState<string>(
     categories[0]?.slug || "tai-nghe-audio"
@@ -103,7 +104,11 @@ export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
   }, []);
 
   const activeCategory = categories.find((c) => c.slug === activeSlug);
-  const activeConfig: CategoryMegaMenuConfig | undefined = getMegaMenuConfig(activeSlug, activeCategory?.name);
+  const activeConfig: CategoryMegaMenuConfig | undefined = getMegaMenuConfig(
+    activeSlug,
+    activeCategory?.name,
+    megaMenuOverrides
+  );
 
   return (
     <div

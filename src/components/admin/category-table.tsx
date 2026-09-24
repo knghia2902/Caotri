@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Plus, Search, Edit3, Trash2, Layers, FolderKanban, Loader2, ExternalLink } from "lucide-react";
+import { Plus, Search, Edit3, Trash2, Layers, FolderKanban, Loader2, ExternalLink, Sliders } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { CategoryModal, type CategoryModalData } from "@/components/admin/category-modal";
+import { MegaMenuConfigModal } from "@/components/admin/mega-menu-config-modal";
 import { deleteCategory } from "@/app/actions/category";
 import { useRouter } from "next/navigation";
 
@@ -31,6 +32,8 @@ export function CategoryTable({ categories }: CategoryTableProps) {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryModalData | null>(null);
+  const [isMegaMenuModalOpen, setIsMegaMenuModalOpen] = useState(false);
+  const [megaMenuCategory, setMegaMenuCategory] = useState<{ id: string; name: string; slug: string } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -47,6 +50,15 @@ export function CategoryTable({ categories }: CategoryTableProps) {
   const handleAddNew = () => {
     setSelectedCategory(null);
     setIsModalOpen(true);
+  };
+
+  const handleOpenMegaMenu = (cat: CategoryWithCount) => {
+    setMegaMenuCategory({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+    });
+    setIsMegaMenuModalOpen(true);
   };
 
   const handleEdit = (cat: CategoryWithCount) => {
@@ -206,6 +218,16 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                       <div className="flex items-center justify-end gap-1.5">
                         <Button
                           size="sm"
+                          variant="outline"
+                          onClick={() => handleOpenMegaMenu(cat)}
+                          title="Cấu hình nhóm & liên kết Menu con (Mega Menu)"
+                          className="h-8 px-2.5 text-xs text-[#111] border-[#D5D5D0] hover:border-[#111] hover:bg-[#F3F3F1] flex items-center gap-1.5"
+                        >
+                          <Sliders className="w-3.5 h-3.5 text-[#111]" />
+                          <span>Menu con</span>
+                        </Button>
+                        <Button
+                          size="sm"
                           variant="ghost"
                           onClick={() => handleEdit(cat)}
                           title="Chỉnh sửa danh mục"
@@ -246,6 +268,16 @@ export function CategoryTable({ categories }: CategoryTableProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         category={selectedCategory}
+        onSuccess={() => {
+          router.refresh();
+        }}
+      />
+
+      {/* Mega Menu Config Modal */}
+      <MegaMenuConfigModal
+        isOpen={isMegaMenuModalOpen}
+        onClose={() => setIsMegaMenuModalOpen(false)}
+        category={megaMenuCategory}
         onSuccess={() => {
           router.refresh();
         }}

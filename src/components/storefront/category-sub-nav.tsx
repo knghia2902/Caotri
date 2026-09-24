@@ -7,10 +7,11 @@ import { getMegaMenuConfig } from "@/lib/mega-menu-data";
 interface CategorySubNavProps {
   categorySlug: string;
   categoryName: string;
+  overrides?: Record<string, any>;
 }
 
-export function CategorySubNav({ categorySlug, categoryName }: CategorySubNavProps) {
-  const config = getMegaMenuConfig(categorySlug, categoryName);
+export function CategorySubNav({ categorySlug, categoryName, overrides }: CategorySubNavProps) {
+  const config = getMegaMenuConfig(categorySlug, categoryName, overrides);
   if (!config) return null;
 
   return (

@@ -10,6 +10,7 @@ import { CategorySubNav } from "@/components/storefront/category-sub-nav";
 import {
   getStorefrontCategories,
   getStorefrontSettings,
+  extractMegaMenuOverrides,
 } from "@/lib/storefront-data";
 import { Package, X } from "lucide-react";
 
@@ -110,6 +111,8 @@ export default async function CategoryPage({
     },
   });
 
+  const megaMenuOverrides = extractMegaMenuOverrides(settings);
+
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col selection:bg-[#111] selection:text-white">
       <StorefrontHeader
@@ -117,6 +120,7 @@ export default async function CategoryPage({
         hotline={settings.hotline}
         logoUrl={settings.logo_url || settings.logoUrl}
         shopName={settings.shop_name || settings.shopName}
+        megaMenuOverrides={megaMenuOverrides}
       />
 
       <main className="flex-1 w-full max-w-[1360px] mx-auto px-4 sm:px-8 py-8 md:py-10 space-y-8">
@@ -137,6 +141,7 @@ export default async function CategoryPage({
         <CategorySubNav
           categorySlug={currentCategory.slug}
           categoryName={currentCategory.name}
+          overrides={megaMenuOverrides}
         />
 
         {/* Category Header & Sort */}
