@@ -18,16 +18,15 @@ export async function createBanner(data: BannerFormData) {
   try {
     await requireRole(["ADMIN", "STAFF"]);
 
-    if (!data.title || !data.title.trim()) {
-      return { success: false, error: "Tiêu đề banner không được để trống" };
-    }
     if (!data.imageUrl || !data.imageUrl.trim()) {
       return { success: false, error: "URL hình ảnh banner không được để trống" };
     }
 
+    const bannerTitle = data.title?.trim() || "Banner quảng cáo";
+
     const banner = await prisma.banner.create({
       data: {
-        title: data.title.trim(),
+        title: bannerTitle,
         imageUrl: normalizeImageUrl(data.imageUrl.trim()),
         linkUrl: data.linkUrl?.trim() || null,
         orderIndex: Number(data.orderIndex) || 0,
@@ -49,17 +48,16 @@ export async function updateBanner(id: string, data: BannerFormData) {
   try {
     await requireRole(["ADMIN", "STAFF"]);
 
-    if (!data.title || !data.title.trim()) {
-      return { success: false, error: "Tiêu đề banner không được để trống" };
-    }
     if (!data.imageUrl || !data.imageUrl.trim()) {
       return { success: false, error: "URL hình ảnh banner không được để trống" };
     }
 
+    const bannerTitle = data.title?.trim() || "Banner quảng cáo";
+
     const banner = await prisma.banner.update({
       where: { id },
       data: {
-        title: data.title.trim(),
+        title: bannerTitle,
         imageUrl: normalizeImageUrl(data.imageUrl.trim()),
         linkUrl: data.linkUrl?.trim() || null,
         orderIndex: Number(data.orderIndex) || 0,

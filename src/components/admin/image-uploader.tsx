@@ -116,16 +116,16 @@ export function ImageUploader({
           variant="outline"
           disabled={disabled || isUploading}
           onClick={() => fileInputRef.current?.click()}
-          className="gap-2 border-[#D5D5D0] hover:border-[#111] hover:text-[#111] text-xs h-10 px-3 whitespace-nowrap bg-white font-medium"
+          className="gap-1.5 border-[#D5D5D0] hover:border-[#111] hover:text-[#111] text-[11px] h-7.5 px-2.5 rounded-lg whitespace-nowrap bg-white font-medium shadow-none"
         >
           {isUploading ? (
             <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-600" />
+              <Loader2 className="w-3 h-3 animate-spin text-cyan-600" />
               Đang lưu VPS...
             </>
           ) : (
             <>
-              <UploadCloud className="w-4 h-4 text-cyan-600" />
+              <UploadCloud className="w-3.5 h-3.5 text-cyan-600" />
               {buttonText}
             </>
           )}

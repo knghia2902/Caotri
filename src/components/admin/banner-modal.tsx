@@ -61,12 +61,8 @@ export function BannerModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim()) {
-      toast.error("Vui lòng nhập tiêu đề banner");
-      return;
-    }
     if (!imageUrl.trim()) {
-      toast.error("Vui lòng nhập URL hình ảnh banner");
+      toast.error("Vui lòng nhập hoặc tải lên hình ảnh banner");
       return;
     }
 
@@ -126,14 +122,13 @@ export function BannerModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-              Tiêu đề Banner <span className="text-[#D94A4A]">*</span>
+              Tiêu đề Banner <span className="text-[11px] font-normal lowercase text-[#8E8E87]">(không bắt buộc)</span>
             </label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="VD: Siêu Phẩm Gaming Chuột Không Dây Mới Nhất 2026"
+              placeholder="VD: Siêu Phẩm Gaming Chuột Không Dây (tùy chọn)"
               disabled={isPending}
-              required
             />
           </div>
 
@@ -192,7 +187,7 @@ export function BannerModal({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 items-start">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
                 Thứ tự hiển thị
@@ -203,23 +198,30 @@ export function BannerModal({
                 onChange={(e) => setOrderIndex(parseInt(e.target.value) || 0)}
                 placeholder="0"
                 disabled={isPending}
+                className="h-10"
               />
               <p className="text-[11px] text-[#74746E] mt-1">Số nhỏ hiển thị trước</p>
             </div>
 
-            <div className="flex flex-col justify-end">
-              <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Trạng thái hiển thị
+              </label>
+              <label className="flex items-center gap-2.5 h-10 px-3 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors select-none">
                 <input
                   type="checkbox"
                   checked={isActive}
                   onChange={(e) => setIsActive(e.target.checked)}
                   disabled={isPending}
-                  className="rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
+                  className="w-4 h-4 rounded border-[#D5D5D0] text-[#111] focus:ring-0 focus:ring-offset-0"
                 />
                 <span className="text-xs font-semibold text-[#111]">
                   Hiển thị trên Slider
                 </span>
               </label>
+              <p className="text-[11px] text-transparent mt-1 select-none pointer-events-none">
+                &nbsp;
+              </p>
             </div>
           </div>
 
