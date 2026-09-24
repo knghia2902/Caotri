@@ -47,30 +47,33 @@ export function StorefrontHeader({
     <header className="sticky top-0 z-50 w-full border-b border-[#E7E7E3] bg-[#FFFFFF]">
       {/* Main navigation bar */}
       <div className="max-w-[1360px] mx-auto px-4 h-[72px] flex items-center justify-between gap-4">
-        {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
-          <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={logoUrl || "/logo.png"}
-              alt={shopName || "TringuyenGear"}
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div>
-            <span className="font-semibold text-lg tracking-tight text-[#111]">
-              {shopName || "TringuyenGear"}
-            </span>
-          </div>
-        </Link>
+        {/* Left Section: Brand Logo & Nút Danh mục liền mạch */}
+        <div className="flex items-center gap-3.5 lg:gap-5 flex-shrink-0">
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoUrl || "/logo.png"}
+                alt={shopName || "TringuyenGear"}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <span className="font-semibold text-lg tracking-tight text-[#111]">
+                {shopName || "TringuyenGear"}
+              </span>
+            </div>
+          </Link>
 
-        {/* Desktop Nav: Danh mục nằm giữa Logo và thanh tìm kiếm */}
-        <nav className="hidden lg:flex items-center text-sm font-medium text-[#111]">
-          <MegaMenu categories={categories} />
-        </nav>
+          {/* Desktop Nav: Nút Danh mục */}
+          <nav className="hidden lg:flex items-center text-sm font-medium text-[#111]">
+            <MegaMenu categories={categories} />
+          </nav>
+        </div>
 
-        {/* Center Section: Search Slot */}
-        <div className="flex-1 max-w-lg hidden md:block">
+        {/* Center Section: Search Slot rộng rãi, cân đối lấp đầy khoảng giữa */}
+        <div className="flex-1 max-w-2xl mx-2 lg:mx-6 hidden md:block">
           {searchSlot || <InstantSearch />}
         </div>
 

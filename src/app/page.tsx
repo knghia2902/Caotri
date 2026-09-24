@@ -36,7 +36,7 @@ export default async function HomePage() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 max-w-[1360px] w-full mx-auto px-8 py-16 md:py-20 space-y-20">
+      <main className="flex-1 max-w-[1360px] w-full mx-auto px-4 sm:px-8 pt-5 pb-16 space-y-12 md:space-y-16">
         {/* 1. Hero Banner Slider */}
         {banners.length > 0 && (
           <section>
