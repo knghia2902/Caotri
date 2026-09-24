@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Gamepad2,
   Search,
   ShoppingBag,
   Phone,
@@ -11,17 +10,15 @@ import {
   X,
   Layers,
   ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { InstantSearch } from "@/components/storefront/instant-search";
 import { useCartHydrated } from "@/stores/cart-store";
+import { MegaMenu, CategoryHeaderItem } from "@/components/storefront/mega-menu";
+import { getMegaMenuConfig } from "@/lib/mega-menu-data";
 
-export interface CategoryHeaderItem {
-  id: string;
-  name: string;
-  slug: string;
-}
+export type { CategoryHeaderItem };
 
 interface StorefrontHeaderProps {
   categories?: CategoryHeaderItem[];
@@ -38,9 +35,13 @@ export function StorefrontHeader({
   shopName = "TringuyenGear",
   searchSlot,
 }: StorefrontHeaderProps) {
-  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
   const { totalItems } = useCartHydrated();
+
+  const toggleMobileCategory = (slug: string) => {
+    setExpandedMobileCategory(expandedMobileCategory === slug ? null : slug);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#E7E7E3] bg-[#FFFFFF]">
@@ -65,8 +66,8 @@ export function StorefrontHeader({
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#111]">
+          {/* Desktop Nav Links with Mega Menu */}
+          <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-[#111]">
             <Link
               href="/"
               className="hover:text-[#74746E] transition-colors py-1"
@@ -81,35 +82,8 @@ export function StorefrontHeader({
               Tất cả sản phẩm
             </Link>
 
-            {/* Categories Dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => setIsCategoryDropdownOpen(true)}
-              onMouseLeave={() => setIsCategoryDropdownOpen(false)}
-            >
-              <button
-                type="button"
-                className="flex items-center gap-1 hover:text-[#74746E] transition-colors py-1 px-1 rounded-md focus:outline-none"
-              >
-                <span>Danh mục gear</span>
-                <ChevronDown className="w-4 h-4 opacity-70" />
-              </button>
-
-              {isCategoryDropdownOpen && (
-                <div className="absolute top-full left-0 w-56 rounded-lg bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.05)] p-2 z-50">
-                  {categories.map((cat) => (
-                    <Link
-                      key={cat.id}
-                      href={`/category/${cat.slug}`}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-[#111] hover:text-[#74746E] hover:bg-[#FAFAFA] transition-colors"
-                    >
-                      <Layers className="w-4 h-4 stroke-[1.5px]" />
-                      <span>{cat.name}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Mega Menu Dropdown */}
+            <MegaMenu categories={categories} />
           </nav>
         </div>
 
@@ -158,7 +132,7 @@ export function StorefrontHeader({
 
       {/* Mobile Drawer Navigation */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-[#E7E7E3] bg-[#FFFFFF] px-4 py-4 space-y-4">
+        <div className="lg:hidden border-t border-[#E7E7E3] bg-[#FFFFFF] px-4 py-4 space-y-4 max-h-[85vh] overflow-y-auto">
           <div className="md:hidden">
             {searchSlot || <InstantSearch />}
           </div>
@@ -167,34 +141,90 @@ export function StorefrontHeader({
             <Link
               href="/"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-[#111] hover:bg-[#FAFAFA] hover:text-[#74746E]"
+              className="block px-3 py-2 rounded-lg text-sm font-medium text-[#111] hover:bg-[#FAFAFA]"
             >
               Trang chủ
             </Link>
             <Link
               href="/products"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-[#111] hover:bg-[#FAFAFA] hover:text-[#74746E]"
+              className="block px-3 py-2 rounded-lg text-sm font-medium text-[#111] hover:bg-[#FAFAFA]"
             >
               Tất cả sản phẩm
             </Link>
           </div>
 
           <div className="pt-2 border-t border-[#E7E7E3]">
-            <p className="px-3 text-xs font-semibold uppercase tracking-tight text-[#A3A39D] mb-1">
-              Danh mục sản phẩm
+            <p className="px-3 text-xs font-semibold uppercase tracking-wider text-[#8E8E87] mb-2">
+              Danh mục & Nhóm sản phẩm
             </p>
-            <div className="grid grid-cols-2 gap-1">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/category/${cat.slug}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-3 py-1.5 rounded-lg text-sm text-[#74746E] hover:text-[#111] hover:bg-[#FAFAFA] transition-colors"
-                >
-                  {cat.name}
-                </Link>
-              ))}
+            <div className="space-y-1.5">
+              {categories.map((cat) => {
+                const subConfig = getMegaMenuConfig(cat.slug);
+                const isExpanded = expandedMobileCategory === cat.slug;
+                return (
+                  <div key={cat.id} className="rounded-xl border border-[#EBEBEB] overflow-hidden bg-[#FAFAFA]">
+                    <div className="flex items-center justify-between px-3 py-2.5">
+                      <Link
+                        href={`/category/${cat.slug}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-sm font-semibold text-[#111] hover:text-[#E11D48] flex-1"
+                      >
+                        {cat.name}
+                      </Link>
+                      {subConfig && (
+                        <button
+                          type="button"
+                          onClick={() => toggleMobileCategory(cat.slug)}
+                          className="p-1 rounded-md text-[#74746E] hover:text-[#111] focus:outline-none"
+                        >
+                          <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-200 ${
+                              isExpanded ? "rotate-180 text-[#111]" : ""
+                            }`}
+                          />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Collapsible Mobile Sub-items */}
+                    {isExpanded && subConfig && (
+                      <div className="px-3 pb-3 pt-1 border-t border-[#EAEAE7] bg-white space-y-3">
+                        <Link
+                          href={subConfig.allHref}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-[#E11D48]"
+                        >
+                          <span>Xem tất cả {cat.name}</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </Link>
+
+                        {subConfig.columns.map((col, cIdx) =>
+                          col.groups.map((group, gIdx) => (
+                            <div key={`${cIdx}-${gIdx}`} className="space-y-1">
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E87] block">
+                                {group.title}
+                              </span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {group.items.map((item, iIdx) => (
+                                  <Link
+                                    key={iIdx}
+                                    href={item.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="text-xs text-[#4B5563] bg-[#F7F7F5] px-2 py-1 rounded-md hover:text-[#E11D48]"
+                                  >
+                                    {item.label}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

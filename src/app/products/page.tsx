@@ -40,6 +40,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     where.OR = [
       { name: { contains: search } },
       { slug: { contains: search } },
+      { description: { contains: search } },
+      { specs: { contains: search } },
     ];
   }
 

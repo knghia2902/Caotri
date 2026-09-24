@@ -6,13 +6,14 @@ import { StorefrontFooter } from "@/components/storefront/storefront-footer";
 import { ProductCard } from "@/components/storefront/product-card";
 import { CatalogFilter } from "@/components/storefront/catalog-filter";
 import { CatalogSortSelect } from "@/components/storefront/catalog-sort-select";
+import { CategorySubNav } from "@/components/storefront/category-sub-nav";
 import {
   getStorefrontCategories,
   getStorefrontSettings,
 } from "@/lib/storefront-data";
-import { Package } from "lucide-react";
+import { Package, X } from "lucide-react";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface CategoryPageProps {
   params: Promise<{
@@ -23,6 +24,8 @@ interface CategoryPageProps {
     maxPrice?: string;
     inStock?: string;
     sort?: string;
+    search?: string;
+    q?: string;
   }>;
 }
 
@@ -37,6 +40,7 @@ export default async function CategoryPage({
   const maxPrice = sParams.maxPrice ? Number(sParams.maxPrice) : undefined;
   const inStockOnly = sParams.inStock === "true";
   const sort = sParams.sort || "newest";
+  const searchQuery = sParams.search?.trim() || sParams.q?.trim();
 
   // Nạp danh mục và cấu hình từ cache
   const [categories, settings] = await Promise.all([
@@ -47,9 +51,10 @@ export default async function CategoryPage({
   // Tìm danh mục hiện tại từ cache trước
   let currentCategory = categories.find((c) => c.slug === slug);
   if (!currentCategory) {
-    currentCategory = await prisma.category.findUnique({
-      where: { slug },
-    }) || undefined;
+    currentCategory =
+      (await prisma.category.findUnique({
+        where: { slug },
+      })) || undefined;
   }
 
   if (!currentCategory) {
@@ -69,6 +74,20 @@ export default async function CategoryPage({
 
   if (inStockOnly) {
     where.inStock = true;
+  }
+
+  if (searchQuery) {
+    where.AND = [
+      ...(where.AND || []),
+      {
+        OR: [
+          { name: { contains: searchQuery } },
+          { slug: { contains: searchQuery } },
+          { description: { contains: searchQuery } },
+          { specs: { contains: searchQuery } },
+        ],
+      },
+    ];
   }
 
   let orderBy: any = { createdAt: "desc" };
@@ -100,7 +119,7 @@ export default async function CategoryPage({
         shopName={settings.shop_name || settings.shopName}
       />
 
-      <main className="flex-1 w-full max-w-[1360px] mx-auto px-8 py-10 space-y-8">
+      <main className="flex-1 w-full max-w-[1360px] mx-auto px-4 sm:px-8 py-8 md:py-10 space-y-8">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm text-[#74746E]">
           <Link href="/" className="hover:text-[#111] transition-colors">
@@ -111,28 +130,46 @@ export default async function CategoryPage({
             Sản phẩm
           </Link>
           <span>/</span>
-          <span className="text-[#111]">{currentCategory.name}</span>
+          <span className="text-[#111] font-medium">{currentCategory.name}</span>
         </nav>
 
+        {/* In-page Category Sub-nav Card matching user screenshot layout */}
+        <CategorySubNav
+          categorySlug={currentCategory.slug}
+          categoryName={currentCategory.name}
+        />
+
         {/* Category Header & Sort */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-[#E7E7E3]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-[#E7E7E3]">
           <div>
-            <h1 className="text-3xl font-semibold text-[#111] tracking-tight">
-              {currentCategory.name}
-            </h1>
-            {currentCategory.description ? (
-              <p className="text-sm text-[#74746E] mt-2 max-w-2xl">
-                {currentCategory.description}
-              </p>
-            ) : (
-              <p className="text-sm text-[#74746E] mt-2">
-                Tổng cộng {products.length} sản phẩm
-              </p>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#111] tracking-tight">
+                {currentCategory.name}
+              </h1>
+              <span className="text-sm font-semibold bg-[#EBEBE8] text-[#111] px-2.5 py-0.5 rounded-full">
+                {products.length} sản phẩm
+              </span>
+            </div>
+
+            {searchQuery && (
+              <div className="flex items-center gap-2 mt-3">
+                <span className="text-xs text-[#74746E]">Đang lọc theo:</span>
+                <span className="inline-flex items-center gap-1.5 bg-[#111] text-white text-xs px-2.5 py-1 rounded-full font-medium">
+                  <span>&quot;{searchQuery}&quot;</span>
+                  <Link
+                    href={`/category/${currentCategory.slug}`}
+                    className="hover:text-red-300 ml-1"
+                    title="Xóa bộ lọc này"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Link>
+                </span>
+              </div>
             )}
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-sm text-[#74746E]">Sắp xếp theo</span>
+            <span className="text-sm text-[#74746E]">Sắp xếp:</span>
             <CatalogSortSelect currentSort={sort} />
           </div>
         </div>
@@ -151,23 +188,25 @@ export default async function CategoryPage({
 
           <div className="flex-1">
             {products.length === 0 ? (
-              <div className="py-20 text-center rounded-lg border border-dashed border-[#D5D5D0] bg-white">
+              <div className="py-20 text-center rounded-2xl border border-dashed border-[#D5D5D0] bg-white p-8">
                 <Package className="w-12 h-12 mx-auto mb-4 text-[#A3A39D]" />
-                <h3 className="text-lg font-medium text-[#111]">
-                  Chưa có sản phẩm nào phù hợp trong danh mục này
+                <h3 className="text-lg font-bold text-[#111]">
+                  Chưa có sản phẩm nào phù hợp
                 </h3>
                 <p className="text-sm text-[#74746E] mt-2 max-w-sm mx-auto">
-                  Thử điều chỉnh lại khoảng giá hoặc xem các danh mục thiết bị khác.
+                  {searchQuery
+                    ? `Không tìm thấy sản phẩm khớp với "${searchQuery}". Hãy thử tìm kiếm với từ khóa khác.`
+                    : "Thử điều chỉnh lại khoảng giá hoặc xem các danh mục thiết bị khác."}
                 </p>
                 <Link
                   href={`/category/${currentCategory.slug}`}
-                  className="inline-flex items-center justify-center h-10 px-4 mt-6 text-sm font-medium text-[#111] bg-white border border-[#D5D5D0] rounded-lg hover:bg-[#FAFAFA] transition-colors"
+                  className="inline-flex items-center justify-center h-10 px-5 mt-6 text-sm font-medium text-white bg-[#111] rounded-xl hover:opacity-90 transition-opacity"
                 >
-                  Xóa bộ lọc giá
+                  Xóa bộ lọc & Xem tất cả
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
