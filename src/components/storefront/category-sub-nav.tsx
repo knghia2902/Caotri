@@ -10,7 +10,7 @@ interface CategorySubNavProps {
 }
 
 export function CategorySubNav({ categorySlug, categoryName }: CategorySubNavProps) {
-  const config = getMegaMenuConfig(categorySlug);
+  const config = getMegaMenuConfig(categorySlug, categoryName);
   if (!config) return null;
 
   return (

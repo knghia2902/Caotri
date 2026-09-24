@@ -15,7 +15,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import {
-  CATEGORY_MEGA_MENUS,
   CategoryMegaMenuConfig,
   getMegaMenuConfig,
 } from "@/lib/mega-menu-data";
@@ -103,7 +102,8 @@ export function MegaMenu({ categories, onNavigate }: MegaMenuProps) {
     };
   }, []);
 
-  const activeConfig: CategoryMegaMenuConfig | undefined = getMegaMenuConfig(activeSlug);
+  const activeCategory = categories.find((c) => c.slug === activeSlug);
+  const activeConfig: CategoryMegaMenuConfig | undefined = getMegaMenuConfig(activeSlug, activeCategory?.name);
 
   return (
     <div
