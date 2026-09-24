@@ -70,25 +70,6 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* 4. Minimal Promotional Banner Section */}
-        <section className="bg-[#FAFAFA] rounded-md p-12 flex flex-col items-center justify-center text-center max-w-4xl mx-auto space-y-6">
-          <div className="space-y-3">
-            <h3 className="text-2xl font-semibold text-[#111] tracking-tight">
-              Cần Tư Vấn Cấu Hình Gaming Setup Chuẩn Pro?
-            </h3>
-            <p className="text-sm text-[#74746E] max-w-xl mx-auto leading-relaxed">
-              Đội ngũ kỹ thuật viên của CaoTrí Gear sẵn sàng hỗ trợ bạn chọn chuột, bàn phím cơ phù hợp với form tay và sở thích cá nhân qua Zalo ngay!
-            </p>
-          </div>
-          <a
-            href={settings.zalo || "https://zalo.me/0987654321"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center bg-[#111] text-white h-11 px-[18px] rounded-lg font-medium transition-opacity hover:opacity-90"
-          >
-            Chat Zalo Tư Vấn Ngay
-          </a>
-        </section>
 
         {/* 5. New Arrivals Section */}
         {newProducts.length > 0 && (
