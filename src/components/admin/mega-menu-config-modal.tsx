@@ -9,17 +9,12 @@ import {
   Save,
   Loader2,
   Sliders,
-  Code,
-  List,
-  AlertCircle,
-  Search,
   DollarSign,
   Link as LinkIcon,
-  HelpCircle,
   Tag,
-  ChevronRight,
-  ExternalLink,
   Sparkles,
+  Info,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -46,74 +41,17 @@ interface MegaMenuConfigModalProps {
   onSuccess?: () => void;
 }
 
-// Preset các mốc giá phổ biến cho gaming gear
-const PRICE_PRESETS = [
-  { label: "Dưới 500 nghìn", maxPrice: "500000", minPrice: "", desc: "Dưới 500.000đ" },
-  { label: "500 nghìn đến 1 triệu", minPrice: "500000", maxPrice: "1000000", desc: "500.000đ - 1.000.000đ" },
-  { label: "1 triệu đến 2 triệu", minPrice: "1000000", maxPrice: "2000000", desc: "1.000.000đ - 2.000.000đ" },
-  { label: "2 triệu đến 3 triệu", minPrice: "2000000", maxPrice: "3000000", desc: "2.000.000đ - 3.000.000đ" },
-  { label: "3 triệu đến 4 triệu", minPrice: "3000000", maxPrice: "4000000", desc: "3.000.000đ - 4.000.000đ" },
-  { label: "Trên 2 triệu", minPrice: "2000000", maxPrice: "", desc: "Từ 2.000.000đ trở lên" },
-  { label: "Trên 3 triệu", minPrice: "3000000", maxPrice: "", desc: "Từ 3.000.000đ trở lên" },
-  { label: "Trên 4 triệu", minPrice: "4000000", maxPrice: "", desc: "Từ 4.000.000đ trở lên" },
+// Preset các mốc giá nhanh
+const QUICK_PRICES = [
+  { label: "Dưới 500 nghìn", maxPrice: "500000", minPrice: "" },
+  { label: "500k - 1 triệu", minPrice: "500000", maxPrice: "1000000" },
+  { label: "1 triệu - 2 triệu", minPrice: "1000000", maxPrice: "2000000" },
+  { label: "2 triệu - 3 triệu", minPrice: "2000000", maxPrice: "3000000" },
+  { label: "3 triệu - 4 triệu", minPrice: "3000000", maxPrice: "4000000" },
+  { label: "Trên 2 triệu", minPrice: "2000000", maxPrice: "" },
+  { label: "Trên 3 triệu", minPrice: "3000000", maxPrice: "" },
+  { label: "Trên 4 triệu", minPrice: "4000000", maxPrice: "" },
 ];
-
-/**
- * Phân tích URL để hiển thị trực quan cho người dùng không cần biết code
- */
-function inspectLink(href: string, categorySlug: string, label: string) {
-  if (!href) {
-    return {
-      type: "search" as const,
-      summary: `Tự động tìm kiếm sản phẩm chứa: "${label || "..."}"`,
-      param: label,
-    };
-  }
-
-  try {
-    if (href.includes("minPrice") || href.includes("maxPrice")) {
-      const u = new URL(href, "http://localhost");
-      const min = u.searchParams.get("minPrice");
-      const max = u.searchParams.get("maxPrice");
-      let priceText = "";
-      if (min && max) {
-        priceText = `${Number(min).toLocaleString("vi-VN")}đ - ${Number(max).toLocaleString("vi-VN")}đ`;
-      } else if (min) {
-        priceText = `Từ ${Number(min).toLocaleString("vi-VN")}đ trở lên`;
-      } else if (max) {
-        priceText = `Dưới ${Number(max).toLocaleString("vi-VN")}đ`;
-      }
-      return {
-        type: "price" as const,
-        summary: `Lọc sản phẩm theo giá: ${priceText}`,
-        min: min || "",
-        max: max || "",
-      };
-    }
-
-    if (href.includes("search=")) {
-      const u = new URL(href, "http://localhost");
-      const q = u.searchParams.get("search") || "";
-      return {
-        type: "search" as const,
-        summary: `Tìm kiếm sản phẩm chứa từ khóa: "${q}"`,
-        param: q,
-      };
-    }
-
-    return {
-      type: "custom" as const,
-      summary: `Đường dẫn riêng: ${href}`,
-      url: href,
-    };
-  } catch {
-    return {
-      type: "custom" as const,
-      summary: href,
-      url: href,
-    };
-  }
-}
 
 export function MegaMenuConfigModal({
   isOpen,
@@ -121,80 +59,57 @@ export function MegaMenuConfigModal({
   category,
   onSuccess,
 }: MegaMenuConfigModalProps) {
-  const [activeColIndex, setActiveColIndex] = useState(0);
-  const [editMode, setEditMode] = useState<"visual" | "json">("visual");
   const [config, setConfig] = useState<CategoryMegaMenuConfig | null>(null);
-  const [jsonText, setJsonText] = useState("");
-  const [jsonError, setJsonError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, startSaving] = useTransition();
 
-  // Expanded items for advanced custom URL editing
-  const [expandedCustomUrls, setExpandedCustomUrls] = useState<Record<string, boolean>>({});
+  // State to toggle URL details for a specific item
+  const [expandedUrlKey, setExpandedUrlKey] = useState<string | null>(null);
 
-  // Price picker dropdown state
-  const [pricePickerTarget, setPricePickerTarget] = useState<{
-    colIdx: number;
-    grpIdx: number;
-    itemIdx?: number;
-  } | null>(null);
+  // Quick price picker popover state: key = `${colIdx}-${grpIdx}`
+  const [activePricePicker, setActivePricePicker] = useState<string | null>(null);
 
   // Load config when opening modal
   useEffect(() => {
     if (isOpen && category) {
       setIsLoading(true);
-      setJsonError(null);
-      setExpandedCustomUrls({});
-      setPricePickerTarget(null);
+      setExpandedUrlKey(null);
+      setActivePricePicker(null);
       getMegaMenuConfigAction(category.slug, category.name)
         .then((res) => {
-          setConfig(res.config);
-          setJsonText(JSON.stringify(res.config, null, 2));
+          // Đảm bảo luôn có đủ 4 cột
+          const loaded = res.config || {
+            slug: category.slug,
+            title: category.name,
+            allHref: `/category/${category.slug}`,
+            columns: [],
+          };
+          while (loaded.columns.length < 4) {
+            loaded.columns.push({ groups: [] });
+          }
+          setConfig(loaded);
         })
         .finally(() => {
           setIsLoading(false);
         });
     } else {
       setConfig(null);
-      setJsonText("");
     }
   }, [isOpen, category]);
 
   if (!isOpen || !category) return null;
 
-  // Sync JSON when switching tabs
-  const handleSwitchToJSON = () => {
-    if (config) {
-      setJsonText(JSON.stringify(config, null, 2));
-      setJsonError(null);
-    }
-    setEditMode("json");
-  };
-
-  const handleSwitchToVisual = () => {
-    try {
-      const parsed = JSON.parse(jsonText);
-      setConfig(parsed);
-      setJsonError(null);
-      setEditMode("visual");
-    } catch (err: any) {
-      setJsonError("Cú pháp JSON không hợp lệ: " + err.message);
-    }
-  };
-
-  // Helper: Update group title
-  const handleUpdateGroupTitle = (
-    colIdx: number,
-    grpIdx: number,
-    title: string
-  ) => {
+  // 1. Cập nhật Tiêu đề nhóm (ví dụ: "Thương hiệu tai nghe", "Tai nghe theo giá"...)
+  const handleUpdateGroupTitle = (colIdx: number, grpIdx: number, newTitle: string) => {
     if (!config) return;
-    const newConfig = { ...config };
-    newConfig.columns[colIdx].groups[grpIdx].title = title;
-    setConfig(newConfig);
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    if (next.columns[colIdx]?.groups[grpIdx]) {
+      next.columns[colIdx].groups[grpIdx].title = newTitle;
+      setConfig(next);
+    }
   };
 
-  // Helper: Update item label - AUTO update search link if it's in search mode!
+  // 2. Cập nhật Tên mục hiển thị (ví dụ: "ASUS", "Razer"...) -> Tự động cập nhật link tìm kiếm
   const handleUpdateItemLabel = (
     colIdx: number,
     grpIdx: number,
@@ -202,147 +117,114 @@ export function MegaMenuConfigModal({
     newLabel: string
   ) => {
     if (!config) return;
-    const newConfig = { ...config };
-    const item = newConfig.columns[colIdx].groups[grpIdx].items[itemIdx];
-    const prevInfo = inspectLink(item.href, category.slug, item.label);
-
-    item.label = newLabel;
-
-    // Nếu mục này đang dùng chế độ tìm kiếm theo tên, tự động cập nhật link luôn mà người dùng không cần gõ!
-    if (prevInfo.type === "search" || !item.href) {
-      item.href = newLabel.trim()
-        ? `/category/${category.slug}?search=${encodeURIComponent(newLabel.trim())}`
-        : `/category/${category.slug}`;
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    const item = next.columns[colIdx]?.groups[grpIdx]?.items[itemIdx];
+    if (item) {
+      item.label = newLabel;
+      // Nếu link hiện tại là link tìm kiếm hoặc chưa có link, tự động cập nhật theo tên luôn!
+      if (!item.href || item.href.includes("search=") || !item.href.includes("?")) {
+        item.href = newLabel.trim()
+          ? `/category/${category.slug}?search=${encodeURIComponent(newLabel.trim())}`
+          : `/category/${category.slug}`;
+      }
+      setConfig(next);
     }
-
-    setConfig(newConfig);
   };
 
-  // Helper: Manually update custom href
-  const handleUpdateCustomHref = (
+  // 3. Cập nhật Link thủ công (chỉ khi người dùng muốn sửa link sâu)
+  const handleUpdateItemHref = (
     colIdx: number,
     grpIdx: number,
     itemIdx: number,
     newHref: string
   ) => {
     if (!config) return;
-    const newConfig = { ...config };
-    newConfig.columns[colIdx].groups[grpIdx].items[itemIdx].href = newHref;
-    setConfig(newConfig);
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    const item = next.columns[colIdx]?.groups[grpIdx]?.items[itemIdx];
+    if (item) {
+      item.href = newHref;
+      setConfig(next);
+    }
   };
 
-  // Helper: Add keyword/brand item
-  const handleAddKeywordItem = (colIdx: number, grpIdx: number, presetName?: string) => {
+  // 4. Thêm mục con mới (chỉ cần gõ tên là có link ngay)
+  const handleAddItem = (colIdx: number, grpIdx: number, defaultLabel = "Mục mới") => {
     if (!config) return;
-    const newConfig = { ...config };
-    const label = presetName || "Mục mới";
-    newConfig.columns[colIdx].groups[grpIdx].items.push({
-      label,
-      href: `/category/${category.slug}?search=${encodeURIComponent(label)}`,
-    });
-    setConfig(newConfig);
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    const grp = next.columns[colIdx]?.groups[grpIdx];
+    if (grp) {
+      grp.items.push({
+        label: defaultLabel,
+        href: `/category/${category.slug}?search=${encodeURIComponent(defaultLabel)}`,
+      });
+      setConfig(next);
+    }
   };
 
-  // Helper: Apply price preset to existing or new item
-  const handleApplyPricePreset = (
+  // 5. Thêm mốc giá nhanh
+  const handleAddPricePreset = (
     colIdx: number,
     grpIdx: number,
-    preset: typeof PRICE_PRESETS[0],
-    itemIdx?: number
+    preset: typeof QUICK_PRICES[0]
   ) => {
     if (!config) return;
-    const newConfig = { ...config };
-    const params = new URLSearchParams();
-    if (preset.minPrice) params.set("minPrice", preset.minPrice);
-    if (preset.maxPrice) params.set("maxPrice", preset.maxPrice);
-    const href = `/category/${category.slug}?${params.toString()}`;
-
-    if (itemIdx !== undefined && newConfig.columns[colIdx]?.groups[grpIdx]?.items[itemIdx]) {
-      newConfig.columns[colIdx].groups[grpIdx].items[itemIdx].label = preset.label;
-      newConfig.columns[colIdx].groups[grpIdx].items[itemIdx].href = href;
-    } else {
-      newConfig.columns[colIdx].groups[grpIdx].items.push({
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    const grp = next.columns[colIdx]?.groups[grpIdx];
+    if (grp) {
+      const params = new URLSearchParams();
+      if (preset.minPrice) params.set("minPrice", preset.minPrice);
+      if (preset.maxPrice) params.set("maxPrice", preset.maxPrice);
+      grp.items.push({
         label: preset.label,
-        href,
+        href: `/category/${category.slug}?${params.toString()}`,
       });
+      setConfig(next);
+      setActivePricePicker(null);
     }
-
-    setConfig(newConfig);
-    setPricePickerTarget(null);
   };
 
-  // Helper: Remove item
+  // 6. Xóa mục con
   const handleRemoveItem = (colIdx: number, grpIdx: number, itemIdx: number) => {
     if (!config) return;
-    const newConfig = { ...config };
-    newConfig.columns[colIdx].groups[grpIdx].items.splice(itemIdx, 1);
-    setConfig(newConfig);
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    next.columns[colIdx]?.groups[grpIdx]?.items.splice(itemIdx, 1);
+    setConfig(next);
   };
 
-  // Helper: Add custom group
+  // 7. Thêm nhóm mới vào cột
   const handleAddGroup = (colIdx: number, title = "Nhóm tiêu đề mới") => {
     if (!config) return;
-    const newConfig = { ...config };
-    if (!newConfig.columns[colIdx]) {
-      newConfig.columns[colIdx] = { groups: [] };
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    if (!next.columns[colIdx]) {
+      next.columns[colIdx] = { groups: [] };
     }
-    newConfig.columns[colIdx].groups.push({
+    next.columns[colIdx].groups.push({
       title,
       href: `/category/${category.slug}`,
       items: [
         {
-          label: "Ví dụ 1",
-          href: `/category/${category.slug}?search=Ví dụ 1`,
+          label: "Mục 1",
+          href: `/category/${category.slug}?search=Mục 1`,
         },
       ],
     });
-    setConfig(newConfig);
+    setConfig(next);
   };
 
-  // Helper: Add price group template
-  const handleAddPriceGroupTemplate = (colIdx: number) => {
-    if (!config) return;
-    const newConfig = { ...config };
-    if (!newConfig.columns[colIdx]) {
-      newConfig.columns[colIdx] = { groups: [] };
-    }
-    newConfig.columns[colIdx].groups.push({
-      title: `${category.name} theo mức giá`,
-      href: `/category/${category.slug}`,
-      items: [
-        { label: "Dưới 1 triệu", href: `/category/${category.slug}?maxPrice=1000000` },
-        { label: "1 triệu đến 2 triệu", href: `/category/${category.slug}?minPrice=1000000&maxPrice=2000000` },
-        { label: "2 triệu đến 3 triệu", href: `/category/${category.slug}?minPrice=2000000&maxPrice=3000000` },
-        { label: "Trên 3 triệu", href: `/category/${category.slug}?minPrice=3000000` },
-      ],
-    });
-    setConfig(newConfig);
-  };
-
-  // Helper: Remove group
+  // 8. Xóa cả nhóm
   const handleRemoveGroup = (colIdx: number, grpIdx: number) => {
     if (!config) return;
-    const newConfig = { ...config };
-    newConfig.columns[colIdx].groups.splice(grpIdx, 1);
-    setConfig(newConfig);
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    next.columns[colIdx]?.groups.splice(grpIdx, 1);
+    setConfig(next);
   };
 
-  // Helper: Save config
+  // 9. Lưu cấu hình
   const handleSave = () => {
-    let finalConfig = config;
-    if (editMode === "json") {
-      try {
-        finalConfig = JSON.parse(jsonText);
-      } catch (err: any) {
-        toast.error("JSON không hợp lệ: " + err.message);
-        return;
-      }
-    }
-
-    if (!finalConfig) return;
+    if (!config) return;
 
     startSaving(async () => {
-      const res = await saveMegaMenuConfigAction(category.slug, finalConfig!);
+      const res = await saveMegaMenuConfigAction(category.slug, config);
       if (res.success) {
         toast.success(`Đã lưu cấu hình menu con cho "${category.name}"`);
         if (onSuccess) onSuccess();
@@ -353,11 +235,11 @@ export function MegaMenuConfigModal({
     });
   };
 
-  // Helper: Reset config to system default
+  // 10. Khôi phục mặc định
   const handleReset = () => {
     if (
       !confirm(
-        `Khôi phục menu con của "${category.name}" về thiết lập mặc định ban đầu?`
+        `Khôi phục toàn bộ menu con của "${category.name}" về thiết lập mặc định chuẩn của hệ thống?`
       )
     ) {
       return;
@@ -366,8 +248,11 @@ export function MegaMenuConfigModal({
     startSaving(async () => {
       const res = await resetMegaMenuConfigAction(category.slug, category.name);
       if (res.success && res.config) {
-        setConfig(res.config);
-        setJsonText(JSON.stringify(res.config, null, 2));
+        const loaded = res.config;
+        while (loaded.columns.length < 4) {
+          loaded.columns.push({ groups: [] });
+        }
+        setConfig(loaded);
         toast.success("Đã khôi phục về thiết lập mặc định");
         if (onSuccess) onSuccess();
       } else {
@@ -376,516 +261,313 @@ export function MegaMenuConfigModal({
     });
   };
 
-  // Ensure 4 columns exist
-  const currentColumns = config?.columns || [];
-  while (currentColumns.length < 4) {
-    currentColumns.push({ groups: [] });
-  }
-
-  const currentCol = currentColumns[activeColIndex] || { groups: [] };
+  const columns = config?.columns || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
-      <div className="w-full max-w-4xl bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-950/60">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto">
+      <div className="w-full max-w-[1240px] bg-white border border-[#E5E5E1] rounded-2xl shadow-2xl flex flex-col max-h-[94vh] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150 text-[#111]">
+        {/* Header - Sáng sủa, thân thiện */}
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-[#EBEBE8] bg-[#FAFAFA]">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <div className="w-10 h-10 rounded-xl bg-red-50 text-[#E11D48] border border-red-100 flex items-center justify-center shrink-0">
               <Sliders className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
-                <span>Cấu hình Menu con</span>
-                <span className="text-cyan-400 font-normal text-sm">
-                  ({category.name})
+              <h2 className="text-lg font-bold text-[#111] flex items-center gap-2">
+                <span>Chỉnh sửa Menu con:</span>
+                <span className="text-[#E11D48] underline underline-offset-4 font-semibold">
+                  {category.name}
                 </span>
               </h2>
-              <p className="text-xs text-zinc-400 flex items-center gap-1.5 mt-0.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Chỉ cần nhập tên nhãn / hãng, hệ thống sẽ <strong>tự động tạo đường dẫn</strong> chuẩn xác!</span>
+              <p className="text-xs text-[#74746E] mt-0.5">
+                Bảng 4 cột bên dưới mô phỏng <strong>y hệt menu hiển thị ngoài trang chủ</strong>. Bạn chỉ cần bấm vào ô để sửa chữ, hệ thống tự lo phần liên kết!
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* View Mode Toggle */}
-            <div className="flex bg-zinc-800 p-0.5 rounded-lg border border-zinc-700 text-xs">
-              <button
-                type="button"
-                onClick={handleSwitchToVisual}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors ${
-                  editMode === "visual"
-                    ? "bg-cyan-500 text-black shadow-sm"
-                    : "text-zinc-400 hover:text-zinc-100"
-                }`}
-              >
-                <List className="w-3.5 h-3.5" />
-                <span>Dễ dùng</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleSwitchToJSON}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors ${
-                  editMode === "json"
-                    ? "bg-cyan-500 text-black shadow-sm"
-                    : "text-zinc-400 hover:text-zinc-100"
-                }`}
-              >
-                <Code className="w-3.5 h-3.5" />
-                <span>Mã JSON</span>
-              </button>
-            </div>
-
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-[#74746E] hover:text-[#111] hover:bg-[#EFEFEF] transition-colors"
+            title="Đóng"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Content Body: Giao diện 4 cột trực quan mô phỏng menu thật */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 bg-[#F7F7F5] space-y-4">
           {isLoading ? (
-            <div className="py-24 flex flex-col items-center justify-center gap-3 text-zinc-400">
-              <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
-              <p className="text-sm">Đang nạp cấu hình menu con...</p>
-            </div>
-          ) : editMode === "json" ? (
-            /* JSON Code Editor Tab */
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs text-zinc-400">
-                <span>Chỉnh sửa trực tiếp dưới dạng JSON (dành cho người am hiểu kỹ thuật)</span>
-                <span className="font-mono text-cyan-400">CategoryMegaMenuConfig</span>
-              </div>
-              {jsonError && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{jsonError}</span>
-                </div>
-              )}
-              <textarea
-                value={jsonText}
-                onChange={(e) => setJsonText(e.target.value)}
-                rows={18}
-                className="w-full font-mono text-xs p-4 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-200 focus:outline-none focus:border-cyan-500 resize-none leading-relaxed"
-                spellCheck={false}
-              />
+            <div className="py-28 flex flex-col items-center justify-center gap-3 text-[#74746E]">
+              <Loader2 className="w-8 h-8 animate-spin text-[#E11D48]" />
+              <p className="text-sm font-medium">Đang tải cấu hình menu...</p>
             </div>
           ) : (
-            /* Visual Interactive Editor Tab */
-            <div className="space-y-6">
-              {/* Column selector tabs */}
-              <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
-                {[0, 1, 2, 3].map((colIndex) => {
-                  const grpCount = config?.columns[colIndex]?.groups.length || 0;
-                  const isSelected = activeColIndex === colIndex;
-                  return (
-                    <button
-                      key={colIndex}
-                      type="button"
-                      onClick={() => {
-                        setActiveColIndex(colIndex);
-                        setPricePickerTarget(null);
-                      }}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                        isSelected
-                          ? "bg-zinc-800 text-cyan-400 border border-cyan-500/30 shadow-sm"
-                          : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
-                      }`}
-                    >
-                      <span>Cột {colIndex + 1}</span>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
-                          isSelected
-                            ? "bg-cyan-500/20 text-cyan-300"
-                            : "bg-zinc-800 text-zinc-500"
-                        }`}
-                      >
-                        {grpCount} nhóm
-                      </span>
-                    </button>
-                  );
-                })}
+            <div className="space-y-4">
+              {/* Dòng hướng dẫn nhanh dễ hiểu */}
+              <div className="bg-amber-50/80 border border-amber-200/80 rounded-xl px-4 py-2.5 flex items-center gap-2.5 text-xs text-amber-900">
+                <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>
+                  <strong>Mẹo:</strong> Bấm vào chữ để sửa tên nhóm hoặc tên hãng. Khi gõ tên mới (vd: <em>Sony</em>, <em>Logitech</em>, <em>Không dây</em>), link tìm kiếm sản phẩm sẽ được <strong>tự động tạo ngay lập tức</strong> mà bạn không cần phải gõ đường dẫn URL nào cả.
+                </span>
               </div>
 
-              {/* Groups in the active column */}
-              <div className="space-y-6">
-                {currentCol.groups.length === 0 ? (
-                  <div className="p-10 text-center border border-dashed border-zinc-800 rounded-2xl bg-zinc-950/40 space-y-4">
-                    <p className="text-sm text-zinc-400">
-                      Cột {activeColIndex + 1} hiện đang trống. Hãy chọn một mẫu nhóm bên dưới để thêm nhanh:
-                    </p>
-                    <div className="flex flex-wrap items-center justify-center gap-2.5">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleAddGroup(activeColIndex, "Thương hiệu nổi bật")}
-                        className="border-zinc-700 bg-zinc-800 hover:bg-cyan-500/10 hover:border-cyan-500/50 text-cyan-400 text-xs"
-                      >
-                        <Tag className="w-3.5 h-3.5 mr-1.5" />
-                        <span>+ Thêm nhóm Thương hiệu</span>
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleAddPriceGroupTemplate(activeColIndex)}
-                        className="border-zinc-700 bg-zinc-800 hover:bg-emerald-500/10 hover:border-emerald-500/50 text-emerald-400 text-xs"
-                      >
-                        <DollarSign className="w-3.5 h-3.5 mr-1.5" />
-                        <span>+ Thêm nhóm Lọc theo mức giá</span>
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleAddGroup(activeColIndex, "Kiểu kết nối")}
-                        className="border-zinc-700 bg-zinc-800 hover:bg-purple-500/10 hover:border-purple-500/50 text-purple-400 text-xs"
-                      >
-                        <Plus className="w-3.5 h-3.5 mr-1.5" />
-                        <span>+ Thêm nhóm Kiểu kết nối</span>
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  currentCol.groups.map((group, grpIdx) => (
+              {/* 4 Cột mô phỏng trực tiếp menu thật */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+                {[0, 1, 2, 3].map((colIdx) => {
+                  const col = columns[colIdx] || { groups: [] };
+
+                  return (
                     <div
-                      key={grpIdx}
-                      className="p-5 rounded-2xl bg-zinc-950/90 border border-zinc-800 space-y-4 shadow-sm"
+                      key={colIdx}
+                      className="bg-white rounded-2xl border border-[#E5E5E1] p-4 shadow-sm space-y-4 min-h-[460px] flex flex-col"
                     >
-                      {/* Group Header */}
-                      <div className="flex items-center justify-between gap-4 pb-3 border-b border-zinc-800/80">
-                        <div className="flex-1 max-w-lg">
-                          <label className="text-[11px] font-bold uppercase tracking-wider text-cyan-400 mb-1.5 flex items-center gap-1.5">
-                            <span>Tiêu đề nhóm</span>
-                            <span className="text-zinc-500 font-normal lowercase">(hiển thị in đậm trên menu)</span>
-                          </label>
-                          <Input
-                            value={group.title}
-                            onChange={(e) =>
-                              handleUpdateGroupTitle(
-                                activeColIndex,
-                                grpIdx,
-                                e.target.value
-                              )
-                            }
-                            placeholder="Ví dụ: Thương hiệu tai nghe, Tai nghe theo giá..."
-                            className="bg-zinc-900 border-zinc-700 font-semibold text-zinc-100 text-sm h-10"
-                          />
-                        </div>
-
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            handleRemoveGroup(activeColIndex, grpIdx)
-                          }
-                          className="text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors mt-5 text-xs"
-                          title="Xóa toàn bộ nhóm này"
-                        >
-                          <Trash2 className="w-4 h-4 mr-1" />
-                          <span>Xóa nhóm</span>
-                        </Button>
-                      </div>
-
-                      {/* Items list */}
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                            Các mục con ({group.items.length} mục):
-                          </label>
-                          <span className="text-[11px] text-zinc-500">
-                            💡 Gõ tên nhãn bên dưới, link sẽ tự động cập nhật
+                      {/* Tiêu đề Cột */}
+                      <div className="flex items-center justify-between pb-2.5 border-b border-[#F0F0EE]">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#E11D48]" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-[#111]">
+                            Cột {colIdx + 1}
                           </span>
                         </div>
+                        <span className="text-[11px] font-medium text-[#8E8E87] bg-[#F5F5F3] px-2 py-0.5 rounded-md">
+                          {col.groups.length} nhóm
+                        </span>
+                      </div>
 
-                        <div className="space-y-2.5">
-                          {group.items.map((item, itemIdx) => {
-                            const linkInfo = inspectLink(item.href, category.slug, item.label);
-                            const isUrlExpanded = expandedCustomUrls[`${activeColIndex}-${grpIdx}-${itemIdx}`];
+                      {/* Danh sách các nhóm trong Cột này */}
+                      <div className="space-y-4 flex-1">
+                        {col.groups.length === 0 ? (
+                          <div className="py-12 text-center border-2 border-dashed border-[#EBEBE8] rounded-xl px-3 space-y-2">
+                            <p className="text-xs text-[#8E8E87]">Cột này hiện chưa có nhóm nào</p>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAddGroup(colIdx, "Nhóm mới")}
+                              className="text-xs h-8 border-[#D5D5D0] hover:border-[#111] bg-white"
+                            >
+                              <Plus className="w-3.5 h-3.5 mr-1" />
+                              <span>Thêm nhóm</span>
+                            </Button>
+                          </div>
+                        ) : (
+                          col.groups.map((group, grpIdx) => {
+                            const pickerKey = `${colIdx}-${grpIdx}`;
+                            const isPickerOpen = activePricePicker === pickerKey;
 
                             return (
                               <div
-                                key={itemIdx}
-                                className="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800/90 space-y-2 hover:border-zinc-700 transition-colors"
+                                key={grpIdx}
+                                className="bg-[#FAFAFA] border border-[#EAEAEA] rounded-xl p-3 space-y-3 relative group/card hover:border-[#D5D5D0] transition-colors"
                               >
-                                <div className="flex items-center gap-2">
-                                  {/* Item Label input */}
-                                  <div className="flex-1">
-                                    <Input
-                                      value={item.label}
-                                      onChange={(e) =>
-                                        handleUpdateItemLabel(
-                                          activeColIndex,
-                                          grpIdx,
-                                          itemIdx,
-                                          e.target.value
-                                        )
-                                      }
-                                      placeholder="Tên mục hiển thị (vd: ASUS, Razer, Dưới 1 triệu...)"
-                                      className="h-9 bg-zinc-950 border-zinc-700 text-sm font-medium text-zinc-100"
-                                    />
-                                  </div>
-
-                                  {/* Quick Link Type Badge / Selector */}
-                                  <div className="shrink-0 flex items-center gap-1.5">
-                                    {/* Price preset button */}
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() =>
-                                        setPricePickerTarget(
-                                          pricePickerTarget?.itemIdx === itemIdx
-                                            ? null
-                                            : { colIdx: activeColIndex, grpIdx, itemIdx }
-                                        )
-                                      }
-                                      className={`h-9 px-2.5 text-xs border-zinc-700 ${
-                                        linkInfo.type === "price"
-                                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                                          : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
-                                      }`}
-                                      title="Chọn nhanh theo mức giá"
-                                    >
-                                      <DollarSign className="w-3.5 h-3.5 mr-1" />
-                                      <span>Chọn mức giá</span>
-                                    </Button>
-
-                                    {/* Toggle custom URL */}
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => {
-                                        const key = `${activeColIndex}-${grpIdx}-${itemIdx}`;
-                                        setExpandedCustomUrls({
-                                          ...expandedCustomUrls,
-                                          [key]: !isUrlExpanded,
-                                        });
-                                      }}
-                                      className={`h-9 px-2 text-xs ${
-                                        linkInfo.type === "custom" || isUrlExpanded
-                                          ? "text-cyan-400 bg-cyan-500/10"
-                                          : "text-zinc-500 hover:text-zinc-300"
-                                      }`}
-                                      title="Tùy chỉnh link thủ công nếu cần"
-                                    >
-                                      <LinkIcon className="w-3.5 h-3.5" />
-                                    </Button>
-
-                                    {/* Delete item button */}
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() =>
-                                        handleRemoveItem(
-                                          activeColIndex,
-                                          grpIdx,
-                                          itemIdx
-                                        )
-                                      }
-                                      className="h-9 w-9 p-0 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10"
-                                      title="Xóa mục này"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                </div>
-
-                                {/* Price presets picker popover */}
-                                {pricePickerTarget?.colIdx === activeColIndex &&
-                                  pricePickerTarget?.grpIdx === grpIdx &&
-                                  pricePickerTarget?.itemIdx === itemIdx && (
-                                    <div className="p-3 bg-zinc-950 border border-emerald-500/30 rounded-xl space-y-2 animate-in fade-in-0 duration-150">
-                                      <div className="text-xs font-semibold text-emerald-400 flex items-center justify-between">
-                                        <span>Chọn nhanh mốc giá mong muốn:</span>
-                                        <button
-                                          type="button"
-                                          onClick={() => setPricePickerTarget(null)}
-                                          className="text-zinc-500 hover:text-zinc-300"
-                                        >
-                                          <X className="w-3.5 h-3.5" />
-                                        </button>
-                                      </div>
-                                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                                        {PRICE_PRESETS.map((p, pIdx) => (
-                                          <button
-                                            key={pIdx}
-                                            type="button"
-                                            onClick={() =>
-                                              handleApplyPricePreset(
-                                                activeColIndex,
-                                                grpIdx,
-                                                p,
-                                                itemIdx
-                                              )
-                                            }
-                                            className="px-2.5 py-1.5 text-xs text-left rounded-lg bg-zinc-900 border border-zinc-800 hover:border-emerald-500 hover:bg-emerald-500/10 text-zinc-200 transition-colors"
-                                          >
-                                            <div className="font-medium text-emerald-300">{p.label}</div>
-                                            <div className="text-[10px] text-zinc-400">{p.desc}</div>
-                                          </button>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                {/* Friendly Human-Readable Link Summary */}
-                                <div className="flex items-center justify-between text-xs px-1">
-                                  <div className="flex items-center gap-1.5 text-zinc-400 truncate">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                                    <span className="truncate">
-                                      Khi khách bấm vào:{" "}
-                                      <strong className="text-zinc-200">{linkInfo.summary}</strong>
+                                {/* Tiêu đề nhóm: ô nhập trực quan */}
+                                <div className="space-y-1">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#8E8E87]">
+                                      Tiêu đề nhóm:
                                     </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveGroup(colIdx, grpIdx)}
+                                      className="text-[#A3A39D] hover:text-red-600 p-0.5 rounded transition-colors"
+                                      title="Xóa nhóm này"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
                                   </div>
+                                  <Input
+                                    value={group.title}
+                                    onChange={(e) =>
+                                      handleUpdateGroupTitle(colIdx, grpIdx, e.target.value)
+                                    }
+                                    placeholder="Vd: Thương hiệu, Lọc theo giá..."
+                                    className="h-8.5 text-xs font-bold text-[#111] bg-white border-[#D5D5D0] focus:border-[#111]"
+                                  />
                                 </div>
 
-                                {/* Custom link input (only shown if expanded or already custom) */}
-                                {(isUrlExpanded || linkInfo.type === "custom") && (
-                                  <div className="pt-1 border-t border-zinc-800/80">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-[11px] text-zinc-500 font-mono shrink-0">Link:</span>
-                                      <Input
-                                        value={item.href}
-                                        onChange={(e) =>
-                                          handleUpdateCustomHref(
-                                            activeColIndex,
-                                            grpIdx,
-                                            itemIdx,
-                                            e.target.value
-                                          )
-                                        }
-                                        placeholder="Ví dụ: /category/tai-nghe?search=ASUS hoặc link ngoài"
-                                        className="h-8 bg-zinc-950 border-zinc-700 text-xs font-mono text-cyan-300"
-                                      />
+                                {/* Danh sách các mục con */}
+                                <div className="space-y-1.5 pt-1 border-t border-[#EAEAE8]">
+                                  <div className="text-[10px] font-semibold text-[#8E8E87] uppercase tracking-wider mb-1">
+                                    Các mục con:
+                                  </div>
+
+                                  {group.items.length === 0 ? (
+                                    <p className="text-[11px] text-[#A3A39D] italic py-1 text-center">
+                                      Chưa có mục nào
+                                    </p>
+                                  ) : (
+                                    group.items.map((item, itemIdx) => {
+                                      const urlKey = `${colIdx}-${grpIdx}-${itemIdx}`;
+                                      const isUrlOpen = expandedUrlKey === urlKey;
+
+                                      return (
+                                        <div
+                                          key={itemIdx}
+                                          className="bg-white rounded-lg border border-[#E5E5E1] p-1.5 space-y-1 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                                        >
+                                          <div className="flex items-center gap-1.5">
+                                            {/* Input Tên mục hiển thị */}
+                                            <input
+                                              type="text"
+                                              value={item.label}
+                                              onChange={(e) =>
+                                                handleUpdateItemLabel(
+                                                  colIdx,
+                                                  grpIdx,
+                                                  itemIdx,
+                                                  e.target.value
+                                                )
+                                              }
+                                              placeholder="Nhập tên..."
+                                              className="flex-1 text-xs font-medium text-[#111] bg-transparent border-0 px-1 py-0.5 focus:outline-none focus:bg-[#F7F7F5] rounded"
+                                            />
+
+                                            {/* Nút xem/sửa link chi tiết nếu cần */}
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                setExpandedUrlKey(isUrlOpen ? null : urlKey)
+                                              }
+                                              className={`p-1 rounded text-[#8E8E87] hover:text-[#111] hover:bg-[#F3F3F1] transition-colors ${
+                                                isUrlOpen ? "text-[#E11D48] bg-red-50" : ""
+                                              }`}
+                                              title={isUrlOpen ? "Thu gọn link" : "Xem/sửa đường dẫn nâng cao"}
+                                            >
+                                              <LinkIcon className="w-3 h-3" />
+                                            </button>
+
+                                            {/* Nút Xóa mục */}
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                handleRemoveItem(colIdx, grpIdx, itemIdx)
+                                              }
+                                              className="p-1 rounded text-[#A3A39D] hover:text-red-600 hover:bg-red-50 transition-colors"
+                                              title="Xóa mục này"
+                                            >
+                                              <X className="w-3 h-3" />
+                                            </button>
+                                          </div>
+
+                                          {/* Hiển thị link mở rộng khi người dùng bấm vào biểu tượng link */}
+                                          {isUrlOpen && (
+                                            <div className="pt-1 border-t border-[#F0F0EE] space-y-1">
+                                              <div className="flex items-center gap-1">
+                                                <span className="text-[10px] text-[#8E8E87] font-mono shrink-0">
+                                                  Link:
+                                                </span>
+                                                <input
+                                                  type="text"
+                                                  value={item.href}
+                                                  onChange={(e) =>
+                                                    handleUpdateItemHref(
+                                                      colIdx,
+                                                      grpIdx,
+                                                      itemIdx,
+                                                      e.target.value
+                                                    )
+                                                  }
+                                                  className="flex-1 text-[11px] font-mono text-[#4B5563] bg-[#F7F7F5] border border-[#D5D5D0] px-1.5 py-0.5 rounded focus:outline-none focus:border-[#111]"
+                                                />
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })
+                                  )}
+                                </div>
+
+                                {/* Các nút thêm nhanh bên dưới nhóm */}
+                                <div className="pt-1 flex items-center justify-between gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAddItem(colIdx, grpIdx, "Mục mới")}
+                                    className="flex items-center gap-1 text-[11px] font-semibold text-[#111] hover:text-[#E11D48] bg-white border border-[#D5D5D0] hover:border-[#111] px-2 py-1 rounded-md transition-colors"
+                                  >
+                                    <Plus className="w-3 h-3" />
+                                    <span>Thêm mục</span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setActivePricePicker(isPickerOpen ? null : pickerKey)
+                                    }
+                                    className={`flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md transition-colors border ${
+                                      isPickerOpen
+                                        ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                        : "bg-white text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                    }`}
+                                    title="Thêm mốc lọc theo giá"
+                                  >
+                                    <DollarSign className="w-3 h-3" />
+                                    <span>Chọn mốc giá</span>
+                                  </button>
+                                </div>
+
+                                {/* Menu chọn mốc giá nhanh xuất hiện ngay tại nhóm */}
+                                {isPickerOpen && (
+                                  <div className="bg-white border border-emerald-300 rounded-xl p-2.5 shadow-lg space-y-2 mt-2 animate-in fade-in-0 duration-150 z-10">
+                                    <div className="flex items-center justify-between text-[11px] font-bold text-emerald-800">
+                                      <span>Click chọn mốc giá để thêm:</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setActivePricePicker(null)}
+                                        className="text-[#8E8E87] hover:text-[#111]"
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-1">
+                                      {QUICK_PRICES.map((p, pIdx) => (
+                                        <button
+                                          key={pIdx}
+                                          type="button"
+                                          onClick={() => handleAddPricePreset(colIdx, grpIdx, p)}
+                                          className="text-left text-[11px] p-1.5 rounded-md hover:bg-emerald-50 hover:text-emerald-900 border border-transparent hover:border-emerald-200 transition-colors"
+                                        >
+                                          + {p.label}
+                                        </button>
+                                      ))}
                                     </div>
                                   </div>
                                 )}
                               </div>
                             );
-                          })}
-                        </div>
-
-                        {/* Add Item Actions */}
-                        <div className="pt-2 flex flex-wrap items-center gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleAddKeywordItem(activeColIndex, grpIdx)}
-                            className="border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-cyan-400 text-xs h-8"
-                          >
-                            <Plus className="w-3.5 h-3.5 mr-1" />
-                            <span>+ Thêm mục (tự tạo link)</span>
-                          </Button>
-
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setPricePickerTarget(
-                                pricePickerTarget?.itemIdx === undefined &&
-                                  pricePickerTarget?.grpIdx === grpIdx
-                                  ? null
-                                  : { colIdx: activeColIndex, grpIdx }
-                              )
-                            }
-                            className="border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-emerald-400 text-xs h-8"
-                          >
-                            <DollarSign className="w-3.5 h-3.5 mr-1" />
-                            <span>+ Thêm nhanh mốc giá</span>
-                          </Button>
-                        </div>
-
-                        {/* New Price Preset Picker */}
-                        {pricePickerTarget?.colIdx === activeColIndex &&
-                          pricePickerTarget?.grpIdx === grpIdx &&
-                          pricePickerTarget?.itemIdx === undefined && (
-                            <div className="p-3 bg-zinc-950 border border-emerald-500/30 rounded-xl space-y-2 mt-2">
-                              <div className="text-xs font-semibold text-emerald-400 flex items-center justify-between">
-                                <span>Bấm vào mốc giá để thêm ngay mục mới:</span>
-                                <button
-                                  type="button"
-                                  onClick={() => setPricePickerTarget(null)}
-                                  className="text-zinc-500 hover:text-zinc-300"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                                {PRICE_PRESETS.map((p, pIdx) => (
-                                  <button
-                                    key={pIdx}
-                                    type="button"
-                                    onClick={() =>
-                                      handleApplyPricePreset(
-                                        activeColIndex,
-                                        grpIdx,
-                                        p
-                                      )
-                                    }
-                                    className="px-2.5 py-1.5 text-xs text-left rounded-lg bg-zinc-900 border border-zinc-800 hover:border-emerald-500 hover:bg-emerald-500/10 text-zinc-200 transition-colors"
-                                  >
-                                    <div className="font-medium text-emerald-300">{p.label}</div>
-                                    <div className="text-[10px] text-zinc-400">{p.desc}</div>
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                          })
+                        )}
                       </div>
-                    </div>
-                  ))
-                )}
 
-                {/* Add new group buttons */}
-                {currentCol.groups.length > 0 && (
-                  <div className="pt-2 flex flex-wrap items-center gap-2.5">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleAddGroup(activeColIndex)}
-                      className="border-dashed border-zinc-800 bg-zinc-950/40 hover:bg-zinc-900 text-zinc-400 hover:text-cyan-400 hover:border-cyan-500/40 text-xs h-10 px-4 rounded-xl"
-                    >
-                      <Plus className="w-4 h-4 mr-1.5" />
-                      <span>+ Thêm nhóm tùy chỉnh vào Cột {activeColIndex + 1}</span>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleAddPriceGroupTemplate(activeColIndex)}
-                      className="border-dashed border-zinc-800 bg-zinc-950/40 hover:bg-zinc-900 text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/40 text-xs h-10 px-4 rounded-xl"
-                    >
-                      <DollarSign className="w-4 h-4 mr-1.5" />
-                      <span>+ Thêm nhóm Lọc theo mức giá</span>
-                    </Button>
-                  </div>
-                )}
+                      {/* Nút thêm nhóm vào cột này */}
+                      <button
+                        type="button"
+                        onClick={() => handleAddGroup(colIdx, "Nhóm tiêu đề mới")}
+                        className="w-full py-2 border border-dashed border-[#D5D5D0] hover:border-[#111] hover:bg-[#FAFAFA] rounded-xl text-xs font-semibold text-[#74746E] hover:text-[#111] flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>+ Thêm nhóm vào Cột {colIdx + 1}</span>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer actions */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-800 bg-zinc-950/60">
+        {/* Footer Actions */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[#EBEBE8] bg-[#FAFAFA]">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={handleReset}
             disabled={isSaving || isLoading}
-            className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors text-xs"
+            className="text-xs text-[#74746E] hover:text-[#111] hover:bg-[#EFEFEF]"
           >
-            <RotateCcw className="w-3.5 h-3.5 mr-1.5 text-amber-400" />
-            <span>Khôi phục mặc định</span>
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
+            <span>Khôi phục về mặc định gốc</span>
           </Button>
 
           <div className="flex items-center gap-3">
@@ -894,7 +576,7 @@ export function MegaMenuConfigModal({
               variant="outline"
               onClick={onClose}
               disabled={isSaving}
-              className="border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+              className="border-[#D5D5D0] bg-white text-[#111] hover:bg-[#F3F3F1] text-xs h-9 px-4 rounded-xl"
             >
               Hủy bỏ
             </Button>
@@ -902,16 +584,16 @@ export function MegaMenuConfigModal({
               type="button"
               onClick={handleSave}
               disabled={isSaving || isLoading}
-              className="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold shadow-lg shadow-cyan-500/20"
+              className="bg-[#111] hover:bg-black text-white font-semibold text-xs h-9 px-5 rounded-xl shadow-sm"
             >
               {isSaving ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
                   <span>Đang lưu...</span>
                 </>
               ) : (
                 <>
-                  <Save className="w-4 h-4 mr-2" />
+                  <Save className="w-4 h-4 mr-1.5" />
                   <span>Lưu cấu hình</span>
                 </>
               )}
