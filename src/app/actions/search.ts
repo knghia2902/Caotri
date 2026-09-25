@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 
+import { buildProductSearchFilter } from "@/lib/search-utils";
+
 export interface SearchProductResult {
   id: string;
   name: string;
@@ -22,8 +24,9 @@ export async function searchProductsAction(query: string): Promise<SearchProduct
   }
 
   try {
+    const searchFilter = buildProductSearchFilter(q);
     const products = await prisma.product.findMany({
-      where: {
+      where: searchFilter || {
         OR: [
           { name: { contains: q } },
           { slug: { contains: q } },

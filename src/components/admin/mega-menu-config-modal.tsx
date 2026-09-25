@@ -15,6 +15,7 @@ import {
   Sparkles,
   Info,
   Check,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,11 @@ import {
   saveMegaMenuConfigAction,
   resetMegaMenuConfigAction,
 } from "@/app/actions/mega-menu";
+import {
+  extractDefaultSearchKeyword,
+  getSearchQueryFromHref,
+  updateSearchQueryInHref,
+} from "@/lib/search-utils";
 
 interface MegaMenuConfigModalProps {
   isOpen: boolean;
@@ -109,7 +115,7 @@ export function MegaMenuConfigModal({
     }
   };
 
-  // 2. Cập nhật Tên mục hiển thị (ví dụ: "ASUS", "Razer"...) -> Tự động cập nhật link tìm kiếm
+  // 2. Cập nhật Tên mục hiển thị -> Tự động trích xuất từ khóa tìm kiếm nếu chưa tùy biến riêng
   const handleUpdateItemLabel = (
     colIdx: number,
     grpIdx: number,
@@ -120,18 +126,46 @@ export function MegaMenuConfigModal({
     const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
     const item = next.columns[colIdx]?.groups[grpIdx]?.items[itemIdx];
     if (item) {
+      const oldDefaultKeyword = extractDefaultSearchKeyword(item.label);
+      const currentSearch = getSearchQueryFromHref(item.href);
       item.label = newLabel;
-      // Nếu link hiện tại là link tìm kiếm hoặc chưa có link, tự động cập nhật theo tên luôn!
+
+      // Nếu link hiện tại là link tìm kiếm hoặc chưa có link:
       if (!item.href || item.href.includes("search=") || !item.href.includes("?")) {
-        item.href = newLabel.trim()
-          ? `/category/${category.slug}?search=${encodeURIComponent(newLabel.trim())}`
-          : `/category/${category.slug}`;
+        // Tự động đổi từ khóa nếu từ khóa hiện tại đang theo mặc định cũ hoặc rỗng
+        const isAuto =
+          !currentSearch ||
+          currentSearch === oldDefaultKeyword ||
+          currentSearch === item.label.trim();
+
+        if (isAuto) {
+          const newDefaultKeyword = extractDefaultSearchKeyword(newLabel);
+          item.href = newDefaultKeyword
+            ? `/category/${category.slug}?search=${encodeURIComponent(newDefaultKeyword)}`
+            : `/category/${category.slug}`;
+        }
       }
       setConfig(next);
     }
   };
 
-  // 3. Cập nhật Link thủ công (chỉ khi người dùng muốn sửa link sâu)
+  // 3. Cập nhật Từ khóa tìm kiếm của mục (cho phép Admin chủ động gõ từ khóa mong muốn)
+  const handleUpdateItemSearchKeyword = (
+    colIdx: number,
+    grpIdx: number,
+    itemIdx: number,
+    newKeyword: string
+  ) => {
+    if (!config) return;
+    const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
+    const item = next.columns[colIdx]?.groups[grpIdx]?.items[itemIdx];
+    if (item) {
+      item.href = updateSearchQueryInHref(item.href, category.slug, newKeyword);
+      setConfig(next);
+    }
+  };
+
+  // 4. Cập nhật Link thủ công (chỉ khi người dùng muốn sửa link sâu)
   const handleUpdateItemHref = (
     colIdx: number,
     grpIdx: number,
@@ -147,15 +181,18 @@ export function MegaMenuConfigModal({
     }
   };
 
-  // 4. Thêm mục con mới (chỉ cần gõ tên là có link ngay)
+  // 5. Thêm mục con mới (tự động gợi ý từ khóa tìm kiếm phù hợp)
   const handleAddItem = (colIdx: number, grpIdx: number, defaultLabel = "Mục mới") => {
     if (!config) return;
     const next = JSON.parse(JSON.stringify(config)) as CategoryMegaMenuConfig;
     const grp = next.columns[colIdx]?.groups[grpIdx];
     if (grp) {
+      const defaultKeyword = extractDefaultSearchKeyword(defaultLabel);
       grp.items.push({
         label: defaultLabel,
-        href: `/category/${category.slug}?search=${encodeURIComponent(defaultLabel)}`,
+        href: defaultKeyword
+          ? `/category/${category.slug}?search=${encodeURIComponent(defaultKeyword)}`
+          : `/category/${category.slug}`,
       });
       setConfig(next);
     }
@@ -307,7 +344,7 @@ export function MegaMenuConfigModal({
               <div className="bg-amber-50/80 border border-amber-200/80 rounded-xl px-4 py-2.5 flex items-center gap-2.5 text-xs text-amber-900">
                 <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
                 <span>
-                  <strong>Mẹo:</strong> Bấm vào chữ để sửa tên nhóm hoặc tên hãng. Khi gõ tên mới (vd: <em>Sony</em>, <em>Logitech</em>, <em>Không dây</em>), link tìm kiếm sản phẩm sẽ được <strong>tự động tạo ngay lập tức</strong> mà bạn không cần phải gõ đường dẫn URL nào cả.
+                  <strong>Mẹo:</strong> Mỗi mục gồm <strong>Tên hiển thị</strong> (chữ hiện trên menu, vd: <em>Chuột không dây (Wireless)</em>) và ô <strong>Tìm</strong> (từ khóa lọc sản phẩm, hệ thống tự trích xuất <em>Wireless</em>). Bạn có thể đổi từ khóa tìm kiếm trực tiếp bất cứ lúc nào!
                 </span>
               </div>
 
@@ -399,11 +436,16 @@ export function MegaMenuConfigModal({
                                     group.items.map((item, itemIdx) => {
                                       const urlKey = `${colIdx}-${grpIdx}-${itemIdx}`;
                                       const isUrlOpen = expandedUrlKey === urlKey;
+                                      const isPriceFilter =
+                                        item.href.includes("minPrice=") ||
+                                        item.href.includes("maxPrice=");
+                                      const searchKeyword = getSearchQueryFromHref(item.href);
+                                      const suggestedKeyword = extractDefaultSearchKeyword(item.label);
 
                                       return (
                                         <div
                                           key={itemIdx}
-                                          className="bg-white rounded-lg border border-[#E5E5E1] p-1.5 space-y-1 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                                          className="bg-white rounded-lg border border-[#E5E5E1] p-1.5 space-y-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
                                         >
                                           <div className="flex items-center gap-1.5">
                                             {/* Input Tên mục hiển thị */}
@@ -418,7 +460,7 @@ export function MegaMenuConfigModal({
                                                   e.target.value
                                                 )
                                               }
-                                              placeholder="Nhập tên..."
+                                              placeholder="Tên hiển thị..."
                                               className="flex-1 text-xs font-medium text-[#111] bg-transparent border-0 px-1 py-0.5 focus:outline-none focus:bg-[#F7F7F5] rounded"
                                             />
 
@@ -448,6 +490,40 @@ export function MegaMenuConfigModal({
                                               <X className="w-3 h-3" />
                                             </button>
                                           </div>
+
+                                          {/* Từ khóa tìm kiếm hoặc nhãn Lọc giá trực quan */}
+                                          {isPriceFilter ? (
+                                            <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50/80 border border-emerald-200/60 rounded text-[10px] text-emerald-800 font-medium">
+                                              <DollarSign className="w-3 h-3 text-emerald-600 shrink-0" />
+                                              <span>Bộ lọc theo khoảng giá</span>
+                                            </div>
+                                          ) : (
+                                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#F7F7F5] rounded border border-[#EAEAE8] text-[11px] focus-within:border-[#111] focus-within:bg-white transition-colors">
+                                              <Search className="w-3 h-3 text-[#8E8E87] shrink-0" />
+                                              <span className="text-[10px] text-[#74746E] font-medium shrink-0">
+                                                Tìm:
+                                              </span>
+                                              <input
+                                                type="text"
+                                                value={searchKeyword}
+                                                onChange={(e) =>
+                                                  handleUpdateItemSearchKeyword(
+                                                    colIdx,
+                                                    grpIdx,
+                                                    itemIdx,
+                                                    e.target.value
+                                                  )
+                                                }
+                                                placeholder={
+                                                  suggestedKeyword
+                                                    ? `vd: ${suggestedKeyword}`
+                                                    : "Từ khóa lọc sản phẩm..."
+                                                }
+                                                className="flex-1 bg-transparent border-0 text-[#111] text-[11px] font-mono focus:outline-none placeholder:text-[#A3A39D]"
+                                                title="Từ khóa hệ thống sẽ tìm kiếm trong sản phẩm khi khách nhấn mục này"
+                                              />
+                                            </div>
+                                          )}
 
                                           {/* Hiển thị link mở rộng khi người dùng bấm vào biểu tượng link */}
                                           {isUrlOpen && (

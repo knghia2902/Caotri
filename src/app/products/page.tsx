@@ -10,6 +10,7 @@ import {
   getStorefrontSettings,
   extractMegaMenuOverrides,
 } from "@/lib/storefront-data";
+import { buildProductSearchFilter } from "@/lib/search-utils";
 import { ChevronRight, Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -38,12 +39,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const where: any = {};
 
   if (search) {
-    where.OR = [
-      { name: { contains: search } },
-      { slug: { contains: search } },
-      { description: { contains: search } },
-      { specs: { contains: search } },
-    ];
+    const searchFilter = buildProductSearchFilter(search);
+    if (searchFilter) {
+      where.OR = searchFilter.OR;
+    }
   }
 
   if (categorySlug) {

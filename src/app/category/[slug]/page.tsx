@@ -12,6 +12,7 @@ import {
   getStorefrontSettings,
   extractMegaMenuOverrides,
 } from "@/lib/storefront-data";
+import { buildProductSearchFilter } from "@/lib/search-utils";
 import { Package, X } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -78,17 +79,13 @@ export default async function CategoryPage({
   }
 
   if (searchQuery) {
-    where.AND = [
-      ...(where.AND || []),
-      {
-        OR: [
-          { name: { contains: searchQuery } },
-          { slug: { contains: searchQuery } },
-          { description: { contains: searchQuery } },
-          { specs: { contains: searchQuery } },
-        ],
-      },
-    ];
+    const searchFilter = buildProductSearchFilter(searchQuery);
+    if (searchFilter) {
+      where.AND = [
+        ...(where.AND || []),
+        searchFilter,
+      ];
+    }
   }
 
   let orderBy: any = { createdAt: "desc" };
