@@ -6,10 +6,16 @@ import { ShieldCheck } from "lucide-react";
 interface ProductTabsProps {
   description: string;
   specsJson?: string | null;
+  policyTitle?: string | null;
   policy?: string | null;
 }
 
-export function ProductTabs({ description, specsJson, policy }: ProductTabsProps) {
+export function ProductTabs({
+  description,
+  specsJson,
+  policyTitle,
+  policy,
+}: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState<"desc" | "specs">("desc");
 
   // Parse specs an toàn
@@ -83,7 +89,7 @@ export function ProductTabs({ description, specsJson, policy }: ProductTabsProps
                   </div>
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#111] mb-1">
-                      Chính sách bảo hành & Ghi chú bán hàng
+                      {policyTitle || "Chính sách bảo hành & Ghi chú bán hàng"}
                     </h4>
                     <p className="text-sm text-[#555550] leading-relaxed whitespace-pre-line">
                       {policy}

@@ -22,6 +22,8 @@ export async function updateSettings(data: Record<string, string>) {
     if (data.logoUrl !== undefined) mapped.logo_url = data.logoUrl;
     if (data.product_policy !== undefined) mapped.productPolicy = data.product_policy;
     if (data.productPolicy !== undefined) mapped.product_policy = data.productPolicy;
+    if (data.product_policy_title !== undefined) mapped.productPolicyTitle = data.product_policy_title;
+    if (data.productPolicyTitle !== undefined) mapped.product_policy_title = data.productPolicyTitle;
 
     const updates = Object.entries(mapped).map(([key, value]) =>
       prisma.siteSetting.upsert({

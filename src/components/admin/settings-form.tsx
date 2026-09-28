@@ -21,6 +21,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     shop_name: initialSettings.shop_name || initialSettings.shopName || "TringuyenGear",
     address: initialSettings.address || "",
     email: initialSettings.email || "",
+    product_policy_title:
+      initialSettings.product_policy_title ||
+      initialSettings.productPolicyTitle ||
+      "Chính sách bảo hành & Ghi chú bán hàng",
     product_policy:
       initialSettings.product_policy ||
       initialSettings.productPolicy ||
@@ -259,18 +263,32 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
-            Nội dung thông tin mặc định (Bảo hành, Bao test, Đặt cọc...)
-          </label>
-          <textarea
-            value={formData.product_policy}
-            onChange={(e) => handleChange("product_policy", e.target.value)}
-            placeholder="VD: Bảo hành 1 tháng • Bao test 7 ngày lỗi 1 đổi 1 • Nhận cọc ship COD toàn quốc..."
-            rows={3}
-            disabled={isPending}
-            className="w-full rounded-xl border border-[#D5D5D0] p-3 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:ring-2 focus:ring-[#111] transition-all resize-y"
-          />
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+              Tiêu đề chính sách & ghi chú
+            </label>
+            <Input
+              value={formData.product_policy_title}
+              onChange={(e) => handleChange("product_policy_title", e.target.value)}
+              placeholder="VD: Chính sách bảo hành & Ghi chú bán hàng"
+              disabled={isPending}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+              Nội dung thông tin mặc định (Bảo hành, Bao test, Đặt cọc...)
+            </label>
+            <textarea
+              value={formData.product_policy}
+              onChange={(e) => handleChange("product_policy", e.target.value)}
+              placeholder="VD: Bảo hành 1 tháng • Bao test 7 ngày lỗi 1 đổi 1 • Nhận cọc ship COD toàn quốc..."
+              rows={4}
+              disabled={isPending}
+              className="w-full rounded-xl border border-[#D5D5D0] p-3 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:ring-2 focus:ring-[#111] transition-all resize-y"
+            />
+          </div>
         </div>
       </div>
 

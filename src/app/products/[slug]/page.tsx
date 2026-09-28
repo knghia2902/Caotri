@@ -10,7 +10,6 @@ import { ProductGalleryViewer } from "@/components/storefront/product-gallery-vi
 import { ProductActions } from "@/components/storefront/product-actions";
 import { ProductTabs } from "@/components/storefront/product-tabs";
 import { ProductCard } from "@/components/storefront/product-card";
-import { ShieldCheck } from "lucide-react";
 import {
   getStorefrontCategories,
   getStorefrontSettings,
@@ -96,7 +95,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       : null;
 
   const megaMenuOverrides = extractMegaMenuOverrides(settings);
-  const productPolicy = settings.product_policy || settings.productPolicy || "";
+  const policyTitle = settings.product_policy_title || settings.productPolicyTitle || "Chính sách bảo hành & Ghi chú bán hàng";
+  const policyContent = settings.product_policy || settings.productPolicy || "";
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-[#111] flex flex-col">
@@ -177,17 +177,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
             {/* Mô tả ngắn nếu có */}
             {product.shortDescription && (
-              <p className="text-sm text-[#74746E] line-clamp-3 leading-relaxed">
+              <p className="text-sm text-[#74746E] leading-relaxed whitespace-pre-line">
                 {product.shortDescription}
               </p>
-            )}
-
-            {/* Dòng thông tin mặc định (Bảo hành, Bao test, Cọc...) */}
-            {productPolicy && (
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FAFAFA] border border-[#E7E7E3] text-xs text-[#333]">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="leading-relaxed font-medium">{productPolicy}</span>
-              </div>
             )}
 
             {/* Khung Tương tác Mua hàng & Thêm giỏ hàng */}
@@ -211,7 +203,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           <ProductTabs
             description={product.description || ""}
             specsJson={product.specs}
-            policy={productPolicy}
+            policyTitle={policyTitle}
+            policy={policyContent}
           />
         </div>
 
