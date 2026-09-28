@@ -111,9 +111,6 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                 placeholder="/logo.png hoặc dán link ảnh logo"
                 disabled={isPending}
               />
-              <p className="text-[11px] text-[#A3A39D]">
-                💡 Bấm <strong>Tải logo từ máy</strong> để lưu trực tiếp lên VPS hoặc nhập đường dẫn ảnh (hỗ trợ PNG trong suốt, WEBP, SVG, JPG).
-              </p>
             </div>
           </div>
         </div>
@@ -149,9 +146,6 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               disabled={isPending}
               required
             />
-            <p className="text-[11px] text-[#74746E] mt-1">
-              Số điện thoại khách hàng bấm gọi trực tiếp khi chọn phương thức Gọi Hotline
-            </p>
           </div>
 
           {/* Zalo OA */}
@@ -167,9 +161,6 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               disabled={isPending}
               required
             />
-            <p className="text-[11px] text-[#74746E] mt-1">
-              Khách hàng bấm vào sẽ mở chat Zalo để gửi danh sách đơn hàng
-            </p>
           </div>
 
           {/* Facebook */}
@@ -186,9 +177,6 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               placeholder="VD: https://facebook.com/tringuyengear hoặc https://m.me/tringuyengear"
               disabled={isPending}
             />
-            <p className="text-[11px] text-[#74746E] mt-1">
-              Liên kết mở Fanpage hoặc khung chat Messenger của shop
-            </p>
           </div>
         </div>
       </div>
@@ -283,18 +271,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             disabled={isPending}
             className="w-full rounded-xl border border-[#D5D5D0] p-3 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:ring-2 focus:ring-[#111] transition-all resize-y"
           />
-          <p className="text-[11px] text-[#74746E]">
-            💡 Dòng thông tin này áp dụng đồng loạt cho <strong>tất cả sản phẩm</strong> trên website. Khi chỉnh sửa tại đây, toàn bộ các trang sản phẩm sẽ tự động cập nhật ngay lập tức.
-          </p>
         </div>
-      </div>
-
-      {/* Security alert for ADMIN only */}
-      <div className="p-4 rounded-xl bg-[#F8F9FA] border border-[#E7E7E3] flex items-center gap-3 text-xs text-[#555]">
-        <ShieldCheck className="w-5 h-5 flex-shrink-0 text-emerald-600" />
-        <span>
-          Tính năng cấu hình cài đặt này được phân quyền nghiêm ngặt dành riêng cho Quản trị viên (<strong>ADMIN</strong>).
-        </span>
       </div>
 
       {/* Submit Button */}
