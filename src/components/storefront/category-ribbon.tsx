@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Layers } from "lucide-react";
 
 export interface CategoryRibbonItem {
@@ -43,14 +44,13 @@ export function CategoryRibbon({ categories }: CategoryRibbonProps) {
             {/* Category Icon / Image */}
             <div className="w-12 h-12 flex items-center justify-center mb-3">
               {cat.imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={cat.imageUrl}
                   alt={cat.name}
+                  width={48}
+                  height={48}
                   className="w-full h-full object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
+                  loading="lazy"
                 />
               ) : (
                 <Layers className="w-6 h-6 text-[#111] stroke-[1.5px]" />

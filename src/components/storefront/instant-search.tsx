@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, X, Loader2, ArrowRight, Package } from "lucide-react";
 import { formatPrice, normalizeImageUrl } from "@/lib/utils";
 import { searchProductsAction, type SearchProductResult } from "@/app/actions/search";
@@ -129,15 +130,13 @@ export function InstantSearch() {
                     {/* Thumbnail */}
                     <div className="w-12 h-12 rounded-md bg-[#F3F3F1] border border-[#E7E7E3] overflow-hidden flex items-center justify-center flex-shrink-0 transition-colors">
                       {firstImg ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={firstImg}
                           alt={product.name}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = "none";
-                          }}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
                         />
                       ) : (
                         <Package className="w-4 h-4 text-[#A3A39D]" />

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   ShoppingBag,
@@ -54,10 +55,12 @@ export function StorefrontHeader({
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={logoUrl || "/logo.png"}
                 alt={shopName || "TringuyenGear"}
+                width={40}
+                height={40}
+                priority
                 className="w-full h-full object-contain"
               />
             </div>

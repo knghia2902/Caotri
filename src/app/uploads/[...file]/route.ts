@@ -32,6 +32,19 @@ export async function GET(
     return new NextResponse("Not a file", { status: 400 });
   }
 
+  const etag = `W/"${stat.size}-${Math.floor(stat.mtimeMs)}"`;
+  const ifNoneMatch = request.headers.get("if-none-match");
+
+  if (ifNoneMatch === etag) {
+    return new NextResponse(null, {
+      status: 304,
+      headers: {
+        ETag: etag,
+        "Cache-Control": "public, max-age=31536000, immutable",
+      },
+    });
+  }
+
   const ext = path.extname(fullPath).toLowerCase();
   const contentType = MIME_TYPES[ext] || "application/octet-stream";
   const fileBuffer = await fs.promises.readFile(fullPath);
@@ -39,7 +52,8 @@ export async function GET(
   return new NextResponse(fileBuffer, {
     headers: {
       "Content-Type": contentType,
-      "Cache-Control": "public, max-age=2592000, immutable",
+      ETag: etag,
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
 }

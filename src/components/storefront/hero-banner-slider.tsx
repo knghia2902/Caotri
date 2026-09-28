@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { normalizeImageUrl } from "@/lib/utils";
 
@@ -61,15 +62,13 @@ export function HeroBannerSlider({ banners }: HeroBannerSliderProps) {
             idx === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
           }`}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={normalizeImageUrl(b.imageUrl)}
             alt={b.title}
-            referrerPolicy="no-referrer"
-            loading={idx === 0 ? "eager" : "lazy"}
-            fetchPriority={idx === 0 ? "high" : "auto"}
-            decoding="async"
-            className="w-full h-full object-cover object-center"
+            fill
+            priority={idx === 0}
+            sizes="(max-width: 768px) 100vw, (max-width: 1360px) 100vw, 1360px"
+            className="object-cover object-center"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
                 "https://placehold.co/1200x500/F3F3F1/74746E?text=TringuyenGear";

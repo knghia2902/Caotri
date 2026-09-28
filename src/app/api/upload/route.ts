@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
+import sharp from "sharp";
 import { getCurrentSession } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 
@@ -102,19 +103,44 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      // Đọc buffer dữ liệu gốc của file
+      const arrayBuffer = await file.arrayBuffer();
+      const rawBuffer = Buffer.from(arrayBuffer);
+
+      let finalBuffer = rawBuffer;
+      let finalExt = ext;
+
+      // Nén và chuyển đổi sang WebP chất lượng cao nếu là ảnh thông thường (JPG, PNG, WEBP, AVIF)
+      if ([".jpg", ".jpeg", ".png", ".webp", ".avif"].includes(ext)) {
+        try {
+          finalBuffer = await sharp(rawBuffer)
+            .rotate() // Xoay đúng chiều EXIF từ điện thoại/máy ảnh
+            .resize({
+              width: 1600,
+              height: 1600,
+              fit: "inside",
+              withoutEnlargement: true,
+            })
+            .webp({ quality: 82, effort: 4 })
+            .toBuffer();
+          finalExt = ".webp";
+        } catch (sharpError) {
+          console.warn("Sharp optimization failed, using original file:", sharpError);
+          finalBuffer = rawBuffer;
+        }
+      }
+
       // Tạo tên file an toàn, chống ghi đè và ngăn chặn path traversal
       const rawBaseName = path.basename(file.name, path.extname(file.name));
       const cleanBase = slugify(rawBaseName).slice(0, 40) || "upload";
       const randomSuffix = crypto.randomBytes(4).toString("hex");
       const timestamp = Date.now();
-      const uniqueFileName = `${cleanBase}-${timestamp}-${randomSuffix}${ext}`;
+      const uniqueFileName = `${cleanBase}-${timestamp}-${randomSuffix}${finalExt}`;
 
       const targetPath = path.join(uploadDir, uniqueFileName);
 
-      // Lưu file vào đĩa
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      await fs.promises.writeFile(targetPath, buffer);
+      // Lưu file đã nén vào đĩa
+      await fs.promises.writeFile(targetPath, finalBuffer);
 
       const publicUrl = `/uploads/${uniqueFileName}`;
       savedUrls.push(publicUrl);

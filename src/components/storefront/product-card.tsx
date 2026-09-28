@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatPrice, normalizeImageUrl } from "@/lib/utils";
 
 export interface StorefrontProduct {
@@ -34,26 +36,36 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   })();
   const rawImage = imageList[0];
-  const mainImage = rawImage
+  const initialImage = rawImage
     ? normalizeImageUrl(rawImage)
     : "https://placehold.co/400x400/F3F3F1/A3A39D?text=No+Image";
+
+  const [imgSrc, setImgSrc] = useState(initialImage);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <Link href={`/products/${product.slug}`} className="group flex flex-col gap-3">
       {/* Top Media Area */}
       <div className="relative aspect-square w-full bg-[#F3F3F1] rounded-md overflow-hidden flex items-center justify-center p-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={mainImage}
+        {/* Placeholder skeleton while image loads */}
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-[#EFEFEF] animate-pulse pointer-events-none" />
+        )}
+
+        <Image
+          src={imgSrc}
           alt={product.name}
-          referrerPolicy="no-referrer"
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-contain"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              "https://placehold.co/400x400/F3F3F1/A3A39D?text=TringuyenGear";
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className={`object-contain p-2 transition-all duration-300 group-hover:scale-105 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => {
+            setImgSrc("https://placehold.co/400x400/F3F3F1/A3A39D?text=TringuyenGear");
+            setIsLoaded(true);
           }}
+          loading="lazy"
         />
 
         {/* Badges Container */}
