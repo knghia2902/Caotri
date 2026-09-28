@@ -175,10 +175,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               )}
             </div>
 
-            {/* Tóm tắt sản phẩm ngắn */}
-            {product.description && (
+            {/* Mô tả ngắn nếu có */}
+            {product.shortDescription && (
               <p className="text-sm text-[#74746E] line-clamp-3 leading-relaxed">
-                {product.description}
+                {product.shortDescription}
               </p>
             )}
 

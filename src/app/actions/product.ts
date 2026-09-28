@@ -10,6 +10,7 @@ import { invalidateStorefrontCache } from "@/lib/storefront-data";
 export interface ProductFormData {
   name: string;
   slug?: string;
+  shortDescription?: string;
   description?: string;
   price: number;
   originalPrice?: number | null;
@@ -73,6 +74,7 @@ export async function createProduct(data: ProductFormData) {
       data: {
         name: data.name.trim(),
         slug: finalSlug,
+        shortDescription: data.shortDescription?.trim() || null,
         description: data.description?.trim() || null,
         price: Number(data.price),
         originalPrice: data.originalPrice ? Number(data.originalPrice) : null,
@@ -88,6 +90,7 @@ export async function createProduct(data: ProductFormData) {
     invalidateStorefrontCache();
     revalidatePath("/admin/products");
     revalidatePath("/admin/categories");
+    revalidatePath("/", "layout");
     revalidatePath("/");
 
     return { success: true, product };
@@ -156,7 +159,8 @@ export async function updateProduct(id: string, data: ProductFormData) {
       data: {
         name: data.name.trim(),
         slug: finalSlug,
-        description: data.description?.trim() || null,
+        shortDescription: data.shortDescription !== undefined ? (data.shortDescription?.trim() || null) : undefined,
+        description: data.description !== undefined ? (data.description?.trim() || null) : undefined,
         price: Number(data.price),
         originalPrice: data.originalPrice ? Number(data.originalPrice) : null,
         images: JSON.stringify(cleanImages),
@@ -172,6 +176,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
     revalidatePath("/admin/products");
     revalidatePath(`/admin/products/${id}/edit`);
     revalidatePath("/admin/categories");
+    revalidatePath("/", "layout");
     revalidatePath("/");
 
     return { success: true, product: updated };

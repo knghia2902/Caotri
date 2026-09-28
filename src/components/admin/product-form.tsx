@@ -17,6 +17,7 @@ export interface InitialProductData {
   id?: string;
   name: string;
   slug: string;
+  shortDescription?: string | null;
   description: string | null;
   price: number;
   originalPrice: number | null;
@@ -47,6 +48,9 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   const [name, setName] = useState(initialData?.name || "");
   const [slug, setSlug] = useState(initialData?.slug || "");
   const [isCustomSlug, setIsCustomSlug] = useState(Boolean(initialData?.slug));
+  const [shortDescription, setShortDescription] = useState(
+    initialData?.shortDescription || ""
+  );
   const [description, setDescription] = useState(initialData?.description || "");
   const [categoryId, setCategoryId] = useState(
     initialData?.categoryId || (categories[0]?.id ?? "")
@@ -126,6 +130,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
       const payload: ProductFormData = {
         name: name.trim(),
         slug: slug.trim(),
+        shortDescription: shortDescription.trim() || undefined,
         description: description.trim() || undefined,
         price: numPrice,
         originalPrice:
@@ -266,12 +271,26 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Mô tả chi tiết sản phẩm
+                Mô tả ngắn (Hiển thị cạnh ảnh & trên phần chính sách)
+              </label>
+              <textarea
+                value={shortDescription}
+                onChange={(e) => setShortDescription(e.target.value)}
+                placeholder="VD: Cấu hình văn phòng học tập, pin 15p, chức năng tốt, kèm sạc..."
+                rows={2}
+                disabled={isPending}
+                className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all resize-y"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Mô tả chi tiết sản phẩm (Hiển thị tại tab Mô tả phía dưới)
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Mô tả các tính năng nổi bật, trải nghiệm sử dụng, chế độ bảo hành..."
+                placeholder="Mô tả chi tiết các tính năng, ngoại hình, thông số, quà tặng kèm theo..."
                 rows={5}
                 disabled={isPending}
                 className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all resize-y"
