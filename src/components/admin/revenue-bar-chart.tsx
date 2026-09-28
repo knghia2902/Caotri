@@ -196,7 +196,7 @@ export function RevenueBarChart({ data }: RevenueBarChartProps) {
         <div className="flex items-center justify-end gap-5 mt-2 text-xs text-[#74746E]">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-[#111111]" />
-            <span>Doanh thu thực tế (COMPLETED)</span>
+            <span>Doanh thu thực tế</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-[#74746E] opacity-40" />

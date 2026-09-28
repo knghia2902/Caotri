@@ -203,11 +203,11 @@ export function TrafficChart({ data }: TrafficChartProps) {
         <div className="flex items-center justify-end gap-5 mt-2 text-xs text-[#74746E]">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-[#111111]" />
-            <span>Khách duy nhất (1 thiết bị/ngày = 1)</span>
+            <span>Khách duy nhất</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-[#A1A1AA]" />
-            <span>Lượt xem trang (Pageviews)</span>
+            <span>Lượt xem trang</span>
           </div>
         </div>
       </div>

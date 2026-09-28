@@ -9,7 +9,6 @@ import {
   Smartphone,
   Tablet,
   History,
-  ShieldCheck,
   ExternalLink,
   ArrowUpRight,
   ArrowDownRight,
@@ -40,22 +39,11 @@ export default async function AdminTrafficPage() {
       <div className="p-6 rounded-2xl bg-white border border-[#E7E7E3] relative overflow-hidden">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-xs uppercase tracking-wider text-[#111] font-semibold">
-                Phân tích lưu lượng web
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                Anti-Spam Deduplication ON
-              </span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#111]">
-              Lượt truy cập (Traffic Analytics)
+              Lượt truy cập
             </h1>
-            <p className="text-sm text-[#74746E] mt-1 max-w-3xl">
-              Thống kê khách truy cập thực tế. Hệ thống khử trùng lặp theo Thiết bị (Cookie) và Địa chỉ IP:
-              1 máy tính / 1 điện thoại / 1 IP tải lại web hoặc chuyển trang liên tục trong ngày chỉ tính là{" "}
-              <strong className="text-[#111] font-medium">1 Khách duy nhất</strong>.
+            <p className="text-sm text-[#74746E] mt-1">
+              Thống kê lưu lượng và khách truy cập website.
             </p>
           </div>
         </div>
@@ -183,9 +171,6 @@ export default async function AdminTrafficPage() {
             <CardTitle className="text-base font-bold text-[#111]">
               Thiết bị truy cập
             </CardTitle>
-            <p className="text-xs text-[#74746E] mt-0.5">
-              Tỉ lệ khách sử dụng máy tính vs điện thoại trong 30 ngày qua.
-            </p>
           </CardHeader>
           <CardContent className="space-y-5">
             {/* Desktop */}
@@ -243,11 +228,6 @@ export default async function AdminTrafficPage() {
                   style={{ width: `${overview.devices.tablet.percent}%` }}
                 />
               </div>
-            </div>
-
-            {/* Info notice */}
-            <div className="p-3 rounded-lg bg-[#F7F7F5] text-[11px] text-[#74746E] leading-relaxed">
-              💡 Giúp bạn đánh giá khách thích xem trên máy tính hay điện thoại để ưu tiên tối ưu giao diện phù hợp.
             </div>
           </CardContent>
         </Card>

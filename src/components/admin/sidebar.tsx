@@ -40,11 +40,6 @@ const navItems: NavItem[] = [
     icon: LayoutDashboard,
   },
   {
-    title: "Lượt truy cập",
-    href: "/admin/traffic",
-    icon: Users,
-  },
-  {
     title: "Đơn hàng",
     href: "/admin/orders",
     icon: ShoppingBag,
@@ -64,6 +59,11 @@ const navItems: NavItem[] = [
     href: "/admin/banners",
     icon: ImageIcon,
     adminOnly: true,
+  },
+  {
+    title: "Lượt truy cập",
+    href: "/admin/traffic",
+    icon: Users,
   },
   {
     title: "Cài đặt Shop",
