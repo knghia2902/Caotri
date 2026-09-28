@@ -176,9 +176,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             </div>
 
             {/* Mô tả ngắn nếu có */}
-            {product.shortDescription && (
+            {(product.shortDescription || product.description) && (
               <p className="text-sm text-[#74746E] leading-relaxed whitespace-pre-line">
-                {product.shortDescription}
+                {product.shortDescription || product.description}
               </p>
             )}
 

@@ -49,7 +49,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   const [slug, setSlug] = useState(initialData?.slug || "");
   const [isCustomSlug, setIsCustomSlug] = useState(Boolean(initialData?.slug));
   const [shortDescription, setShortDescription] = useState(
-    initialData?.shortDescription || ""
+    initialData?.shortDescription || initialData?.description || ""
   );
   const [description, setDescription] = useState(initialData?.description || "");
   const [categoryId, setCategoryId] = useState(
