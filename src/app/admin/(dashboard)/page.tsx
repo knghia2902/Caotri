@@ -12,11 +12,13 @@ import {
   ArrowRight,
   DollarSign,
   Wallet,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import { computeDailyRevenue } from "@/lib/order-analytics";
 import { RevenueBarChart } from "@/components/admin/revenue-bar-chart";
+import { getTrafficOverview } from "@/lib/traffic";
 
 export const metadata = {
   title: "Dashboard Quản trị | TringuyenGear",
@@ -38,6 +40,7 @@ export default async function AdminDashboardPage() {
     inStockProductsCount,
     ordersIn7Days,
     recentOrders,
+    trafficOverview,
   ] = await Promise.all([
     // 1. Doanh thu thực tế (COMPLETED)
     prisma.order.aggregate({
@@ -83,6 +86,9 @@ export default async function AdminDashboardPage() {
         items: true,
       },
     }),
+
+    // 7. Thống kê lưu lượng truy cập thực tế
+    getTrafficOverview(),
   ]);
 
   const completedRevenue = completedRevenueAgg._sum.totalAmount || 0;
@@ -262,6 +268,50 @@ export default async function AdminDashboardPage() {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Snapshot Lưu lượng truy cập (Traffic & Khách hàng thực tế) */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+            <Users className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[#111]">Lưu lượng khách truy cập (Traffic)</h3>
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Khử trùng lặp IP / Thiết bị
+              </span>
+            </div>
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-1 text-xs text-[#74746E]">
+              <span>
+                Hôm nay: <strong className="text-sm font-bold text-[#111]">{trafficOverview.today.visitors}</strong> khách duy nhất
+              </span>
+              <span>•</span>
+              <span>
+                <strong className="font-semibold text-[#111]">{trafficOverview.today.pageviews}</strong> lượt xem trang
+              </span>
+              <span className="hidden sm:inline">•</span>
+              <span className="hidden sm:inline">
+                Hôm qua: <strong className="font-semibold text-[#111]">{trafficOverview.yesterday.visitors}</strong> khách
+              </span>
+              <span className="hidden md:inline">•</span>
+              <span className="hidden md:inline">
+                7 ngày: <strong className="font-semibold text-[#111]">{trafficOverview.last7Days.visitors}</strong> khách
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E7E7E3]">
+          <Link
+            href="/admin/traffic"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[#E7E7E3] hover:border-[#111] bg-white text-xs font-semibold text-[#111] hover:bg-[#F7F7F5] transition-colors"
+          >
+            <span>Chi tiết biểu đồ & Thiết bị</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
       </div>
 
       {/* Biểu đồ Doanh thu 7 ngày gần nhất (Pure SVG Bar Chart) */}

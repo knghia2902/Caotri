@@ -45,3 +45,6 @@ scratch_cf.yml
 # uploaded files
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# scratch directory
+scratch/

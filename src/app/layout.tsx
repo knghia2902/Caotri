@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { TrafficTracker } from "@/components/common/traffic-tracker";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -80,7 +82,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <TrafficTracker />
+        {children}
+      </body>
     </html>
   );
 }

@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Gamepad2,
   X,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +38,11 @@ const navItems: NavItem[] = [
     title: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Lượt truy cập",
+    href: "/admin/traffic",
+    icon: Users,
   },
   {
     title: "Đơn hàng",

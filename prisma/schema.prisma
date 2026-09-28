@@ -91,3 +91,35 @@ model SiteSetting {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model DailyVisitor {
+  id         String   @id @default(cuid())
+  date       String   // Format: "YYYY-MM-DD" theo múi giờ Việt Nam (UTC+7)
+  visitorId  String   // Token định danh trình duyệt/máy tính (Cookie tg_vid)
+  ipHash     String   // Hash SHA-256 của IP khách để chống spam F5/mở tab mới
+  userAgent  String?
+  deviceType String?  // "Desktop" | "Mobile" | "Tablet"
+  pageviews  Int      @default(1)
+  lastPath   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([visitorId, date])
+  @@index([ipHash, date])
+  @@index([date])
+}
+
+model TrafficStat {
+  date       String   @id // Format: "YYYY-MM-DD"
+  visitors   Int      @default(0) // Số khách truy cập duy nhất trong ngày (Unique Visitors)
+  pageviews  Int      @default(0) // Tổng số lượt xem trang trong ngày (Pageviews)
+  updatedAt  DateTime @updatedAt
+}
+
+model PageviewStat {
+  id        String   @id @default(cuid())
+  path      String   @unique // URL đường dẫn: "/", "/product/...", "/category/..."
+  title     String?
+  views     Int      @default(1)
+  updatedAt DateTime @updatedAt
+}
