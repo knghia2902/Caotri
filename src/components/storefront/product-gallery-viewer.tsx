@@ -67,24 +67,47 @@ export function ProductGalleryViewer({ images, title }: ProductGalleryViewerProp
     };
   }, [isLightboxOpen, handlePrev, handleNext]);
 
+  // Preload toàn bộ ảnh trong gallery vào RAM trình duyệt ngay khi trang mở
+  useEffect(() => {
+    displayImages.forEach((src) => {
+      if (src && typeof window !== "undefined") {
+        const preloadImg = new window.Image();
+        preloadImg.src = src;
+      }
+    });
+  }, [displayImages]);
+
   return (
     <div className="space-y-4">
-      {/* Khung ảnh lớn chính */}
+      {/* Khung ảnh lớn chính với hiệu ứng Crossfade mượt mà tức thì */}
       <div
         onClick={() => setIsLightboxOpen(true)}
         className="relative aspect-square w-full rounded-2xl bg-[#F7F7F5] overflow-hidden group cursor-zoom-in border border-[#E7E7E3]"
         title="Bấm để phóng to xem chi tiết"
       >
-        <Image
-          src={isCurrentError ? "/placeholder-gear.svg" : currentImage}
-          alt={`${title} - Ảnh ${selectedIndex + 1}`}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain p-4 sm:p-6 transition-transform duration-300 group-hover:scale-[1.02]"
-          referrerPolicy="no-referrer"
-          onError={() => setHasError((prev) => ({ ...prev, [selectedIndex]: true }))}
-        />
+        {displayImages.map((img, idx) => {
+          const isSelected = idx === selectedIndex;
+          const isErr = hasError[idx];
+          return (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${
+                isSelected ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              <Image
+                src={isErr ? "/placeholder-gear.svg" : img}
+                alt={`${title} - Ảnh ${idx + 1}`}
+                fill
+                priority={idx === 0}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-contain p-4 sm:p-6 transition-transform duration-300 group-hover:scale-[1.02]"
+                referrerPolicy="no-referrer"
+                onError={() => setHasError((prev) => ({ ...prev, [idx]: true }))}
+              />
+            </div>
+          );
+        })}
 
         {/* Nút Previous & Next trên ảnh chính */}
         {displayImages.length > 1 && (
