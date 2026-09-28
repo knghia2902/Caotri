@@ -4,6 +4,19 @@ import { verifyJWT, COOKIE_NAME } from "@/lib/auth";
 
 const ADMIN_ONLY_ROUTES = ["/admin/banners", "/admin/settings"];
 
+function getTargetUrl(path: string, req: NextRequest): URL {
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const host = forwardedHost || req.headers.get("host") || "";
+  const proto = req.headers.get("x-forwarded-proto") || "https";
+
+  if (!host || host.includes("localhost") || host.includes("127.0.0.1")) {
+    const baseUrl = process.env.NEXTAUTH_URL || "https://tringuyengear.com";
+    return new URL(path, baseUrl);
+  }
+
+  return new URL(path, `${proto}://${host}`);
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -25,7 +38,7 @@ export async function middleware(req: NextRequest) {
       if (isLoginPage) {
         return NextResponse.next();
       }
-      const loginUrl = new URL("/admin/login", req.url);
+      const loginUrl = getTargetUrl("/admin/login", req);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -36,7 +49,7 @@ export async function middleware(req: NextRequest) {
       if (isLoginPage) {
         return NextResponse.next();
       }
-      const loginUrl = new URL("/admin/login", req.url);
+      const loginUrl = getTargetUrl("/admin/login", req);
       loginUrl.searchParams.set("redirect", pathname);
       const response = NextResponse.redirect(loginUrl);
       response.cookies.delete(COOKIE_NAME);
@@ -45,7 +58,7 @@ export async function middleware(req: NextRequest) {
 
     // Đã có session hợp lệ nhưng đang truy cập vào trang login -> chuyển thẳng về dashboard
     if (isLoginPage) {
-      return NextResponse.redirect(new URL("/admin", req.url));
+      return NextResponse.redirect(getTargetUrl("/admin", req));
     }
 
     // Kiểm tra phân quyền: Staff bị chặn truy cập các trang chỉ dành cho Admin
@@ -53,7 +66,7 @@ export async function middleware(req: NextRequest) {
       session.role === "STAFF" &&
       ADMIN_ONLY_ROUTES.some((route) => pathname.startsWith(route))
     ) {
-      const forbiddenUrl = new URL("/admin", req.url);
+      const forbiddenUrl = getTargetUrl("/admin", req);
       forbiddenUrl.searchParams.set("error", "forbidden");
       return NextResponse.redirect(forbiddenUrl);
     }
