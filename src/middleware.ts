@@ -7,14 +7,14 @@ const ADMIN_ONLY_ROUTES = ["/admin/banners", "/admin/settings"];
 function getTargetUrl(path: string, req: NextRequest): URL {
   const forwardedHost = req.headers.get("x-forwarded-host");
   const host = forwardedHost || req.headers.get("host") || "";
-  const proto = req.headers.get("x-forwarded-proto") || "https";
 
   if (!host || host.includes("localhost") || host.includes("127.0.0.1")) {
     const baseUrl = process.env.NEXTAUTH_URL || "https://tringuyengear.com";
     return new URL(path, baseUrl);
   }
 
-  return new URL(path, `${proto}://${host}`);
+  // Đảm bảo luôn chuyển hướng về giao thức bảo mật HTTPS khi chạy với domain thật
+  return new URL(path, `https://${host}`);
 }
 
 export async function middleware(req: NextRequest) {
