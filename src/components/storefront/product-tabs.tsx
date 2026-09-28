@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { ShieldCheck } from "lucide-react";
 
 interface ProductTabsProps {
   description: string;
   specsJson?: string | null;
+  policy?: string | null;
 }
 
-export function ProductTabs({ description, specsJson }: ProductTabsProps) {
+export function ProductTabs({ description, specsJson, policy }: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState<"desc" | "specs">("desc");
 
   // Parse specs an toàn
@@ -68,10 +70,28 @@ export function ProductTabs({ description, specsJson }: ProductTabsProps) {
       {/* Nội dung Tab */}
       <div className="py-8">
         {activeTab === "desc" ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-sm text-[#555550] leading-relaxed whitespace-pre-line space-y-4">
               {description}
             </div>
+
+            {policy && (
+              <div className="pt-6 border-t border-[#E7E7E3]">
+                <div className="flex items-start gap-3.5 p-4 rounded-xl bg-[#FAFAFA] border border-[#E7E7E3]">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#111] mb-1">
+                      Chính sách bảo hành & Ghi chú bán hàng
+                    </h4>
+                    <p className="text-sm text-[#555550] leading-relaxed whitespace-pre-line">
+                      {policy}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-4">

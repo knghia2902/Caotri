@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/auth";
 import { SettingsForm } from "@/components/admin/settings-form";
-import { Sliders } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -25,16 +24,10 @@ export default async function SettingsPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <div className="flex items-center gap-2.5 text-cyan-400 mb-1">
-          <Sliders className="w-5 h-5" />
-          <span className="text-xs font-semibold uppercase tracking-wider">
-            Hệ thống & Cấu hình
-          </span>
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+        <h1 className="text-2xl font-bold tracking-tight text-[#111]">
           Cài đặt Cửa hàng
         </h1>
-        <p className="text-sm text-zinc-400 mt-1">
+        <p className="text-sm text-[#74746E] mt-1">
           Thiết lập thông tin liên hệ Hotline, Zalo OA, Fanpage Facebook và địa chỉ cửa hàng
         </p>
       </div>

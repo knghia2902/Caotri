@@ -20,6 +20,8 @@ export async function updateSettings(data: Record<string, string>) {
     if (data.facebookUrl !== undefined) mapped.facebook = data.facebookUrl;
     if (data.logo_url !== undefined) mapped.logoUrl = data.logo_url;
     if (data.logoUrl !== undefined) mapped.logo_url = data.logoUrl;
+    if (data.product_policy !== undefined) mapped.productPolicy = data.product_policy;
+    if (data.productPolicy !== undefined) mapped.product_policy = data.productPolicy;
 
     const updates = Object.entries(mapped).map(([key, value]) =>
       prisma.siteSetting.upsert({
@@ -33,6 +35,7 @@ export async function updateSettings(data: Record<string, string>) {
 
     invalidateStorefrontCache();
     revalidatePath("/admin/settings");
+    revalidatePath("/", "layout");
     revalidatePath("/");
     revalidatePath("/cart");
     revalidatePath("/products");

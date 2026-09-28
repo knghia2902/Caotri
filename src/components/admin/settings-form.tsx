@@ -21,6 +21,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     shop_name: initialSettings.shop_name || initialSettings.shopName || "TringuyenGear",
     address: initialSettings.address || "",
     email: initialSettings.email || "",
+    product_policy:
+      initialSettings.product_policy ||
+      initialSettings.productPolicy ||
+      "Bảo hành 1 tháng • Bao test 7 ngày lỗi 1 đổi 1 • Nhận cọc ship COD toàn quốc",
   });
 
   const [isPending, startTransition] = useTransition();
@@ -251,9 +255,43 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
         </div>
       </div>
 
+      {/* Block 4: Chính sách & Ghi chú mặc định sản phẩm */}
+      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+        <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
+          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-[#21A366]">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-[#111]">
+              Chính sách & Ghi chú mặc định sản phẩm
+            </h2>
+            <p className="text-xs text-[#74746E]">
+              Hiển thị tự động bên dưới phần mô tả của tất cả sản phẩm (bảo hành, bao test, cọc, quy định đổi trả...)
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E]">
+            Nội dung thông tin mặc định (Bảo hành, Bao test, Đặt cọc...)
+          </label>
+          <textarea
+            value={formData.product_policy}
+            onChange={(e) => handleChange("product_policy", e.target.value)}
+            placeholder="VD: Bảo hành 1 tháng • Bao test 7 ngày lỗi 1 đổi 1 • Nhận cọc ship COD toàn quốc..."
+            rows={3}
+            disabled={isPending}
+            className="w-full rounded-xl border border-[#D5D5D0] p-3 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:ring-2 focus:ring-[#111] transition-all resize-y"
+          />
+          <p className="text-[11px] text-[#74746E]">
+            💡 Dòng thông tin này áp dụng đồng loạt cho <strong>tất cả sản phẩm</strong> trên website. Khi chỉnh sửa tại đây, toàn bộ các trang sản phẩm sẽ tự động cập nhật ngay lập tức.
+          </p>
+        </div>
+      </div>
+
       {/* Security alert for ADMIN only */}
-      <div className="p-4 rounded-xl bg-cyan-950/20 border border-[#D5D5D0] flex items-center gap-3 text-xs text-[#111]">
-        <ShieldCheck className="w-5 h-5 flex-shrink-0 text-[#111]" />
+      <div className="p-4 rounded-xl bg-[#F8F9FA] border border-[#E7E7E3] flex items-center gap-3 text-xs text-[#555]">
+        <ShieldCheck className="w-5 h-5 flex-shrink-0 text-emerald-600" />
         <span>
           Tính năng cấu hình cài đặt này được phân quyền nghiêm ngặt dành riêng cho Quản trị viên (<strong>ADMIN</strong>).
         </span>
