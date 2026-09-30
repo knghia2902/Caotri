@@ -15,6 +15,7 @@ import {
   Gamepad2,
   X,
   Users,
+  Cloud,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +65,12 @@ const navItems: NavItem[] = [
     title: "Lượt truy cập",
     href: "/admin/traffic",
     icon: Users,
+  },
+  {
+    title: "Sao lưu dữ liệu",
+    href: "/admin/backups",
+    icon: Cloud,
+    adminOnly: true,
   },
   {
     title: "Cài đặt Shop",
