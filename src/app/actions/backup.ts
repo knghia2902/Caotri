@@ -35,6 +35,7 @@ export interface BackupConfig {
   backup_include_source: boolean;
   backup_upload_gdrive: boolean;
   gdrive_connected: boolean;
+  gdrive_client_id: string;
 }
 
 function formatBytes(bytes: number, decimals = 1) {
@@ -82,6 +83,7 @@ export async function getBackupConfigAction(): Promise<BackupConfig> {
     backup_include_source: map["backup_include_source"] !== "false",
     backup_upload_gdrive: map["backup_upload_gdrive"] === "true",
     gdrive_connected: gdriveConnected,
+    gdrive_client_id: process.env.GDRIVE_CLIENT_ID || map["gdrive_client_id"] || "",
   };
 }
 
@@ -279,6 +281,9 @@ export async function saveGoogleDriveConfigAction(input: string) {
       return { success: false, error: "Vui lòng nhập mã code hoặc token!" };
     }
 
+    const clientId = process.env.GDRIVE_CLIENT_ID || (await prisma.siteSetting.findUnique({ where: { key: "backup_gdrive_client_id" } }))?.value || "";
+    const clientSecret = process.env.GDRIVE_CLIENT_SECRET || (await prisma.siteSetting.findUnique({ where: { key: "backup_gdrive_client_secret" } }))?.value || "";
+
     let tokenData: any = null;
 
     // Trường hợp 1: Nhập trực tiếp JSON Token (ví dụ từ rclone authorize)
@@ -309,8 +314,8 @@ export async function saveGoogleDriveConfigAction(input: string) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           code: code,
-          client_id: "202264815644.apps.googleusercontent.com",
-          client_secret: "X4Z3ca8xfWDb1Voo-F9a7ZxJ",
+          client_id: clientId,
+          client_secret: clientSecret,
           redirect_uri: "http://127.0.0.1:53682/",
           grant_type: "authorization_code",
         }),
@@ -337,7 +342,7 @@ export async function saveGoogleDriveConfigAction(input: string) {
       return { success: false, error: "Không tìm thấy access_token hoặc refresh_token trong dữ liệu xác thực." };
     }
 
-    const rcloneConf = `[gdrive]\ntype = drive\nscope = drive\ntoken = ${JSON.stringify(tokenData)}\n`;
+    const rcloneConf = `[gdrive]\ntype = drive\nclient_id = ${clientId}\nclient_secret = ${clientSecret}\nscope = drive\ntoken = ${JSON.stringify(tokenData)}\n`;
 
     if (!fs.existsSync(RCLONE_CONF_DIR)) {
       fs.mkdirSync(RCLONE_CONF_DIR, { recursive: true });
