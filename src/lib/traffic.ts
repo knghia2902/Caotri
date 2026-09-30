@@ -42,10 +42,29 @@ export function detectDeviceType(userAgent: string = ""): "Desktop" | "Mobile" |
  * Nhận diện bot / web crawlers tự động để bỏ qua không tính vào lượt truy cập
  */
 export function isBot(userAgent: string = ""): boolean {
-  if (!userAgent) return false;
-  return /bot|crawler|spider|crawling|googlebot|bingbot|yandex|slurp|duckduckbot|baiduspider|headlesschrome|facebookexternalhit|whatsapp|telegrambot|curl|wget|lighthouse|dataprovider|semrush|ahrefs|uptime|pingdom|bytespider|amazonbot|claudebot|gptbot|censys|shodan/i.test(
-    userAgent
-  );
+  if (!userAgent || userAgent.trim().length < 15) return true;
+  const ua = userAgent.toLowerCase();
+
+  // 1. Các từ khóa bot, crawler, scanner thông dụng
+  if (
+    /bot|crawler|spider|crawling|googlebot|bingbot|yandex|slurp|duckduckbot|baiduspider|headlesschrome|facebookexternalhit|whatsapp|telegrambot|curl|wget|lighthouse|dataprovider|semrush|ahrefs|uptime|pingdom|bytespider|amazonbot|claudebot|gptbot|censys|shodan|netcraft|python|axios|go-http-client/i.test(
+      userAgent
+    )
+  ) {
+    return true;
+  }
+
+  // 2. Chặn các phiên bản giả lập của mạng bot scanner (ví dụ iOS 18_7_8, Safari 26.6.1)
+  if (/18_7_8|26\.6\.1|dataprovider/i.test(userAgent)) {
+    return true;
+  }
+
+  // 3. Chặn các trình duyệt Linux server tự động quét trang (X11; Linux)
+  if (/x11;\s*linux|linux aarch64/i.test(ua) && !/android/i.test(ua)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
