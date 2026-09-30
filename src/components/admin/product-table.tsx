@@ -16,6 +16,10 @@ import {
   Filter,
   Loader2,
   Coins,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -65,10 +69,38 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [featuredFilter, setFeaturedFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(20);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingFeaturedId, setTogglingFeaturedId] = useState<string | null>(null);
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+
+  // Handlers reset page về 1 khi thay đổi điều kiện tìm kiếm/lọc
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (val: string) => {
+    setSelectedCategory(val);
+    setCurrentPage(1);
+  };
+
+  const handleStockFilterChange = (val: string) => {
+    setStockFilter(val);
+    setCurrentPage(1);
+  };
+
+  const handleFeaturedFilterChange = (val: string) => {
+    setFeaturedFilter(val);
+    setCurrentPage(1);
+  };
+
+  const handlePageSizeChange = (val: number) => {
+    setPageSize(val);
+    setCurrentPage(1);
+  };
 
   // Sync state if initialProducts changes
   if (initialProducts !== products && initialProducts.length !== products.length) {
@@ -99,6 +131,38 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
     return matchesSearch && matchesCategory && matchesStock && matchesFeatured;
   });
+
+  // Tính toán phân trang
+  const totalFiltered = filteredProducts.length;
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / pageSize));
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const startIndex = (safePage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalFiltered);
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Sinh danh sách trang thông minh với dấu ...
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (safePage > 3) {
+        pages.push("...");
+      }
+      const start = Math.max(2, safePage - 1);
+      const end = Math.min(totalPages - 1, safePage + 1);
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      if (safePage < totalPages - 2) {
+        pages.push("...");
+      }
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   // Quick-Toggle Featured
   const handleToggleFeatured = async (product: ProductItem) => {
@@ -270,7 +334,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#74746E]" />
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Tìm kiếm sản phẩm theo tên, slug, thương hiệu..."
             className="pl-10"
           />
@@ -281,7 +345,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           {/* Category Filter */}
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value)}
             className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
           >
             <option value="all">Tất cả danh mục ({categories.length})</option>
@@ -295,7 +359,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           {/* Stock Filter */}
           <select
             value={stockFilter}
-            onChange={(e) => setStockFilter(e.target.value)}
+            onChange={(e) => handleStockFilterChange(e.target.value)}
             className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
           >
             <option value="all">Tất cả tồn kho</option>
@@ -306,7 +370,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           {/* Featured Filter */}
           <select
             value={featuredFilter}
-            onChange={(e) => setFeaturedFilter(e.target.value)}
+            onChange={(e) => handleFeaturedFilterChange(e.target.value)}
             className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
           >
             <option value="all">Tất cả sản phẩm</option>
@@ -351,7 +415,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((product) => {
+                paginatedProducts.map((product) => {
                   let imageList: string[] = [];
                   try {
                     imageList = JSON.parse(product.images || "[]");
@@ -514,6 +578,104 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Footer */}
+        {totalFiltered > 0 && (
+          <div className="flex flex-col md:flex-row items-center justify-between px-4 py-3.5 border-t border-[#E7E7E3] bg-[#FAFAFA] gap-3">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-[#74746E]">
+              <span>
+                Hiển thị <strong className="text-[#111]">{startIndex + 1}</strong> -{" "}
+                <strong className="text-[#111]">{endIndex}</strong> trên tổng số{" "}
+                <strong className="text-[#111]">{totalFiltered}</strong> sản phẩm
+              </span>
+              <div className="flex items-center gap-1.5 pl-2 border-l border-[#E7E7E3]">
+                <span>Hiển thị:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                  className="h-7 rounded border border-[#E7E7E3] bg-white px-2 text-xs font-medium text-[#111] focus:outline-none focus:ring-1 focus:ring-[#111]"
+                >
+                  <option value={10}>10 / trang</option>
+                  <option value={20}>20 / trang</option>
+                  <option value={50}>50 / trang</option>
+                  <option value={100}>100 / trang</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              {/* Trang đầu */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage(1)}
+                disabled={safePage <= 1}
+                className="p-1.5 rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Trang đầu tiên"
+              >
+                <ChevronsLeft className="w-4 h-4" />
+              </button>
+
+              {/* Trang trước */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Trang trước"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Trước</span>
+              </button>
+
+              {/* Danh sách số trang */}
+              <div className="flex items-center gap-1">
+                {getPageNumbers().map((p, idx) =>
+                  p === "..." ? (
+                    <span key={`ellipsis-${idx}`} className="px-1 text-xs text-[#74746E]">
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={`page-${p}`}
+                      type="button"
+                      onClick={() => setCurrentPage(Number(p))}
+                      className={`min-w-8 h-8 px-2 text-xs font-semibold rounded-lg transition-colors ${
+                        safePage === p
+                          ? "bg-[#111] text-white shadow-sm"
+                          : "border border-[#E7E7E3] bg-white text-[#111] hover:bg-[#F3F3F1]"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+              </div>
+
+              {/* Trang sau */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Trang tiếp theo"
+              >
+                <span className="hidden sm:inline">Sau</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              {/* Trang cuối */}
+              <button
+                type="button"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={safePage >= totalPages}
+                className="p-1.5 rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Trang cuối cùng"
+              >
+                <ChevronsRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
