@@ -616,7 +616,7 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
 
               <div className="space-y-2">
                 <a
-                  href={`https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=${config.gdrive_client_id || "208019830049-jfk1fb7hog0rn7vrde0oir6e3g9i91no.apps.googleusercontent.com"}&redirect_uri=https%3A%2F%2Ftringuyengear.com%2Fapi%2Fadmin%2Fbackup%2Fgoogle-callback&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&prompt=consent`}
+                  href={`https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=${config.gdrive_client_id || "208019830049-jfk1fb7hog0rn7vrde0oir6e3g9i91no.apps.googleusercontent.com"}&redirect_uri=https%3A%2F%2Ftringuyengear.com%2Fapi%2Fadmin%2Fbackup%2Fgoogle-callback&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&prompt=consent%20select_account`}
                   className="inline-flex items-center justify-center gap-2 w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs transition-all text-xs"
                 >
                   <Cloud className="w-4 h-4" />
@@ -638,7 +638,7 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
 
               <div>
                 <a
-                  href={`https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=${config.gdrive_client_id || "208019830049-jfk1fb7hog0rn7vrde0oir6e3g9i91no.apps.googleusercontent.com"}&redirect_uri=http%3A%2F%2F127.0.0.1%3A53682%2F&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&prompt=consent`}
+                  href={`https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=${config.gdrive_client_id || "208019830049-jfk1fb7hog0rn7vrde0oir6e3g9i91no.apps.googleusercontent.com"}&redirect_uri=http%3A%2F%2F127.0.0.1%3A53682%2F&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&prompt=consent%20select_account`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-1.5 w-full h-9 bg-white border border-[#E7E7E3] hover:border-[#111]/40 rounded-xl font-medium text-[#111] shadow-2xs transition-all text-xs"
