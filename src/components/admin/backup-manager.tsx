@@ -394,6 +394,19 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
                 <span className="text-[11px] text-[#74746E]">Toàn bộ 487+ hình ảnh tải lên của các sản phẩm trên shop</span>
               </div>
             </label>
+
+            <label className="flex items-start gap-3 p-3.5 rounded-xl border border-[#E7E7E3] bg-[#FAFAF8] cursor-pointer hover:border-[#111]/30 transition-all sm:col-span-2">
+              <input
+                type="checkbox"
+                checked={config.backup_include_source}
+                onChange={(e) => setConfig({ ...config, backup_include_source: e.target.checked })}
+                className="mt-0.5 rounded text-[#111] focus:ring-0"
+              />
+              <div>
+                <span className="text-xs font-semibold text-[#111] block">Mã nguồn & Cấu hình môi trường (.env)</span>
+                <span className="text-[11px] text-[#74746E]">Lưu toàn bộ code dự án và file cấu hình bảo mật .env (Tự động loại trừ node_modules và thư mục build để tối ưu dung lượng, chỉ ~3.5 MB)</span>
+              </div>
+            </label>
           </div>
 
           <div className="pt-1">
@@ -570,16 +583,22 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
 
             <div className="space-y-4 text-xs">
               <div className="bg-blue-50/70 border border-blue-100 p-3.5 rounded-xl space-y-2 text-[#444]">
-                <p className="font-semibold text-blue-900">Cách liên kết Google Drive bằng Token:</p>
-                <ol className="list-decimal pl-4 space-y-1 leading-relaxed">
+                <p className="font-semibold text-blue-900">Cách liên kết Google Drive cực kỳ đơn giản:</p>
+                <ol className="list-decimal pl-4 space-y-1.5 leading-relaxed text-[11px]">
                   <li>
-                    Bấm vào liên kết ủy quyền của Google bên dưới để đăng nhập tài khoản Drive của bạn.
+                    Bấm vào nút <strong>&ldquo;Mở trang đăng nhập Google Drive&rdquo;</strong> bên dưới.
                   </li>
                   <li>
-                    Cấp quyền cho ứng dụng và copy chuỗi JSON mã Token nhận được.
+                    Đăng nhập tài khoản Google của bạn và bấm <strong>&ldquo;Tiếp tục / Cho phép&rdquo;</strong>.
                   </li>
                   <li>
-                    Dán chuỗi Token vào ô bên dưới và bấm <strong>&ldquo;Xác thực & Kết nối&rdquo;</strong>.
+                    <span className="text-amber-800 font-medium">Lưu ý quan trọng:</span> Sau khi cấp quyền, trình duyệt sẽ chuyển hướng đến một trang báo lỗi <strong>&ldquo;This site can’t be reached&rdquo;</strong> hoặc <strong>&ldquo;127.0.0.1 từ chối kết nối&rdquo;</strong>. <em>(Hiện tượng này hoàn toàn bình thường)</em>.
+                  </li>
+                  <li>
+                    Hãy <strong>copy toàn bộ đường link trên thanh địa chỉ (URL)</strong> của trang báo lỗi đó (có dạng <code className="bg-white/80 px-1 py-0.5 rounded font-mono text-[10px]">http://127.0.0.1:53682/?state=...&code=...</code>).
+                  </li>
+                  <li>
+                    Dán link vừa copy vào ô bên dưới và bấm <strong>&ldquo;Xác thực & Kết nối&rdquo;</strong>. Hệ thống sẽ tự động kích hoạt kết nối Drive ngay lập tức!
                   </li>
                 </ol>
               </div>
@@ -598,13 +617,13 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
 
               <div className="space-y-1.5">
                 <label className="block font-semibold text-[#111]">
-                  Dán chuỗi Token hoặc Cấu hình JSON vào đây:
+                  Dán đường link URL báo lỗi (hoặc mã Code / JSON Token) vào đây:
                 </label>
                 <textarea
-                  rows={5}
+                  rows={4}
                   value={tokenInput}
                   onChange={(e) => setTokenInput(e.target.value)}
-                  placeholder='{"access_token":"ya29...","token_type":"Bearer","refresh_token":"1//...","expiry":"..."}'
+                  placeholder="Dán đường link URL trang báo lỗi (http://127.0.0.1:53682/?code=...) hoặc mã code hoặc chuỗi JSON token vào đây..."
                   className="w-full p-3 font-mono text-[11px] bg-[#FAFAF8] border border-[#E7E7E3] rounded-xl text-[#111] focus:outline-none focus:border-[#111]"
                 />
               </div>

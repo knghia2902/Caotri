@@ -32,6 +32,7 @@ export interface BackupConfig {
   backup_max_copies: number; // 7
   backup_include_db: boolean;
   backup_include_uploads: boolean;
+  backup_include_source: boolean;
   backup_upload_gdrive: boolean;
   gdrive_connected: boolean;
 }
@@ -78,6 +79,7 @@ export async function getBackupConfigAction(): Promise<BackupConfig> {
     backup_max_copies: parseInt(map["backup_max_copies"] || "7", 10) || 7,
     backup_include_db: map["backup_include_db"] !== "false",
     backup_include_uploads: map["backup_include_uploads"] !== "false",
+    backup_include_source: map["backup_include_source"] !== "false",
     backup_upload_gdrive: map["backup_upload_gdrive"] === "true",
     gdrive_connected: gdriveConnected,
   };
@@ -95,6 +97,7 @@ export async function saveBackupConfigAction(config: Partial<BackupConfig>) {
     if (config.backup_max_copies !== undefined) keysToSave["backup_max_copies"] = String(config.backup_max_copies);
     if (config.backup_include_db !== undefined) keysToSave["backup_include_db"] = String(config.backup_include_db);
     if (config.backup_include_uploads !== undefined) keysToSave["backup_include_uploads"] = String(config.backup_include_uploads);
+    if (config.backup_include_source !== undefined) keysToSave["backup_include_source"] = String(config.backup_include_source);
     if (config.backup_upload_gdrive !== undefined) keysToSave["backup_upload_gdrive"] = String(config.backup_upload_gdrive);
 
     const ops = Object.entries(keysToSave).map(([key, value]) =>
@@ -110,9 +113,10 @@ export async function saveBackupConfigAction(config: Partial<BackupConfig>) {
     const maxCopies = config.backup_max_copies || 7;
     const includeDb = config.backup_include_db !== false;
     const includeUploads = config.backup_include_uploads !== false;
+    const includeSource = config.backup_include_source !== false;
     const uploadGdrive = config.backup_upload_gdrive === true;
 
-    const confContent = `MAX_COPIES=${maxCopies}\nINCLUDE_DB=${includeDb}\nINCLUDE_UPLOADS=${includeUploads}\nUPLOAD_GDRIVE=${uploadGdrive}\n`;
+    const confContent = `MAX_COPIES=${maxCopies}\nINCLUDE_DB=${includeDb}\nINCLUDE_UPLOADS=${includeUploads}\nINCLUDE_SOURCE=${includeSource}\nUPLOAD_GDRIVE=${uploadGdrive}\n`;
 
     try {
       fs.writeFileSync(CONF_PATH, confContent, "utf-8");
@@ -266,22 +270,74 @@ export async function deleteBackupAction(filename: string) {
 }
 
 // 6. Lưu cấu hình / Token Google Drive
-export async function saveGoogleDriveConfigAction(tokenJsonString: string) {
+export async function saveGoogleDriveConfigAction(input: string) {
   await requireRole(["ADMIN"]);
 
   try {
-    let parsedToken: any;
-    try {
-      parsedToken = JSON.parse(tokenJsonString.trim());
-    } catch {
-      return { success: false, error: "Định dạng JSON Token không hợp lệ. Vui lòng kiểm tra lại!" };
+    const trimmed = input.trim();
+    if (!trimmed) {
+      return { success: false, error: "Vui lòng nhập mã code hoặc token!" };
     }
 
-    if (!parsedToken.access_token && !parsedToken.refresh_token) {
-      return { success: false, error: "Token cần có access_token hoặc refresh_token!" };
+    let tokenData: any = null;
+
+    // Trường hợp 1: Nhập trực tiếp JSON Token (ví dụ từ rclone authorize)
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      try {
+        tokenData = JSON.parse(trimmed);
+      } catch {
+        return { success: false, error: "Định dạng JSON Token không hợp lệ. Vui lòng kiểm tra lại!" };
+      }
+    } else {
+      // Trường hợp 2: Người dùng copy cả link redirect URL hoặc mã code sau khi Google redirect
+      let code = trimmed;
+      if (trimmed.includes("code=")) {
+        try {
+          const url = new URL(trimmed.startsWith("http") ? trimmed : `http://127.0.0.1/?${trimmed}`);
+          code = url.searchParams.get("code") || trimmed;
+        } catch {
+          const match = trimmed.match(/code=([^&]+)/);
+          if (match) code = decodeURIComponent(match[1]);
+        }
+      }
+
+      code = code.trim();
+
+      // Đổi Authorization Code lấy OAuth Token từ Google API
+      const tokenResp = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          code: code,
+          client_id: "202264815644.apps.googleusercontent.com",
+          client_secret: "X4Z3ca8xfWDb1Voo-F9a7ZxJ",
+          redirect_uri: "http://127.0.0.1:53682/",
+          grant_type: "authorization_code",
+        }),
+      });
+
+      const tokenJson = await tokenResp.json();
+      if (!tokenResp.ok || tokenJson.error) {
+        const errMsg = tokenJson.error_description || tokenJson.error || "Mã code không hợp lệ hoặc đã hết hạn";
+        return {
+          success: false,
+          error: `Google từ chối xác thực: ${errMsg}. Vui lòng bấm vào link đăng nhập lại để lấy mã mới!`,
+        };
+      }
+
+      tokenData = {
+        access_token: tokenJson.access_token,
+        token_type: tokenJson.token_type || "Bearer",
+        refresh_token: tokenJson.refresh_token,
+        expiry: new Date(Date.now() + (tokenJson.expires_in || 3600) * 1000).toISOString(),
+      };
     }
 
-    const rcloneConf = `[gdrive]\ntype = drive\nscope = drive\ntoken = ${JSON.stringify(parsedToken)}\n`;
+    if (!tokenData || (!tokenData.access_token && !tokenData.refresh_token)) {
+      return { success: false, error: "Không tìm thấy access_token hoặc refresh_token trong dữ liệu xác thực." };
+    }
+
+    const rcloneConf = `[gdrive]\ntype = drive\nscope = drive\ntoken = ${JSON.stringify(tokenData)}\n`;
 
     if (!fs.existsSync(RCLONE_CONF_DIR)) {
       fs.mkdirSync(RCLONE_CONF_DIR, { recursive: true });
