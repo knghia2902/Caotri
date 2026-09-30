@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   HardDrive,
   Cloud,
@@ -50,6 +51,16 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tokenInput, setTokenInput] = useState("");
   const [isSavingToken, setIsSavingToken] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("gdrive") === "connected") {
+      setConfig((prev) => ({ ...prev, gdrive_connected: true, backup_upload_gdrive: true }));
+      toast.success("Kết nối Google Drive thành công 100%! Đã kích hoạt tự động đồng bộ đám mây.");
+    } else if (searchParams.get("error")) {
+      toast.error(decodeURIComponent(searchParams.get("error") || "Lỗi kết nối Google Drive"));
+    }
+  }, [searchParams]);
 
   const [, startTransition] = useTransition();
 
@@ -603,15 +614,37 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
                 </ol>
               </div>
 
+              <div className="space-y-2">
+                <a
+                  href={`https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=${config.gdrive_client_id || "208019830049-jfk1fb7hog0rn7vrde0oir6e3g9i91no.apps.googleusercontent.com"}&redirect_uri=https%3A%2F%2Ftringuyengear.com%2Fapi%2Fadmin%2Fbackup%2Fgoogle-callback&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&prompt=consent`}
+                  className="inline-flex items-center justify-center gap-2 w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-xs transition-all text-xs"
+                >
+                  <Cloud className="w-4 h-4" />
+                  Đăng nhập & Tự động kết nối Google Drive (1-Click)
+                </a>
+                <p className="text-[11px] text-[#74746E] text-center">
+                  Bấm nút trên để đăng nhập Google. Sau khi cấp quyền, hệ thống sẽ tự động kích hoạt kết nối mà không cần copy mã.
+                </p>
+              </div>
+
+              <div className="relative py-1 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-[#E7E7E3]"></div>
+                </div>
+                <span className="relative bg-white px-2.5 text-[11px] text-[#74746E]">
+                  hoặc dán liên kết ủy quyền thủ công
+                </span>
+              </div>
+
               <div>
                 <a
                   href={`https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=${config.gdrive_client_id || "208019830049-jfk1fb7hog0rn7vrde0oir6e3g9i91no.apps.googleusercontent.com"}&redirect_uri=http%3A%2F%2F127.0.0.1%3A53682%2F&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive&prompt=consent`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 w-full h-10 bg-white border border-[#E7E7E3] hover:border-[#111]/40 rounded-xl font-medium text-[#111] shadow-2xs transition-all"
+                  className="inline-flex items-center justify-center gap-1.5 w-full h-9 bg-white border border-[#E7E7E3] hover:border-[#111]/40 rounded-xl font-medium text-[#111] shadow-2xs transition-all text-xs"
                 >
                   <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
-                  Mở trang đăng nhập tài khoản Google Drive
+                  Mở link xác thực thủ công (qua 127.0.0.1)
                 </a>
               </div>
 
