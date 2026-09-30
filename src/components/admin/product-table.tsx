@@ -15,6 +15,7 @@ import {
   ExternalLink,
   Filter,
   Loader2,
+  Coins,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -177,8 +178,91 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
     });
   };
 
+  // Thống kê tồn kho & giá trị sản phẩm còn hàng
+  const totalInStockValue = products
+    .filter((p) => p.inStock)
+    .reduce((sum, p) => sum + (p.price || 0), 0);
+  const inStockCount = products.filter((p) => p.inStock).length;
+  const outOfStockCount = products.length - inStockCount;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Product Inventory Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. Tổng giá trị hàng còn */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium text-[#74746E]">
+              Tổng giá trị hàng còn
+            </p>
+            <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight">
+              {formatPrice(totalInStockValue)}
+            </p>
+            <p className="text-[11px] text-[#21A366] mt-1 font-medium flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{inStockCount} sản phẩm sẵn sàng bán</span>
+            </p>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <Coins className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* 2. Sản phẩm còn hàng */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium text-[#74746E]">
+              Sản phẩm còn hàng
+            </p>
+            <p className="text-xl sm:text-2xl font-bold text-emerald-600 mt-1 tracking-tight">
+              {inStockCount}
+            </p>
+            <p className="text-[11px] text-[#74746E] mt-1">
+              Khách có thể đặt mua ngay
+            </p>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* 3. Sản phẩm hết hàng */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium text-[#74746E]">
+              Sản phẩm hết hàng
+            </p>
+            <p className="text-xl sm:text-2xl font-bold text-rose-600 mt-1 tracking-tight">
+              {outOfStockCount}
+            </p>
+            <p className="text-[11px] text-[#74746E] mt-1">
+              Tạm ngưng nhận đơn
+            </p>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <XCircle className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* 4. Tổng sản phẩm trên web */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium text-[#74746E]">
+              Tổng sản phẩm đã đăng
+            </p>
+            <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight">
+              {products.length}
+            </p>
+            <p className="text-[11px] text-[#74746E] mt-1">
+              Toàn bộ danh mục kinh doanh
+            </p>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center shrink-0">
+            <Package className="w-5 h-5" />
+          </div>
+        </div>
+      </div>
+
       {/* Action and Filter Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         {/* Search */}

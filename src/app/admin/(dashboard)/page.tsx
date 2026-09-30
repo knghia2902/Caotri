@@ -10,6 +10,7 @@ import {
   DollarSign,
   Wallet,
   Users,
+  Coins,
 } from "lucide-react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
@@ -35,6 +36,8 @@ export default async function AdminDashboardPage() {
     pendingRevenueAgg,
     pendingOrdersCount,
     inStockProductsCount,
+    totalProductsCount,
+    inStockValueAgg,
     ordersIn7Days,
     recentOrders,
     trafficOverview,
@@ -63,7 +66,16 @@ export default async function AdminDashboardPage() {
       where: { inStock: true },
     }),
 
-    // 5. Đơn hàng trong 7 ngày gần nhất
+    // 5. Tổng số sản phẩm trên hệ thống
+    prisma.product.count(),
+
+    // 6. Tổng giá trị sản phẩm còn hàng
+    prisma.product.aggregate({
+      _sum: { price: true },
+      where: { inStock: true },
+    }),
+
+    // 7. Đơn hàng trong 7 ngày gần nhất
     prisma.order.findMany({
       where: {
         createdAt: { gte: sevenDaysAgo },
@@ -75,7 +87,7 @@ export default async function AdminDashboardPage() {
       },
     }),
 
-    // 6. Bảng đơn hàng gần đây cần xử lý
+    // 8. Bảng đơn hàng gần đây cần xử lý
     prisma.order.findMany({
       take: 6,
       orderBy: { createdAt: "desc" },
@@ -84,12 +96,13 @@ export default async function AdminDashboardPage() {
       },
     }),
 
-    // 7. Thống kê lưu lượng truy cập thực tế
+    // 9. Thống kê lưu lượng truy cập thực tế
     getTrafficOverview(),
   ]);
 
   const completedRevenue = completedRevenueAgg._sum.totalAmount || 0;
   const pendingRevenue = pendingRevenueAgg._sum.totalAmount || 0;
+  const inStockValue = inStockValueAgg._sum.price || 0;
 
   // Tính toán dữ liệu 7 ngày cho biểu đồ SVG
   const dailyPoints = computeDailyRevenue(ordersIn7Days);
@@ -161,8 +174,8 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Overview Stat Cards (4 Cards) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* Overview Stat Cards (5 Cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
         {/* 1. Doanh thu thực tế (COMPLETED) */}
         <Card className="bg-white border-[#E7E7E3]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -234,7 +247,28 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* 4. Sản phẩm đang kinh doanh */}
+        {/* 4. Tổng giá trị hàng còn */}
+        <Card className="bg-white border-[#E7E7E3]">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xs font-medium text-[#74746E]">
+              Tổng giá trị hàng còn
+            </CardTitle>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Coins className="w-4 h-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-[#111] tracking-tight">
+              {formatPrice(inStockValue)}
+            </div>
+            <p className="text-xs text-[#74746E] mt-1 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#21A366]" />
+              <span className="text-[#21A366] font-medium">{inStockProductsCount} sp sẵn sàng bán</span>
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* 5. Sản phẩm đang kinh doanh */}
         <Card className="bg-white border-[#E7E7E3]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-medium text-[#74746E]">
@@ -247,6 +281,7 @@ export default async function AdminDashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold text-[#111] tracking-tight">
               {inStockProductsCount}
+              <span className="text-sm font-normal text-[#74746E] ml-1">/ {totalProductsCount}</span>
             </div>
             <p className="text-xs text-[#74746E] mt-1 flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#21A366]" />
