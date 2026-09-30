@@ -26,10 +26,11 @@ export async function POST(req: NextRequest) {
     const path = body.path || "/";
     const title = body.title || "";
 
-    // 3. Lấy IP khách truy cập thực tế (Nginx reverse proxy hoặc direct)
+    // 3. Lấy IP khách truy cập thực tế (Cloudflare Tunnel, Nginx reverse proxy hoặc direct)
+    const cfIp = req.headers.get("cf-connecting-ip");
     const forwarded = req.headers.get("x-forwarded-for");
     const realIp = req.headers.get("x-real-ip");
-    const ip = forwarded ? forwarded.split(",")[0].trim() : realIp || "127.0.0.1";
+    const ip = cfIp ? cfIp.trim() : forwarded ? forwarded.split(",")[0].trim() : realIp || "127.0.0.1";
 
     // 4. Lấy User-Agent
     const userAgent = req.headers.get("user-agent") || "";

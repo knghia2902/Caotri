@@ -43,9 +43,43 @@ export function detectDeviceType(userAgent: string = ""): "Desktop" | "Mobile" |
  */
 export function isBot(userAgent: string = ""): boolean {
   if (!userAgent) return false;
-  return /bot|crawler|spider|crawling|googlebot|bingbot|yandex|slurp|duckduckbot|baiduspider|headlesschrome|facebookexternalhit|whatsapp|telegrambot|curl|wget|lighthouse/i.test(
+  return /bot|crawler|spider|crawling|googlebot|bingbot|yandex|slurp|duckduckbot|baiduspider|headlesschrome|facebookexternalhit|whatsapp|telegrambot|curl|wget|lighthouse|dataprovider|semrush|ahrefs|uptime|pingdom|bytespider|amazonbot|claudebot|gptbot|censys|shodan/i.test(
     userAgent
   );
+}
+
+/**
+ * Trích xuất tên thiết bị / hệ điều hành thân thiện từ User-Agent
+ */
+export function parseDeviceInfo(userAgent: string = ""): string {
+  if (!userAgent) return "Không rõ";
+  const ua = userAgent.trim();
+
+  if (/Dataprovider/i.test(ua)) return "Bot (Dataprovider)";
+  if (/SM-S721B/i.test(ua)) return "Samsung Galaxy S24 FE";
+  if (/SM-N970F/i.test(ua)) return "Samsung Note 10";
+  if (/V2425A/i.test(ua)) return "Vivo X200 Pro";
+  if (/iPhone/i.test(ua)) {
+    const match = ua.match(/OS ([0-9_]+)/i);
+    const ver = match ? match[1].replace(/_/g, ".") : "";
+    return `iPhone${ver ? ` (iOS ${ver})` : ""}`;
+  }
+  if (/iPad/i.test(ua)) return "iPad";
+  if (/Android/i.test(ua)) {
+    const modelMatch = ua.match(/;\s*([A-Za-z0-9\-_ ]+)\s+Build\//i);
+    if (modelMatch && modelMatch[1]) {
+      return modelMatch[1].trim();
+    }
+    const verMatch = ua.match(/Android ([0-9.]+)/i);
+    return `Android${verMatch ? ` ${verMatch[1]}` : ""}`;
+  }
+  if (/Windows NT 10.0/i.test(ua)) return "Windows 10/11";
+  if (/Windows NT 6.3/i.test(ua)) return "Windows 8.1";
+  if (/Windows NT 6.1/i.test(ua)) return "Windows 7";
+  if (/Windows/i.test(ua)) return "Windows PC";
+  if (/Macintosh.*Mac OS X/i.test(ua)) return "Mac / macOS";
+  if (/Linux/i.test(ua)) return "Linux PC";
+  return "Thiết bị khác";
 }
 
 export interface RecordVisitParams {
@@ -293,6 +327,7 @@ export async function getTrafficOverview() {
         id: true,
         date: true,
         deviceType: true,
+        userAgent: true,
         pageviews: true,
         lastPath: true,
         createdAt: true,

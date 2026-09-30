@@ -1,4 +1,4 @@
-import { getTrafficOverview } from "@/lib/traffic";
+import { getTrafficOverview, parseDeviceInfo } from "@/lib/traffic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrafficChart } from "@/components/admin/traffic-chart";
 import {
@@ -341,16 +341,24 @@ export default async function AdminTrafficPage() {
                             <span className="text-[10px] text-[#74746E] block">{dateStr}</span>
                           </td>
                           <td className="py-3 px-4">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#F7F7F5] border border-[#E7E7E3] text-[#111]">
-                              {v.deviceType === "Mobile" ? (
-                                <Smartphone className="w-3 h-3 text-blue-600" />
-                              ) : v.deviceType === "Tablet" ? (
-                                <Tablet className="w-3 h-3 text-amber-600" />
-                              ) : (
-                                <Monitor className="w-3 h-3 text-[#111]" />
-                              )}
-                              <span>{v.deviceType || "Desktop"}</span>
-                            </span>
+                            <div className="flex flex-col gap-1">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#F7F7F5] border border-[#E7E7E3] text-[#111] w-fit">
+                                {v.deviceType === "Mobile" ? (
+                                  <Smartphone className="w-3 h-3 text-blue-600" />
+                                ) : v.deviceType === "Tablet" ? (
+                                  <Tablet className="w-3 h-3 text-amber-600" />
+                                ) : (
+                                  <Monitor className="w-3 h-3 text-[#111]" />
+                                )}
+                                <span>{v.deviceType || "Desktop"}</span>
+                              </span>
+                              <span
+                                className="text-[11px] text-[#74746E] font-medium truncate max-w-[190px]"
+                                title={v.userAgent || ""}
+                              >
+                                {parseDeviceInfo(v.userAgent || "")}
+                              </span>
+                            </div>
                           </td>
                           <td className="py-3 px-4 text-[#74746E] font-mono text-[11px] max-w-[180px] truncate">
                             {v.lastPath || "/"}
