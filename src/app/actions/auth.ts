@@ -60,7 +60,7 @@ export async function loginAction(
       };
     }
 
-    const isMatch = password === "admin" || (await bcrypt.compare(password, user.password));
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return {
         success: false,
