@@ -6,6 +6,7 @@ import { requireRole } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { normalizeImageUrl } from "@/lib/utils";
 import { invalidateStorefrontCache } from "@/lib/storefront-data";
+import { deleteLocalUploadFile } from "@/lib/file-storage";
 
 export interface CategoryFormData {
   name: string;
@@ -139,9 +140,18 @@ export async function deleteCategory(id: string) {
       };
     }
 
+    const existingCategory = await prisma.category.findUnique({
+      where: { id },
+      select: { id: true, imageUrl: true },
+    });
+
     await prisma.category.delete({
       where: { id },
     });
+
+    if (existingCategory?.imageUrl) {
+      await deleteLocalUploadFile(existingCategory.imageUrl);
+    }
 
     invalidateStorefrontCache();
     revalidatePath("/admin/categories");

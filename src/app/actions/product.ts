@@ -6,6 +6,7 @@ import { requireRole } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
 import { normalizeImageUrl } from "@/lib/utils";
 import { invalidateStorefrontCache } from "@/lib/storefront-data";
+import { deleteProductImages } from "@/lib/file-storage";
 
 export interface ProductFormData {
   name: string;
@@ -189,16 +190,50 @@ export async function deleteProduct(id: string) {
   try {
     await requireRole(["ADMIN", "STAFF"]);
 
+    // 1. Lấy thông tin sản phẩm trước khi xóa (bao gồm danh sách ảnh)
+    const existingProduct = await prisma.product.findUnique({
+      where: { id },
+      select: { id: true, name: true, images: true },
+    });
+
+    if (!existingProduct) {
+      return { success: false, error: "Sản phẩm không tồn tại hoặc đã được xóa trước đó" };
+    }
+
+    // 2. Kiểm tra xem sản phẩm có nằm trong đơn hàng nào không
+    const orderItemCount = await prisma.orderItem.count({
+      where: { productId: id },
+    });
+    if (orderItemCount > 0) {
+      return {
+        success: false,
+        error: `Sản phẩm "${existingProduct.name}" đã phát sinh trong ${orderItemCount} đơn hàng của khách. Để bảo toàn lịch sử hóa đơn, vui lòng chuyển trạng thái sang "Hết hàng" thay vì xóa hẳn.`,
+      };
+    }
+
+    // 3. Xóa record sản phẩm trong Database
     await prisma.product.delete({
       where: { id },
     });
+
+    // 4. Xóa các file ảnh vật lý trên server (nằm trong thư mục public/uploads/)
+    const cleanupResult = await deleteProductImages(existingProduct.images, id);
+    if (cleanupResult.deletedFiles.length > 0) {
+      console.log(
+        `[Product Delete] Đã xóa ${cleanupResult.deletedFiles.length} file ảnh trên server của "${existingProduct.name}":`,
+        cleanupResult.deletedFiles
+      );
+    }
 
     invalidateStorefrontCache();
     revalidatePath("/admin/products");
     revalidatePath("/admin/categories");
     revalidatePath("/");
 
-    return { success: true };
+    return {
+      success: true,
+      deletedImages: cleanupResult.deletedFiles,
+    };
   } catch (error: any) {
     return { success: false, error: error.message || "Lỗi khi xóa sản phẩm" };
   }

@@ -17,6 +17,7 @@ import { formatPrice } from "@/lib/utils";
 import { computeDailyRevenue } from "@/lib/order-analytics";
 import { RevenueBarChart } from "@/components/admin/revenue-bar-chart";
 import { getTrafficOverview } from "@/lib/traffic";
+import { VpsMonitorCard } from "@/components/admin/vps-monitor-card";
 
 export const metadata = {
   title: "Dashboard Quản trị | TringuyenGear",
@@ -173,6 +174,9 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* VPS System Resource Monitor */}
+      {session?.role === "ADMIN" && <VpsMonitorCard />}
 
       {/* Overview Stat Cards (5 Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">

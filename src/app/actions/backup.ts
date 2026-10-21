@@ -139,7 +139,7 @@ export async function saveBackupConfigAction(config: Partial<BackupConfig>) {
         cronTiming = `${min} ${hour} * * 0`; // Chủ nhật hàng tuần
       }
 
-      const backupCmd = `${SCRIPT_PATH} >/home/caotri/backups/cron.log 2>&1`;
+      const backupCmd = `${SCRIPT_PATH} >> /home/caotri/backups/cron.log 2>&1`;
 
       if (isEnabled) {
         const updateCronCmd = `(crontab -l 2>/dev/null | grep -v "${SCRIPT_PATH}" ; echo "${cronTiming} ${backupCmd}") | crontab -`;

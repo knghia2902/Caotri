@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { normalizeImageUrl } from "@/lib/utils";
 import { invalidateStorefrontCache } from "@/lib/storefront-data";
+import { deleteLocalUploadFile } from "@/lib/file-storage";
 
 export interface BannerFormData {
   title: string;
@@ -79,9 +80,18 @@ export async function deleteBanner(id: string) {
   try {
     await requireRole(["ADMIN", "STAFF"]);
 
+    const existingBanner = await prisma.banner.findUnique({
+      where: { id },
+      select: { id: true, imageUrl: true },
+    });
+
     await prisma.banner.delete({
       where: { id },
     });
+
+    if (existingBanner?.imageUrl) {
+      await deleteLocalUploadFile(existingBanner.imageUrl);
+    }
 
     invalidateStorefrontCache();
     revalidatePath("/admin/banners");

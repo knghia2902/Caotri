@@ -224,7 +224,13 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
   // Xóa sản phẩm
   const handleDelete = async (product: ProductItem) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${product.name}"?`)) {
+    const confirmMsg =
+      `Bạn có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm "${product.name}"?\n\n` +
+      `⚠️ Chú ý phân biệt:\n` +
+      `• Nếu sản phẩm chỉ TẠM HẾT HÀNG: Hãy hủy bỏ và bấm nút "Còn hàng / Hết hàng" để giữ lại thông tin & ảnh.\n` +
+      `• Nếu XÓA HẲN: Sản phẩm sẽ bị xóa khỏi hệ thống và toàn bộ file ảnh trên máy chủ sẽ được dọn dẹp để tiết kiệm ổ đĩa.`;
+
+    if (!window.confirm(confirmMsg)) {
       return;
     }
 
@@ -232,7 +238,12 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
     startTransition(async () => {
       const res = await deleteProduct(product.id);
       if (res.success) {
-        toast.success(`Đã xóa sản phẩm "${product.name}"`);
+        const imgCount = (res as any).deletedImages?.length || 0;
+        toast.success(
+          imgCount > 0
+            ? `Đã xóa "${product.name}" và giải phóng ${imgCount} file ảnh trên server.`
+            : `Đã xóa sản phẩm "${product.name}" khỏi hệ thống.`
+        );
         setProducts((prev) => prev.filter((p) => p.id !== product.id));
         router.refresh();
       } else {
