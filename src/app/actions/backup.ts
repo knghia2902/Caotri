@@ -83,7 +83,7 @@ export async function getBackupConfigAction(): Promise<BackupConfig> {
     backup_include_source: map["backup_include_source"] !== "false",
     backup_upload_gdrive: map["backup_upload_gdrive"] === "true",
     gdrive_connected: gdriveConnected,
-    gdrive_client_id: process.env.GDRIVE_CLIENT_ID || map["gdrive_client_id"] || "",
+    gdrive_client_id: process.env.GDRIVE_CLIENT_ID || map["backup_gdrive_client_id"] || map["gdrive_client_id"] || "208019830049-cahgubgg6ea9999prj9pg2dau9loai1p.apps.googleusercontent.com",
   };
 }
 
