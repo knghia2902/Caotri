@@ -16,6 +16,8 @@ import {
   X,
   Users,
   Cloud,
+  ShieldCheck,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +66,13 @@ const navItems: NavItem[] = [
   {
     title: "Lượt truy cập",
     href: "/admin/traffic",
-    icon: Users,
+    icon: Activity,
+  },
+  {
+    title: "Tài khoản quản trị",
+    href: "/admin/users",
+    icon: ShieldCheck,
+    adminOnly: true,
   },
   {
     title: "Sao lưu dữ liệu",

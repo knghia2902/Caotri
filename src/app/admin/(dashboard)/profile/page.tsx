@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "@/lib/auth";
 import { ChangePasswordCard } from "@/components/admin/change-password-card";
-import { User, Shield, Mail } from "lucide-react";
+import { User, Shield, Mail, UserPlus, ChevronRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,17 @@ export default async function AdminProfilePage() {
             </div>
           </div>
         </div>
+
+        {session.role === "ADMIN" && (
+          <Link
+            href="/admin/users"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#FAFAF8] hover:bg-[#F2F2F0] border border-[#E7E7E3] rounded-xl text-xs font-semibold text-[#111] transition-all"
+          >
+            <UserPlus className="w-4 h-4 text-purple-600" />
+            <span>Quản lý tài khoản & phân quyền</span>
+            <ChevronRight className="w-4 h-4 text-[#999]" />
+          </Link>
+        )}
       </div>
 
       <ChangePasswordCard userEmail={session.email} />
