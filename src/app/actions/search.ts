@@ -26,11 +26,14 @@ export async function searchProductsAction(query: string): Promise<SearchProduct
   try {
     const searchFilter = buildProductSearchFilter(q);
     const products = await prisma.product.findMany({
-      where: searchFilter || {
-        OR: [
-          { name: { contains: q } },
-          { slug: { contains: q } },
-        ],
+      where: {
+        isArchived: false,
+        ...(searchFilter || {
+          OR: [
+            { name: { contains: q } },
+            { slug: { contains: q } },
+          ],
+        }),
       },
       take: 6,
       select: {

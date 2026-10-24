@@ -63,9 +63,10 @@ export default async function CategoryPage({
     notFound();
   }
 
-  // Điều kiện lọc
+  // Điều kiện lọc (Ẩn sản phẩm đã lưu kho)
   const where: any = {
     categoryId: currentCategory.id,
+    isArchived: false,
   };
 
   if (minPrice !== undefined || maxPrice !== undefined) {

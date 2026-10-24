@@ -336,8 +336,10 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-[#74746E]">
-                  <span>Phí giao hàng toàn quốc:</span>
-                  <span className="font-medium text-emerald-600">Miễn phí</span>
+                  <span>Phí vận chuyển:</span>
+                  <span className="font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                    Khách chịu (thanh toán khi nhận)
+                  </span>
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t border-[#E7E7E3]">
                   <div>
@@ -595,7 +597,10 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
         {/* Total COD Amount */}
         <div className="py-3 border-b-2 border-black flex items-center justify-between">
           <div className="font-bold uppercase text-xs">
-            TỔNG TIỀN THU HỘ (COD):
+            TỔNG TIỀN HÀNG THU HỘ (COD):
+            <span className="block text-[10px] font-normal normal-case text-gray-600">
+              * Phí ship khách thanh toán cho shipper khi nhận
+            </span>
           </div>
           <div className="font-mono font-black text-lg">
             {formatVND(order.totalAmount)}

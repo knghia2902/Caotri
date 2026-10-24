@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Save, Sparkles, Check, PackageCheck } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Sparkles, Check, PackageCheck, ShieldAlert, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,9 @@ export interface InitialProductData {
   inStock: boolean;
   isFeatured: boolean;
   isNew: boolean;
+  isArchived?: boolean;
+  warrantyNote?: string | null;
+  warrantyImages?: string | null; // JSON
   categoryId: string;
 }
 
@@ -89,6 +92,20 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   const [inStock, setInStock] = useState(initialData ? initialData.inStock : true);
   const [isFeatured, setIsFeatured] = useState(initialData ? initialData.isFeatured : false);
   const [isNew, setIsNew] = useState(initialData ? initialData.isNew : true);
+  const [isArchived, setIsArchived] = useState(initialData?.isArchived ?? false);
+
+  // Warranty note & private images (Chỉ lưu nội bộ, không hiển thị web)
+  const [warrantyNote, setWarrantyNote] = useState(initialData?.warrantyNote || "");
+  const initialWarrantyImages: string[] = (() => {
+    if (!initialData?.warrantyImages) return [];
+    try {
+      if (Array.isArray(initialData.warrantyImages)) return initialData.warrantyImages;
+      return JSON.parse(initialData.warrantyImages);
+    } catch {
+      return [];
+    }
+  })();
+  const [warrantyImages, setWarrantyImages] = useState<string[]>(initialWarrantyImages);
 
   const [isPending, startTransition] = useTransition();
 
@@ -142,6 +159,9 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         inStock,
         isFeatured,
         isNew,
+        isArchived,
+        warrantyNote: warrantyNote.trim() || null,
+        warrantyImages,
         categoryId,
       };
 
@@ -319,6 +339,52 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
               disabled={isPending}
             />
           </div>
+
+          {/* Card: Hồ sơ bảo hành & Ghi chú nội bộ (Chỉ lưu nội bộ, không hiển thị web) */}
+          <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-amber-600" />
+                <h2 className="text-sm font-semibold text-amber-950 uppercase tracking-wider">
+                  Hồ sơ bảo hành & Ghi chú nội bộ
+                </h2>
+              </div>
+              <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
+                🔒 Không hiển thị ngoài web
+              </span>
+            </div>
+            <p className="text-xs text-amber-900/80 leading-relaxed">
+              Khu vực dành riêng cho quản trị viên lưu lại <strong>số Serial / IMEI, hóa đơn mua hàng, ảnh chụp tem bảo hành</strong> để sau này tiện tra cứu đối soát khi khách mang máy đến bảo hành hoặc kiểm tra lịch sử linh kiện đã bán.
+            </p>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Ghi chú bảo hành / Số Serial / Hóa đơn mua vào
+              </label>
+              <textarea
+                value={warrantyNote}
+                onChange={(e) => setWarrantyNote(e.target.value)}
+                placeholder="VD: Serial: SN-982348719, hóa đơn VAT mua ngày 15/01/2026 tại APShop, bảo hành 12 tháng đến 15/01/2027, liên hệ NPP Mai Hoàng..."
+                rows={3}
+                disabled={isPending}
+                className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all resize-y"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Ảnh chụp số Serial & Hóa đơn chứng từ (Chỉ Admin xem)
+              </label>
+              <ImageGalleryEditor
+                images={warrantyImages}
+                onChange={setWarrantyImages}
+                disabled={isPending}
+              />
+              <p className="text-[11px] text-[#74746E] mt-1.5">
+                * Tải lên hoặc chụp ảnh tem bảo hành, mã vạch serial, hóa đơn đỏ hoặc phiếu bảo hành. Hình ảnh này được bảo mật nội bộ và không bao giờ xuất hiện trên cửa hàng trực tuyến.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Right 1 Col: Category, Pricing, Visibility */}
@@ -457,6 +523,30 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 </span>
                 <p className="text-xs text-[#74746E]">
                   Hiển thị huy hiệu &quot;Mới&quot; trên thẻ sản phẩm
+                </p>
+              </div>
+            </label>
+
+            {/* Lưu kho / Ẩn khỏi website */}
+            <label className="flex items-start gap-3 p-3 rounded-lg bg-amber-50/60 border border-amber-200 cursor-pointer hover:border-amber-300 transition-colors">
+              <input
+                type="checkbox"
+                checked={isArchived}
+                onChange={(e) => setIsArchived(e.target.checked)}
+                disabled={isPending}
+                className="mt-0.5 rounded border-amber-300 text-amber-600 focus:border-amber-600 focus:ring-0"
+              />
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-semibold text-amber-950">
+                    Lưu kho / Ẩn khỏi website
+                  </span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.2 rounded bg-amber-200 text-amber-800">
+                    Kho nội bộ
+                  </span>
+                </div>
+                <p className="text-xs text-amber-800 mt-0.5">
+                  Tích chọn khi món đồ <strong>đã bán</strong> hoặc muốn cất vào kho. Sản phẩm sẽ bị ẩn hoàn toàn ngoài website nhưng vẫn lưu lại trong trang Quản trị để tra cứu thông tin bảo hành, hóa đơn và serial sau này.
                 </p>
               </div>
             </label>

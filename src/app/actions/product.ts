@@ -20,6 +20,9 @@ export interface ProductFormData {
   inStock?: boolean;
   isFeatured?: boolean;
   isNew?: boolean;
+  isArchived?: boolean;
+  warrantyNote?: string | null;
+  warrantyImages?: string[];
   categoryId: string;
 }
 
@@ -61,6 +64,10 @@ export async function createProduct(data: ProductFormData) {
       .map((url) => normalizeImageUrl(url.trim()))
       .filter((url) => url.length > 0);
 
+    const cleanWarrantyImages = (data.warrantyImages || [])
+      .map((url) => normalizeImageUrl(url.trim()))
+      .filter((url) => url.length > 0);
+
     // Làm sạch specs
     const cleanSpecs: Record<string, string> = {};
     if (data.specs) {
@@ -84,6 +91,9 @@ export async function createProduct(data: ProductFormData) {
         inStock: data.inStock ?? true,
         isFeatured: data.isFeatured ?? false,
         isNew: data.isNew ?? true,
+        isArchived: data.isArchived ?? false,
+        warrantyNote: data.warrantyNote?.trim() || null,
+        warrantyImages: JSON.stringify(cleanWarrantyImages),
         categoryId: data.categoryId,
       },
     });
@@ -146,6 +156,10 @@ export async function updateProduct(id: string, data: ProductFormData) {
       .map((url) => normalizeImageUrl(url.trim()))
       .filter((url) => url.length > 0);
 
+    const cleanWarrantyImages = (data.warrantyImages || [])
+      .map((url) => normalizeImageUrl(url.trim()))
+      .filter((url) => url.length > 0);
+
     const cleanSpecs: Record<string, string> = {};
     if (data.specs) {
       for (const [k, v] of Object.entries(data.specs)) {
@@ -169,6 +183,9 @@ export async function updateProduct(id: string, data: ProductFormData) {
         inStock: data.inStock ?? true,
         isFeatured: data.isFeatured ?? false,
         isNew: data.isNew ?? false,
+        isArchived: data.isArchived !== undefined ? data.isArchived : undefined,
+        warrantyNote: data.warrantyNote !== undefined ? (data.warrantyNote?.trim() || null) : undefined,
+        warrantyImages: data.warrantyImages !== undefined ? JSON.stringify(cleanWarrantyImages) : undefined,
         categoryId: data.categoryId,
       },
     });
@@ -190,10 +207,10 @@ export async function deleteProduct(id: string) {
   try {
     await requireRole(["ADMIN", "STAFF"]);
 
-    // 1. Lấy thông tin sản phẩm trước khi xóa (bao gồm danh sách ảnh)
+    // 1. Lấy thông tin sản phẩm trước khi xóa (bao gồm danh sách ảnh & ảnh bảo hành)
     const existingProduct = await prisma.product.findUnique({
       where: { id },
-      select: { id: true, name: true, images: true },
+      select: { id: true, name: true, images: true, warrantyImages: true },
     });
 
     if (!existingProduct) {
@@ -207,7 +224,7 @@ export async function deleteProduct(id: string) {
     if (orderItemCount > 0) {
       return {
         success: false,
-        error: `Sản phẩm "${existingProduct.name}" đã phát sinh trong ${orderItemCount} đơn hàng của khách. Để bảo toàn lịch sử hóa đơn, vui lòng chuyển trạng thái sang "Hết hàng" thay vì xóa hẳn.`,
+        error: `Sản phẩm "${existingProduct.name}" đã phát sinh trong ${orderItemCount} đơn hàng của khách. Để bảo toàn lịch sử hóa đơn, vui lòng chuyển trạng thái sang "Lưu kho" thay vì xóa hẳn.`,
       };
     }
 
@@ -217,7 +234,15 @@ export async function deleteProduct(id: string) {
     });
 
     // 4. Xóa các file ảnh vật lý trên server (nằm trong thư mục public/uploads/)
-    const cleanupResult = await deleteProductImages(existingProduct.images, id);
+    let allImagesToDelete: string[] = [];
+    try {
+      allImagesToDelete = allImagesToDelete.concat(JSON.parse(existingProduct.images || "[]"));
+    } catch {}
+    try {
+      allImagesToDelete = allImagesToDelete.concat(JSON.parse(existingProduct.warrantyImages || "[]"));
+    } catch {}
+
+    const cleanupResult = await deleteProductImages(allImagesToDelete, id);
     if (cleanupResult.deletedFiles.length > 0) {
       console.log(
         `[Product Delete] Đã xóa ${cleanupResult.deletedFiles.length} file ảnh trên server của "${existingProduct.name}":`,
@@ -276,5 +301,25 @@ export async function toggleProductInStock(id: string, currentStatus: boolean) {
     return { success: true, inStock: newStatus };
   } catch (error: any) {
     return { success: false, error: error.message || "Lỗi khi đổi trạng thái kho hàng" };
+  }
+}
+
+export async function toggleProductArchived(id: string, currentStatus: boolean) {
+  try {
+    await requireRole(["ADMIN", "STAFF"]);
+
+    const newStatus = !currentStatus;
+    await prisma.product.update({
+      where: { id },
+      data: { isArchived: newStatus },
+    });
+
+    invalidateStorefrontCache();
+    revalidatePath("/admin/products");
+    revalidatePath("/");
+
+    return { success: true, isArchived: newStatus };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Lỗi khi đổi trạng thái lưu kho" };
   }
 }

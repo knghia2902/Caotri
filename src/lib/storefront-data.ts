@@ -80,7 +80,11 @@ export async function getStorefrontCategories() {
       orderBy: { orderIndex: "asc" },
       include: {
         _count: {
-          select: { products: true },
+          select: {
+            products: {
+              where: { isArchived: false },
+            },
+          },
         },
       },
     });
@@ -123,7 +127,7 @@ export async function getFeaturedProducts(take = 8) {
   }
   try {
     const data = await prisma.product.findMany({
-      where: { isFeatured: true },
+      where: { isFeatured: true, isArchived: false },
       take,
       orderBy: { createdAt: "desc" },
       include: {
@@ -150,7 +154,7 @@ export async function getNewProducts(take = 8) {
   }
   try {
     const data = await prisma.product.findMany({
-      where: { isNew: true },
+      where: { isNew: true, isArchived: false },
       take,
       orderBy: { createdAt: "desc" },
       include: {

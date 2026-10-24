@@ -38,7 +38,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProduct(slug);
 
-  if (!product) {
+  if (!product || product.isArchived) {
     return {
       title: "Không tìm thấy sản phẩm | TringuyenGear",
     };
@@ -56,7 +56,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   // 1. Nạp chi tiết sản phẩm (sử dụng cache deduplication với generateMetadata)
   const product = await getProduct(slug);
 
-  if (!product) {
+  if (!product || product.isArchived) {
     notFound();
   }
 
@@ -67,6 +67,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       where: {
         categoryId: product.categoryId,
         id: { not: product.id },
+        isArchived: false,
       },
       include: {
         category: true,

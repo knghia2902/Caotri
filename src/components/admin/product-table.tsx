@@ -20,6 +20,9 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Archive,
+  ArchiveRestore,
+  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -30,6 +33,7 @@ import {
   deleteProduct,
   toggleProductFeatured,
   toggleProductInStock,
+  toggleProductArchived,
 } from "@/app/actions/product";
 
 export interface ProductItem {
@@ -43,6 +47,9 @@ export interface ProductItem {
   inStock: boolean;
   isFeatured: boolean;
   isNew: boolean;
+  isArchived?: boolean;
+  warrantyNote?: string | null;
+  warrantyImages?: string | null;
   categoryId: string;
   category: {
     id: string;
@@ -69,11 +76,13 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [featuredFilter, setFeaturedFilter] = useState<string>("all");
+  const [archiveFilter, setArchiveFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingFeaturedId, setTogglingFeaturedId] = useState<string | null>(null);
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
+  const [togglingArchiveId, setTogglingArchiveId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   // Handlers reset page về 1 khi thay đổi điều kiện tìm kiếm/lọc
@@ -94,6 +103,11 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
   const handleFeaturedFilterChange = (val: string) => {
     setFeaturedFilter(val);
+    setCurrentPage(1);
+  };
+
+  const handleArchiveFilterChange = (val: string) => {
+    setArchiveFilter(val);
     setCurrentPage(1);
   };
 
@@ -129,7 +143,12 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
       (featuredFilter === "featured" && p.isFeatured) ||
       (featuredFilter === "standard" && !p.isFeatured);
 
-    return matchesSearch && matchesCategory && matchesStock && matchesFeatured;
+    const matchesArchive =
+      archiveFilter === "all" ||
+      (archiveFilter === "active" && !p.isArchived) ||
+      (archiveFilter === "archived" && Boolean(p.isArchived));
+
+    return matchesSearch && matchesCategory && matchesStock && matchesFeatured && matchesArchive;
   });
 
   // Tính toán phân trang
@@ -222,6 +241,35 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
     }
   };
 
+  // Quick-Toggle Archive (Lưu kho / Đưa ra web)
+  const handleToggleArchive = async (product: ProductItem) => {
+    const oldStatus = Boolean(product.isArchived);
+    const newStatus = !oldStatus;
+
+    // Optimistic UI update
+    setProducts((prev) =>
+      prev.map((p) => (p.id === product.id ? { ...p, isArchived: newStatus } : p))
+    );
+    setTogglingArchiveId(product.id);
+
+    const res = await toggleProductArchived(product.id, oldStatus);
+    setTogglingArchiveId(null);
+
+    if (res.success) {
+      toast.success(
+        newStatus
+          ? `Đã chuyển "${product.name}" vào LƯU KHO (ẩn hoàn toàn khỏi website)`
+          : `Đã mở bán lại "${product.name}" trên website`
+      );
+    } else {
+      // Rollback
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, isArchived: oldStatus } : p))
+      );
+      toast.error(res.error || "Lỗi cập nhật trạng thái lưu kho");
+    }
+  };
+
   // Xóa sản phẩm
   const handleDelete = async (product: ProductItem) => {
     const confirmMsg =
@@ -254,11 +302,13 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
   };
 
   // Thống kê tồn kho & giá trị sản phẩm còn hàng
-  const totalInStockValue = products
+  const archivedCount = products.filter((p) => p.isArchived).length;
+  const activeProducts = products.filter((p) => !p.isArchived);
+  const totalInStockValue = activeProducts
     .filter((p) => p.inStock)
     .reduce((sum, p) => sum + (p.price || 0), 0);
-  const inStockCount = products.filter((p) => p.inStock).length;
-  const outOfStockCount = products.length - inStockCount;
+  const inStockCount = activeProducts.filter((p) => p.inStock).length;
+  const outOfStockCount = activeProducts.length - inStockCount;
 
   return (
     <div className="space-y-6">
@@ -268,7 +318,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">
-              Tổng giá trị hàng còn
+              Tổng giá trị hàng còn (Đang bán)
             </p>
             <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight">
               {formatPrice(totalInStockValue)}
@@ -319,17 +369,17 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           </div>
         </div>
 
-        {/* 4. Tổng sản phẩm trên web */}
+        {/* 4. Tổng sản phẩm (Web & Kho) */}
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">
-              Tổng sản phẩm đã đăng
+              Tổng sản phẩm quản lý
             </p>
             <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight">
               {products.length}
             </p>
             <p className="text-[11px] text-[#74746E] mt-1">
-              Toàn bộ danh mục kinh doanh
+              <span className="text-emerald-700 font-semibold">{activeProducts.length} đang bán</span> • <span className="text-amber-700 font-semibold">{archivedCount} lưu kho</span>
             </p>
           </div>
           <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center shrink-0">
@@ -376,6 +426,17 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             <option value="all">Tất cả tồn kho</option>
             <option value="in_stock">🟢 Còn hàng</option>
             <option value="out_of_stock">🔴 Hết hàng</option>
+          </select>
+
+          {/* Archive Filter */}
+          <select
+            value={archiveFilter}
+            onChange={(e) => handleArchiveFilterChange(e.target.value)}
+            className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
+          >
+            <option value="all">Kho: Tất cả ({products.length})</option>
+            <option value="active">🌐 Đang bán ({activeProducts.length})</option>
+            <option value="archived">📦 Đã lưu kho ({archivedCount})</option>
           </select>
 
           {/* Featured Filter */}
@@ -463,13 +524,25 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
                       {/* Name & Slug */}
                       <td className="py-3.5 px-4 max-w-xs sm:max-w-sm">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-semibold text-[#111] group-hover:text-[#111] transition-colors line-clamp-1">
                             {product.name}
                           </span>
-                          {product.isNew && (
+                          {product.isArchived && (
+                            <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] px-1.5 py-0 flex items-center gap-1 font-semibold">
+                              <Archive className="w-2.5 h-2.5" />
+                              Lưu kho
+                            </Badge>
+                          )}
+                          {product.isNew && !product.isArchived && (
                             <Badge className="bg-[#F3F3F1] text-[#21A366] border border-[#21A366] text-[10px] px-1.5 py-0">
                               Mới
+                            </Badge>
+                          )}
+                          {(product.warrantyNote || (product.warrantyImages && product.warrantyImages !== "[]")) && (
+                            <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] px-1.5 py-0 flex items-center gap-0.5" title="Có hồ sơ bảo hành / số Serial / hóa đơn nội bộ">
+                              <ShieldCheck className="w-2.5 h-2.5 text-blue-600" />
+                              BH
                             </Badge>
                           )}
                         </div>
@@ -556,6 +629,31 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       {/* Actions */}
                       <td className="py-3.5 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* 1-Click Toggle Lưu kho */}
+                          <button
+                            type="button"
+                            onClick={() => handleToggleArchive(product)}
+                            disabled={togglingArchiveId === product.id}
+                            title={
+                              product.isArchived
+                                ? "Đang lưu kho (đã ẩn ngoài web). Bấm để mở bán lại ra website"
+                                : "Đang bán ngoài web. Bấm để cất vào kho (ẩn khỏi website)"
+                            }
+                            className={`h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-all ${
+                              product.isArchived
+                                ? "bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100"
+                                : "bg-white border-[#E7E7E3] text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1]"
+                            }`}
+                          >
+                            {togglingArchiveId === product.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-600" />
+                            ) : product.isArchived ? (
+                              <ArchiveRestore className="w-3.5 h-3.5 text-amber-700" />
+                            ) : (
+                              <Archive className="w-3.5 h-3.5 text-[#74746E]" />
+                            )}
+                          </button>
+
                           <Link href={`/admin/products/${product.id}/edit`}>
                             <Button
                               size="sm"

@@ -35,8 +35,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const inStockOnly = params.inStock === "true";
   const sort = params.sort || "newest";
 
-  // Xây dựng điều kiện lọc Prisma
-  const where: any = {};
+  // Xây dựng điều kiện lọc Prisma (Ẩn sản phẩm đã lưu kho)
+  const where: any = {
+    isArchived: false,
+  };
 
   if (search) {
     const searchFilter = buildProductSearchFilter(search);
