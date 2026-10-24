@@ -1,9 +1,9 @@
 import { prisma } from "../src/lib/prisma";
+import { updateOrderStatusAction } from "../src/app/actions/order";
 import {
   updateOrderStatusSchema,
   updateOrderNotesSchema,
-  updateOrderStatusAction,
-} from "../src/app/actions/order";
+} from "../src/lib/order-schema";
 import { getStatusLabel } from "../src/lib/utils";
 import { computeDailyRevenue } from "../src/lib/order-analytics";
 

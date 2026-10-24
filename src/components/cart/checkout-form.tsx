@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, ShieldCheck, Truck, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatVND } from "@/lib/utils";
@@ -181,17 +181,7 @@ export function CheckoutForm() {
 
         {/* Bảng tính tổng tiền */}
         <div className="pt-4 border-t border-[#E7E7E3] space-y-2.5">
-          <div className="flex justify-between text-sm text-[#74746E]">
-            <span>Tạm tính</span>
-            <span className="font-medium text-[#111]">{formatVND(totalPrice)}</span>
-          </div>
-
-          <div className="flex justify-between text-sm text-[#74746E]">
-            <span>Phí vận chuyển</span>
-            <span className="font-medium text-[#21A366]">Miễn phí</span>
-          </div>
-
-          <div className="pt-3 border-t border-[#E7E7E3] flex justify-between items-baseline">
+          <div className="flex justify-between items-baseline">
             <span className="text-base font-semibold text-[#111]">Tổng thanh toán</span>
             <span className="text-xl font-bold text-[#111]">{formatVND(totalPrice)}</span>
           </div>
@@ -216,18 +206,6 @@ export function CheckoutForm() {
           )}
         </Button>
       </form>
-
-      {/* Cam kết mua sắm */}
-      <div className="pt-4 border-t border-[#E7E7E3] space-y-2">
-        <div className="flex items-center gap-2 text-xs text-[#74746E]">
-          <ShieldCheck className="w-4 h-4 text-[#74746E] flex-shrink-0" />
-          <span>Hàng chính hãng 100%, bảo hành 1 đổi 1.</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-[#74746E]">
-          <Truck className="w-4 h-4 text-[#74746E] flex-shrink-0" />
-          <span>Giao hàng toàn quốc, thanh toán khi nhận (COD).</span>
-        </div>
-      </div>
     </div>
   );
 }

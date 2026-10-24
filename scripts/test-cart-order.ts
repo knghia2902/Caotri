@@ -1,5 +1,6 @@
 import { prisma } from "../src/lib/prisma";
-import { createOrderAction, checkoutSchema } from "../src/app/actions/order";
+import { createOrderAction } from "../src/app/actions/order";
+import { checkoutSchema } from "../src/lib/order-schema";
 
 async function runCartOrderTests() {
   console.log("🛒 === BẮT ĐẦU KIỂM THỬ TỰ ĐỘNG GIỎ HÀNG & ĐẶT HÀNG (PHASE 5) ===\n");
