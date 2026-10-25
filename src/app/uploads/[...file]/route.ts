@@ -49,11 +49,21 @@ export async function GET(
   const contentType = MIME_TYPES[ext] || "application/octet-stream";
   const fileBuffer = await fs.promises.readFile(fullPath);
 
+  const isDownload = request.nextUrl.searchParams.get("download") === "1" ||
+    request.nextUrl.searchParams.get("download") === "true";
+  const baseFilename = path.basename(fullPath);
+
+  const headers: Record<string, string> = {
+    "Content-Type": contentType,
+    ETag: etag,
+    "Cache-Control": isDownload ? "no-cache" : "public, max-age=31536000, immutable",
+  };
+
+  if (isDownload) {
+    headers["Content-Disposition"] = `attachment; filename="${encodeURIComponent(baseFilename)}"`;
+  }
+
   return new NextResponse(fileBuffer, {
-    headers: {
-      "Content-Type": contentType,
-      ETag: etag,
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
+    headers,
   });
 }

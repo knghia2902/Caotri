@@ -23,6 +23,9 @@ import {
   Archive,
   ArchiveRestore,
   ShieldCheck,
+  Eye,
+  Download,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -83,7 +86,47 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
   const [togglingFeaturedId, setTogglingFeaturedId] = useState<string | null>(null);
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
   const [togglingArchiveId, setTogglingArchiveId] = useState<string | null>(null);
+  const [viewingWarrantyProduct, setViewingWarrantyProduct] = useState<ProductItem | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+
+  // Helper tải ảnh trực tiếp về máy
+  const handleDownloadImage = async (url: string, prefix = "anh") => {
+    const cleanUrl = normalizeImageUrl(url);
+    const filename = cleanUrl.split("/").pop()?.split("?")[0] || `${prefix}.jpg`;
+
+    try {
+      const downloadTarget = cleanUrl.startsWith("/uploads/")
+        ? `${cleanUrl}${cleanUrl.includes("?") ? "&" : "?"}download=1`
+        : cleanUrl;
+
+      const response = await fetch(downloadTarget, { mode: "cors" });
+      if (!response.ok) throw new Error("Fetch failed");
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(blobUrl);
+      toast.success(`Đã tải xuống: ${filename}`);
+    } catch {
+      const a = document.createElement("a");
+      a.href = cleanUrl.startsWith("/uploads/")
+        ? `${cleanUrl}${cleanUrl.includes("?") ? "&" : "?"}download=1`
+        : cleanUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.info(`Đang mở tải file ${filename}...`);
+    }
+  };
 
   // Handlers reset page về 1 khi thay đổi điều kiện tìm kiếm/lọc
   const handleSearchChange = (val: string) => {
@@ -540,10 +583,15 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             </Badge>
                           )}
                           {(product.warrantyNote || (product.warrantyImages && product.warrantyImages !== "[]")) && (
-                            <Badge className="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] px-1.5 py-0 flex items-center gap-0.5" title="Có hồ sơ bảo hành / số Serial / hóa đơn nội bộ">
-                              <ShieldCheck className="w-2.5 h-2.5 text-blue-600" />
-                              BH
-                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => setViewingWarrantyProduct(product)}
+                              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 font-semibold transition-colors cursor-pointer"
+                              title="Bấm để xem nhanh hồ sơ bảo hành, số serial và tải ảnh hóa đơn"
+                            >
+                              <ShieldCheck className="w-3 h-3 text-blue-600" />
+                              <span>BH</span>
+                            </button>
                           )}
                         </div>
                         <div className="text-xs font-mono text-[#74746E] truncate mt-0.5">
@@ -786,6 +834,234 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           </div>
         )}
       </div>
+
+      {/* ========================================================================= */}
+      {/* MODAL XEM NHANH HỒ SƠ BẢO HÀNH & HÓA ĐƠN TRONG BẢNG SẢN PHẨM */}
+      {/* ========================================================================= */}
+      {viewingWarrantyProduct && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setViewingWarrantyProduct(null)}
+        >
+          <div
+            className="bg-white rounded-2xl border border-[#E7E7E3] shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="p-5 border-b border-[#E7E7E3] flex items-center justify-between bg-[#FAFAFA]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-[#111] line-clamp-1">
+                    Hồ sơ bảo hành: {viewingWarrantyProduct.name}
+                  </h2>
+                  <p className="text-xs text-[#74746E]">
+                    Thông tin nội bộ • Không hiển thị ngoài web
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingWarrantyProduct(null)}
+                className="p-1.5 rounded-lg text-[#74746E] hover:text-[#111] hover:bg-[#E7E7E3] transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 overflow-y-auto space-y-5">
+              {/* Ghi chú */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-2">
+                  Ghi chú bảo hành / Số Serial / Hóa đơn
+                </h3>
+                {viewingWarrantyProduct.warrantyNote ? (
+                  <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 text-sm text-amber-950 font-mono whitespace-pre-wrap leading-relaxed select-text">
+                    {viewingWarrantyProduct.warrantyNote}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#A3A39D] italic">Chưa có ghi chú văn bản nào.</p>
+                )}
+              </div>
+
+              {/* Ảnh chứng từ / hóa đơn */}
+              {(() => {
+                let warrantyImgList: string[] = [];
+                try {
+                  if (Array.isArray(viewingWarrantyProduct.warrantyImages)) {
+                    warrantyImgList = viewingWarrantyProduct.warrantyImages;
+                  } else if (viewingWarrantyProduct.warrantyImages) {
+                    warrantyImgList = JSON.parse(viewingWarrantyProduct.warrantyImages);
+                  }
+                } catch {
+                  warrantyImgList = [];
+                }
+
+                return (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-[#74746E]">
+                        Ảnh chụp hóa đơn, tem & số serial ({warrantyImgList.length})
+                      </h3>
+                      {warrantyImgList.length > 0 && (
+                        <span className="text-[11px] text-[#74746E]">
+                          Bấm vào ảnh để xem lớn hoặc tải về máy
+                        </span>
+                      )}
+                    </div>
+
+                    {warrantyImgList.length === 0 ? (
+                      <p className="text-xs text-[#A3A39D] italic">
+                        Chưa có ảnh hóa đơn/serial nào được tải lên.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {warrantyImgList.map((url, idx) => {
+                          const cleanUrl = normalizeImageUrl(url);
+                          return (
+                            <div
+                              key={url + idx}
+                              className="group rounded-xl overflow-hidden border border-[#E7E7E3] bg-zinc-900 relative shadow-sm"
+                            >
+                              <div
+                                onClick={() => setPreviewImageUrl(cleanUrl)}
+                                className="aspect-square relative overflow-hidden flex items-center justify-center cursor-pointer"
+                                title="Bấm để xem ảnh lớn"
+                              >
+                                <img
+                                  src={cleanUrl}
+                                  alt={`Chứng từ ${idx + 1}`}
+                                  className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src =
+                                      "https://placehold.co/400x400/18181b/a1a1aa?text=Lỗi+ảnh";
+                                  }}
+                                />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                  <span className="p-2 rounded-lg bg-white/90 text-[#111]">
+                                    <Eye className="w-4 h-4" />
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="p-2 bg-white border-t border-[#E7E7E3] flex items-center justify-between">
+                                <span className="text-[11px] font-mono text-[#74746E]">
+                                  #{idx + 1}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => setPreviewImageUrl(cleanUrl)}
+                                    className="p-1 rounded text-zinc-700 hover:text-[#111] hover:bg-zinc-100"
+                                    title="Xem lớn"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleDownloadImage(
+                                        url,
+                                        `bh-${viewingWarrantyProduct.slug}-${idx + 1}`
+                                      )
+                                    }
+                                    className="p-1 rounded text-emerald-700 hover:bg-emerald-50"
+                                    title="Tải ảnh về máy"
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-[#E7E7E3] bg-[#FAFAFA] flex items-center justify-between">
+              <Link href={`/admin/products/${viewingWarrantyProduct.id}/edit`}>
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                  <Edit3 className="w-3.5 h-3.5" />
+                  Sửa thông tin sản phẩm
+                </Button>
+              </Link>
+              <Button
+                type="button"
+                onClick={() => setViewingWarrantyProduct(null)}
+                size="sm"
+                className="bg-[#111] text-white text-xs"
+              >
+                Đóng
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Preview riêng cho Modal bảo hành */}
+      {previewImageUrl && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex flex-col justify-between p-4 animate-in fade-in duration-150"
+          onClick={() => setPreviewImageUrl(null)}
+        >
+          <div
+            className="flex items-center justify-between text-white max-w-4xl mx-auto w-full z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="text-xs text-zinc-300 font-mono truncate max-w-sm">
+              {previewImageUrl.split("/").pop()}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleDownloadImage(previewImageUrl, "bao-hanh")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium"
+              >
+                <Download className="w-4 h-4" />
+                <span>Tải về máy</span>
+              </button>
+              <a
+                href={previewImageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white"
+                title="Mở tab mới"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
+              <button
+                type="button"
+                onClick={() => setPreviewImageUrl(null)}
+                className="p-2 rounded-lg bg-zinc-800 hover:bg-rose-600 text-zinc-300 hover:text-white"
+                title="Đóng (ESC)"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="relative flex-1 flex items-center justify-center my-3">
+            <img
+              src={previewImageUrl}
+              alt="Xem ảnh lớn"
+              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+
+          <div className="text-center text-xs text-zinc-400 py-1">
+            Bấm phím ESC hoặc bấm ra ngoài để đóng
+          </div>
+        </div>
+      )}
     </div>
   );
 }

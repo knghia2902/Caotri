@@ -378,6 +378,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
               <ImageGalleryEditor
                 images={warrantyImages}
                 onChange={setWarrantyImages}
+                allowSetMain={false}
                 disabled={isPending}
               />
               <p className="text-[11px] text-[#74746E] mt-1.5">
