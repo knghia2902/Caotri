@@ -21,6 +21,8 @@ export interface ProductFormData {
   isFeatured?: boolean;
   isNew?: boolean;
   isArchived?: boolean;
+  costPrice?: number | null;
+  internalNote?: string | null;
   warrantyNote?: string | null;
   warrantyImages?: string[];
   categoryId: string;
@@ -92,6 +94,8 @@ export async function createProduct(data: ProductFormData) {
         isFeatured: data.isFeatured ?? false,
         isNew: data.isNew ?? true,
         isArchived: data.isArchived ?? false,
+        costPrice: data.costPrice !== undefined && data.costPrice !== null && !isNaN(Number(data.costPrice)) ? Number(data.costPrice) : null,
+        internalNote: data.internalNote?.trim() || null,
         warrantyNote: data.warrantyNote?.trim() || null,
         warrantyImages: JSON.stringify(cleanWarrantyImages),
         categoryId: data.categoryId,
@@ -184,6 +188,8 @@ export async function updateProduct(id: string, data: ProductFormData) {
         isFeatured: data.isFeatured ?? false,
         isNew: data.isNew ?? false,
         isArchived: data.isArchived !== undefined ? data.isArchived : undefined,
+        costPrice: data.costPrice !== undefined ? (data.costPrice !== null && !isNaN(Number(data.costPrice)) ? Number(data.costPrice) : null) : undefined,
+        internalNote: data.internalNote !== undefined ? (data.internalNote?.trim() || null) : undefined,
         warrantyNote: data.warrantyNote !== undefined ? (data.warrantyNote?.trim() || null) : undefined,
         warrantyImages: data.warrantyImages !== undefined ? JSON.stringify(cleanWarrantyImages) : undefined,
         categoryId: data.categoryId,

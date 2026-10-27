@@ -44,6 +44,8 @@ model Product {
   isFeatured    Boolean     @default(false)
   isNew         Boolean     @default(true)
   isArchived    Boolean     @default(false) // Lưu kho nội bộ, ẩn khỏi storefront bên ngoài
+  costPrice     Float?      // Giá thu vào / vốn mua hàng (Chỉ nội bộ Admin)
+  internalNote  String?     // Ghi chú thu, bán, trade, nguồn hàng (Chỉ nội bộ Admin)
   warrantyNote  String?     // Ghi chú bảo hành, số seri, hóa đơn (Chỉ nội bộ Admin)
   warrantyImages String?    @default("[]") // Ảnh chụp bảo hành, số seri, hóa đơn (Chỉ nội bộ Admin)
   categoryId    String

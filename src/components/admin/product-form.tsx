@@ -3,7 +3,20 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Save, Sparkles, Check, PackageCheck, ShieldAlert, Archive } from "lucide-react";
+import {
+  ArrowLeft,
+  Loader2,
+  Save,
+  Sparkles,
+  Check,
+  PackageCheck,
+  ShieldAlert,
+  Archive,
+  BadgeDollarSign,
+  ArrowRightLeft,
+  TrendingUp,
+  TrendingDown,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +40,8 @@ export interface InitialProductData {
   isFeatured: boolean;
   isNew: boolean;
   isArchived?: boolean;
+  costPrice?: number | null;
+  internalNote?: string | null;
   warrantyNote?: string | null;
   warrantyImages?: string | null; // JSON
   categoryId: string;
@@ -94,6 +109,16 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   const [isNew, setIsNew] = useState(initialData ? initialData.isNew : true);
   const [isArchived, setIsArchived] = useState(initialData?.isArchived ?? false);
 
+  // Sổ tính giá thu / vốn & ghi chú trade nội bộ (Chỉ Admin thấy)
+  const [costPrice, setCostPrice] = useState<number | string>(
+    initialData?.costPrice !== null && initialData?.costPrice !== undefined
+      ? initialData.costPrice
+      : ""
+  );
+  const [internalNote, setInternalNote] = useState<string>(
+    initialData?.internalNote || ""
+  );
+
   // Warranty note & private images (Chỉ lưu nội bộ, không hiển thị web)
   const [warrantyNote, setWarrantyNote] = useState(initialData?.warrantyNote || "");
   const initialWarrantyImages: string[] = (() => {
@@ -160,6 +185,11 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         isFeatured,
         isNew,
         isArchived,
+        costPrice:
+          costPrice !== "" && !isNaN(Number(costPrice))
+            ? Number(costPrice)
+            : null,
+        internalNote: internalNote.trim() || null,
         warrantyNote: warrantyNote.trim() || null,
         warrantyImages,
         categoryId,
@@ -551,6 +581,89 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 </p>
               </div>
             </label>
+          </div>
+
+          {/* Card: Sổ tính & Ghi chú nội bộ (Giá thu / Bán / Trade) */}
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50/20 p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BadgeDollarSign className="w-4 h-4 text-indigo-600" />
+                <h2 className="text-sm font-semibold text-indigo-950 uppercase tracking-wider">
+                  Sổ tính nội bộ (Thu / Bán / Trade)
+                </h2>
+              </div>
+              <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-200">
+                🔒 Chỉ Admin thấy
+              </span>
+            </div>
+
+            <p className="text-xs text-indigo-900/80 leading-relaxed">
+              Ghi chép giá thu vào (vốn), lịch sử giao lưu trade bù trừ, thỏa thuận giá với khách... để kiểm soát dòng tiền và lợi nhuận từng món gear.
+            </p>
+
+            {/* Giá thu vào / Giá vốn */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Giá thu vào / Giá vốn (VNĐ, tùy chọn)
+              </label>
+              <Input
+                type="number"
+                value={costPrice}
+                onChange={(e) => setCostPrice(e.target.value)}
+                placeholder="VD: 800000"
+                disabled={isPending}
+                className="bg-white"
+              />
+              {costPrice !== "" && !isNaN(Number(costPrice)) && Number(costPrice) > 0 ? (
+                <div className="mt-2.5 p-3 rounded-lg bg-white border border-indigo-100 space-y-1.5 shadow-sm">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-[#74746E]">Giá vốn / Giá thu:</span>
+                    <span className="font-mono font-semibold text-indigo-950">
+                      {formatPrice(Number(costPrice))}
+                    </span>
+                  </div>
+                  {price !== "" && !isNaN(Number(price)) && Number(price) > 0 && (
+                    <div className="flex items-center justify-between text-xs pt-1.5 border-t border-dashed border-gray-200">
+                      <span className="text-[#74746E] flex items-center gap-1">
+                        {Number(price) >= Number(costPrice) ? (
+                          <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <TrendingDown className="w-3.5 h-3.5 text-rose-600" />
+                        )}
+                        <span>Chênh lệch / Lời dự kiến:</span>
+                      </span>
+                      {Number(price) - Number(costPrice) >= 0 ? (
+                        <span className="font-mono font-bold text-emerald-600">
+                          +{formatPrice(Number(price) - Number(costPrice))} ({(((Number(price) - Number(costPrice)) / Number(costPrice)) * 100).toFixed(1)}%)
+                        </span>
+                      ) : (
+                        <span className="font-mono font-bold text-rose-600">
+                          {formatPrice(Number(price) - Number(costPrice))}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            {/* Ghi chú Thu / Bán / Trade */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                Ghi chú Thu / Bán / Trade / Khách hàng
+              </label>
+              <textarea
+                value={internalNote}
+                onChange={(e) => setInternalNote(e.target.value)}
+                placeholder="VD:&#10;• Thu của Nam FB ngày 25/10 giá 800k fullbox.&#10;• Khách trade từ phím RK61 bù thêm 350k.&#10;• Bán khách quen fix 1200k freeship..."
+                rows={4}
+                disabled={isPending}
+                className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-y"
+              />
+              <p className="text-[11px] text-[#74746E] mt-1.5">
+                * Toàn bộ giá thu và ghi chú trade này hoàn toàn bảo mật nội bộ, khách hàng xem ngoài website sẽ không bao giờ thấy.
+              </p>
+            </div>
           </div>
         </div>
       </div>
