@@ -20,3 +20,9 @@ slug: gmail-order-notifications
    - Added Block 4: "Thông báo Email Đơn hàng (Gmail SMTP)" with toggle switch, admin recipient email, sender Gmail, app password with show/hide toggle, and sender display name.
    - Added step-by-step Google App Password guide with direct links.
    - Added "Gửi email kiểm tra (Test)" button with real-time toast feedback.
+5. **Live Production Verification (VPS 103.27.238.50)**:
+   - User configured `nguyenlecaotri6900@gmail.com` with Google App Password in `/admin/settings`.
+   - Verified automated removal of spaces from App Password.
+   - Successfully authenticated with Google SMTP (`smtp.gmail.com`).
+   - Dispatched test order `DH-FMT1Q2` with 100% success (`[Email Alert] Đã gửi thông báo đơn hàng #DH-FMT1Q2 thành công tới nguyenlecaotri6900@gmail.com`).
+   - Production PM2 service online and functioning properly.
