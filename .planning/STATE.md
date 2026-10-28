@@ -51,6 +51,7 @@ Progress: [██████████] 100%
 
 ### Decisions
 
+- [Email Notifications]: Tích hợp hệ thống gửi thông báo đơn hàng mới tự động qua Gmail SMTP (Nodemailer), cấu hình linh hoạt trong `/admin/settings` kèm nút gửi thử và hướng dẫn Google App Passwords.
 - [Storefront Theme]: Áp dụng Dark Gaming Sleek (`zinc-950`, viền `zinc-800`, neon cyan accents) đồng bộ hoàn toàn với phong cách Admin Dashboard.
 - [Hero Banner Slider]: Toàn chiều rộng, tự động chuyển slide sau 5s (pause khi hover), nút điều hướng và chấm tròn indicator, lấy banner `isActive: true` từ CSDL.
 - [Price Range Slider]: Thanh trượt kép 2 đầu kéo lọc giá min-max linh hoạt kèm ô nhập trực tiếp và nút chọn nhanh ngân sách (<500k, 500k-1.5tr, 1.5tr-3tr, >3tr).

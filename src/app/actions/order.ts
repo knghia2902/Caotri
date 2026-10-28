@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { getStatusLabel } from "@/lib/utils";
+import { sendNewOrderNotification } from "@/lib/email";
 import {
   checkoutSchema,
   updateOrderStatusSchema,
@@ -89,8 +90,16 @@ export async function createOrderAction(
             })),
           },
         },
+        include: {
+          items: true,
+        },
       });
       return order;
+    });
+
+    // Kích hoạt gửi thông báo email ngầm đến Admin (non-blocking để checkout nhanh tức thì)
+    sendNewOrderNotification(createdOrder).catch((err) => {
+      console.error("[Order Action] Gửi email đơn hàng thất bại:", err);
     });
 
     return {
