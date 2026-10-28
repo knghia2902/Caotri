@@ -11,6 +11,7 @@ import {
   Check,
   PackageCheck,
   ShieldAlert,
+  ShieldCheck,
   Archive,
   BadgeDollarSign,
   ArrowRightLeft,
@@ -370,26 +371,28 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             />
           </div>
 
-          {/* Card: Hồ sơ bảo hành & Ghi chú nội bộ (Chỉ lưu nội bộ, không hiển thị web) */}
-          <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-5 space-y-4">
-            <div className="flex items-center justify-between">
+          {/* Card: Hồ sơ bảo hành (Chuyên lưu Serial, tem & hóa đơn bảo hành) */}
+          <div className="rounded-xl border border-blue-200 bg-blue-50/20 p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-amber-600" />
-                <h2 className="text-sm font-semibold text-amber-950 uppercase tracking-wider">
-                  Hồ sơ bảo hành & Ghi chú nội bộ
-                </h2>
+                <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
+                <div>
+                  <h2 className="text-sm font-bold text-blue-950 uppercase tracking-wider">
+                    Hồ sơ bảo hành (Số Serial & Hóa đơn VAT)
+                  </h2>
+                  <p className="text-xs text-blue-800">
+                    Chuyên lưu đối soát bảo hành. Khi điền mục này, danh sách ngoài bảng sẽ hiện huy hiệu <span className="font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">BH</span> để không bị xóa nhầm.
+                  </p>
+                </div>
               </div>
-              <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 shrink-0 self-start sm:self-auto">
                 🔒 Không hiển thị ngoài web
               </span>
             </div>
-            <p className="text-xs text-amber-900/80 leading-relaxed">
-              Khu vực dành riêng cho quản trị viên lưu lại <strong>số Serial / IMEI, hóa đơn mua hàng, ảnh chụp tem bảo hành</strong> để sau này tiện tra cứu đối soát khi khách mang máy đến bảo hành hoặc kiểm tra lịch sử linh kiện đã bán.
-            </p>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Ghi chú bảo hành / Số Serial / Hóa đơn mua vào
+                Số Serial / IMEI & Thời hạn bảo hành hãng
               </label>
               <textarea
                 value={warrantyNote}
@@ -397,13 +400,13 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 placeholder="VD: Serial: SN-982348719, hóa đơn VAT mua ngày 15/01/2026 tại APShop, bảo hành 12 tháng đến 15/01/2027, liên hệ NPP Mai Hoàng..."
                 rows={3}
                 disabled={isPending}
-                className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all resize-y"
+                className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-y"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Ảnh chụp số Serial & Hóa đơn chứng từ (Chỉ Admin xem)
+                Ảnh chụp tem bảo hành, số Serial & Hóa đơn chứng từ (Chỉ Admin xem)
               </label>
               <ImageGalleryEditor
                 images={warrantyImages}
@@ -585,14 +588,19 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
           {/* Card: Sổ tính & Ghi chú nội bộ (Giá thu / Bán / Trade) */}
           <div className="rounded-xl border border-indigo-200 bg-indigo-50/20 p-5 space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <BadgeDollarSign className="w-4 h-4 text-indigo-600" />
-                <h2 className="text-sm font-semibold text-indigo-950 uppercase tracking-wider">
-                  Sổ tính nội bộ (Thu / Bán / Trade)
-                </h2>
+                <BadgeDollarSign className="w-5 h-5 text-indigo-600 shrink-0" />
+                <div>
+                  <h2 className="text-sm font-bold text-indigo-950 uppercase tracking-wider">
+                    Sổ tính & Ghi chú nội bộ (Thu / Bán / Trade)
+                  </h2>
+                  <p className="text-xs text-indigo-800">
+                    Quản lý giá vốn, thỏa thuận bù trừ trade. Hoàn toàn độc lập, KHÔNG hiện chữ BH.
+                  </p>
+                </div>
               </div>
-              <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-200">
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0 self-start sm:self-auto">
                 🔒 Chỉ Admin thấy
               </span>
             </div>

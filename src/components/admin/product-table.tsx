@@ -24,6 +24,9 @@ import {
   ArchiveRestore,
   ShieldCheck,
   BadgeDollarSign,
+  FileText,
+  TrendingUp,
+  TrendingDown,
   Eye,
   Download,
   X,
@@ -90,6 +93,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
   const [togglingArchiveId, setTogglingArchiveId] = useState<string | null>(null);
   const [viewingWarrantyProduct, setViewingWarrantyProduct] = useState<ProductItem | null>(null);
+  const [viewingInternalNoteProduct, setViewingInternalNoteProduct] = useState<ProductItem | null>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
@@ -630,12 +634,27 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                           {formatPrice(product.price)}
                         </div>
                         {product.costPrice && product.costPrice > 0 ? (
-                          <div
-                            className="text-[11px] text-indigo-700 flex items-center gap-1 font-sans mt-0.5 font-medium"
-                            title={`Giá thu vào: ${formatPrice(product.costPrice)} | Lời dự kiến: ${formatPrice(product.price - product.costPrice)}`}
+                          <button
+                            type="button"
+                            onClick={() => setViewingInternalNoteProduct(product)}
+                            className="text-[11px] text-indigo-700 hover:text-indigo-950 inline-flex items-center gap-1 font-sans mt-1 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition-colors cursor-pointer"
+                            title="Bấm để xem Sổ tính giá vốn & Ghi chú nội bộ"
                           >
                             <span>Vốn: {formatPrice(product.costPrice)}</span>
-                          </div>
+                            {product.internalNote && (
+                              <FileText className="w-3 h-3 text-indigo-500" />
+                            )}
+                          </button>
+                        ) : product.internalNote ? (
+                          <button
+                            type="button"
+                            onClick={() => setViewingInternalNoteProduct(product)}
+                            className="text-[11px] text-indigo-700 hover:text-indigo-950 inline-flex items-center gap-1 font-sans mt-1 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition-colors cursor-pointer"
+                            title="Bấm để xem Ghi chú nội bộ / Trade"
+                          >
+                            <FileText className="w-3 h-3 text-indigo-600" />
+                            <span>Ghi chú</span>
+                          </button>
                         ) : product.originalPrice && product.originalPrice > product.price ? (
                           <div className="text-xs text-[#74746E] line-through">
                             {formatPrice(product.originalPrice)}
@@ -879,8 +898,8 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   <h2 className="text-base font-bold text-[#111] line-clamp-1">
                     Hồ sơ bảo hành: {viewingWarrantyProduct.name}
                   </h2>
-                  <p className="text-xs text-[#74746E]">
-                    Thông tin nội bộ • Không hiển thị ngoài web
+                  <p className="text-xs text-blue-700 font-medium">
+                    Số Serial, tem hãng & hóa đơn VAT • Không hiển thị ngoài web
                   </p>
                 </div>
               </div>
@@ -1005,61 +1024,6 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   </div>
                 );
               })()}
-
-              {/* Sổ tính giá thu & ghi chú Trade (Tham khảo thêm) */}
-              {(viewingWarrantyProduct.costPrice || viewingWarrantyProduct.internalNote) && (
-                <div className="p-4 rounded-xl bg-indigo-50/50 border border-indigo-200/80 space-y-3 pt-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-950 uppercase tracking-wider">
-                      <BadgeDollarSign className="w-4 h-4 text-indigo-600" />
-                      <span>Sổ tính giá vốn & ghi chú trade</span>
-                    </div>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
-                      Nội bộ
-                    </span>
-                  </div>
-
-                  {viewingWarrantyProduct.costPrice && viewingWarrantyProduct.costPrice > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-2.5 rounded-lg bg-white border border-indigo-100 text-xs shadow-sm">
-                      <div>
-                        <span className="text-[#74746E] block text-[11px]">Giá thu (vốn):</span>
-                        <span className="font-mono font-bold text-indigo-950">
-                          {formatPrice(viewingWarrantyProduct.costPrice)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[#74746E] block text-[11px]">Giá bán hiện tại:</span>
-                        <span className="font-mono font-bold text-[#111]">
-                          {formatPrice(viewingWarrantyProduct.price)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[#74746E] block text-[11px]">Lời dự kiến:</span>
-                        {viewingWarrantyProduct.price - viewingWarrantyProduct.costPrice >= 0 ? (
-                          <span className="font-mono font-bold text-emerald-600">
-                            +{formatPrice(viewingWarrantyProduct.price - viewingWarrantyProduct.costPrice)}
-                          </span>
-                        ) : (
-                          <span className="font-mono font-bold text-rose-600">
-                            {formatPrice(viewingWarrantyProduct.price - viewingWarrantyProduct.costPrice)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {viewingWarrantyProduct.internalNote && (
-                    <div>
-                      <span className="text-[11px] font-semibold text-indigo-900 block mb-1">
-                        Ghi chú thu / trade / khách:
-                      </span>
-                      <div className="text-xs text-indigo-950 whitespace-pre-wrap leading-relaxed bg-white/90 p-2.5 rounded-lg border border-indigo-100 font-mono select-text">
-                        {viewingWarrantyProduct.internalNote}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Footer */}
@@ -1073,6 +1037,124 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
               <Button
                 type="button"
                 onClick={() => setViewingWarrantyProduct(null)}
+                size="sm"
+                className="bg-[#111] text-white text-xs"
+              >
+                Đóng
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL XEM RIÊNG SỔ TÍNH & GHI CHÚ NỘI BỘ (THU / BÁN / TRADE) */}
+      {/* ========================================================================= */}
+      {viewingInternalNoteProduct && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setViewingInternalNoteProduct(null)}
+        >
+          <div
+            className="bg-white rounded-2xl border border-[#E7E7E3] shadow-2xl max-w-lg w-full flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="p-5 border-b border-[#E7E7E3] flex items-center justify-between bg-indigo-50/40">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 border border-indigo-200">
+                  <BadgeDollarSign className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-indigo-950 line-clamp-1">
+                    Sổ tính & Ghi chú: {viewingInternalNoteProduct.name}
+                  </h2>
+                  <p className="text-xs text-indigo-700/80">
+                    Dữ liệu kinh doanh nội bộ • Chỉ Admin thấy
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingInternalNoteProduct(null)}
+                className="p-1.5 rounded-lg text-[#74746E] hover:text-[#111] hover:bg-[#E7E7E3] transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+              {/* Financial Box */}
+              {viewingInternalNoteProduct.costPrice && viewingInternalNoteProduct.costPrice > 0 ? (
+                <div className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E7E7E3] space-y-3">
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="p-2.5 rounded-lg bg-white border border-[#E7E7E3]">
+                      <span className="text-[#74746E] block mb-0.5">Giá thu vào (vốn):</span>
+                      <span className="text-sm font-bold font-mono text-indigo-950">
+                        {formatPrice(viewingInternalNoteProduct.costPrice)}
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-white border border-[#E7E7E3]">
+                      <span className="text-[#74746E] block mb-0.5">Giá bán niêm yết:</span>
+                      <span className="text-sm font-bold font-mono text-[#111]">
+                        {formatPrice(viewingInternalNoteProduct.price)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-white border border-[#E7E7E3] flex items-center justify-between text-xs">
+                    <span className="text-[#74746E] flex items-center gap-1.5 font-medium">
+                      {viewingInternalNoteProduct.price >= viewingInternalNoteProduct.costPrice ? (
+                        <TrendingUp className="w-4 h-4 text-emerald-600" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4 text-rose-600" />
+                      )}
+                      <span>Chênh lệch / Lời dự kiến:</span>
+                    </span>
+                    {viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice >= 0 ? (
+                      <span className="text-sm font-bold font-mono text-emerald-600">
+                        +{formatPrice(viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice)}
+                        {" "}
+                        <span className="text-xs font-normal">
+                          ({(((viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice) / viewingInternalNoteProduct.costPrice) * 100).toFixed(1)}%)
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-sm font-bold font-mono text-rose-600">
+                        {formatPrice(viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Internal Note */}
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
+                  Ghi chú Thu / Bán / Trade / Nguồn nhập
+                </h3>
+                {viewingInternalNoteProduct.internalNote ? (
+                  <div className="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-200 text-sm text-indigo-950 font-mono whitespace-pre-wrap leading-relaxed select-text">
+                    {viewingInternalNoteProduct.internalNote}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#A3A39D] italic">Chưa có ghi chú văn bản nào.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-[#E7E7E3] bg-[#FAFAFA] flex items-center justify-between">
+              <Link href={`/admin/products/${viewingInternalNoteProduct.id}/edit`}>
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                  <Edit3 className="w-3.5 h-3.5" />
+                  Sửa thông tin sản phẩm
+                </Button>
+              </Link>
+              <Button
+                type="button"
+                onClick={() => setViewingInternalNoteProduct(null)}
                 size="sm"
                 className="bg-[#111] text-white text-xs"
               >
