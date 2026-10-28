@@ -973,14 +973,17 @@ Hệ thống nút được thiết kế đồng bộ theo lưới chiều cao (h
 - **Hover**: `bg-red-50 border-red-200 text-[#D94A4A]`.
 - Giữ toàn bộ hàng nút thẳng hàng, sạch sẽ và không gây giật thị giác trước khi hover.
 
-## 29.3 Quy chuẩn Badges / Nhãn trạng thái và Danh mục trên bảng
+## 29.3 Quy chuẩn Cột Bảo hành & Huy hiệu sản phẩm (Gear 2nd)
 
-- **Huy hiệu trạng thái sản phẩm (`[Mới]`, `[🛡️ BH]`, `[Lưu kho]`)**:
-  - Chiều cao: `20px` (`h-5`)
-  - Bo góc: **`rounded-md`** (`6px`)
-  - Font chữ: `10px` (`text-[10px] font-semibold`)
-  - Padding: `px-1.5`
-  - Đặt inline ngay cạnh tên sản phẩm trên cùng một dòng.
+- **Mô hình kinh doanh Gear 2nd**:
+  - Toàn bộ sản phẩm là hàng 2nd (đã qua sử dụng), loại bỏ hoàn toàn nhãn `[Mới]` (New) trên bảng quản trị để tránh gây hiểu lầm với hàng mới đập hộp seal.
+- **Cột Bảo hành riêng biệt (Warranty Column)**:
+  - Tách riêng thành một cột độc lập trong bảng sản phẩm:
+    - **Sản phẩm có hồ sơ BH**: Nút bấm `[🛡️ Còn BH]` (`h-7 px-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-medium`). Bấm vào mở pop-up đối soát hồ sơ, số serial và ảnh hóa đơn.
+    - **Sản phẩm không có BH**: Văn bản mờ `Hết BH` (`text-xs text-[#A3A39D] font-medium`).
+  - Lợi ích: Cột Tên sản phẩm hoàn toàn sạch sẽ, thoáng mắt; người quản lý có thể quét mắt dọc theo cột để nhận diện nhanh những món gear còn bảo hành hãng để tư vấn khách.
+- **Huy hiệu Lưu kho (`[Lưu kho]`)**:
+  - Chiều cao: `20px` (`h-5`), bo góc `rounded-md`, chữ `10px` (`text-[10px] font-semibold`). Đặt cạnh tên khi sản phẩm bị ẩn khỏi web.
 - **Cột Danh mục (Category Column)**:
   - Hiển thị dưới dạng **văn bản thuần túy** (`text-xs font-medium text-[#555550]`).
   - **KHÔNG đóng khung hay đổ màu nền giả làm badge/button**, tránh tình trạng người dùng nhầm lẫn với nút bấm hoặc thấy kích thước lệch lạc so với các huy hiệu trạng thái bên cạnh.

@@ -86,6 +86,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [featuredFilter, setFeaturedFilter] = useState<string>("all");
   const [archiveFilter, setArchiveFilter] = useState<string>("all");
+  const [warrantyFilter, setWarrantyFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -173,6 +174,11 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
     setCurrentPage(1);
   };
 
+  const handleWarrantyFilterChange = (val: string) => {
+    setWarrantyFilter(val);
+    setCurrentPage(1);
+  };
+
   const handlePageSizeChange = (val: number) => {
     setPageSize(val);
     setCurrentPage(1);
@@ -210,7 +216,19 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
       (archiveFilter === "active" && !p.isArchived) ||
       (archiveFilter === "archived" && Boolean(p.isArchived));
 
-    return matchesSearch && matchesCategory && matchesStock && matchesFeatured && matchesArchive;
+    const matchesWarranty =
+      warrantyFilter === "all" ||
+      (warrantyFilter === "warranty" && hasWarranty(p)) ||
+      (warrantyFilter === "no_warranty" && !hasWarranty(p));
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesStock &&
+      matchesFeatured &&
+      matchesArchive &&
+      matchesWarranty
+    );
   });
 
   // Tính toán phân trang
@@ -490,6 +508,17 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             <option value="out_of_stock">🔴 Hết hàng</option>
           </select>
 
+          {/* Warranty Filter */}
+          <select
+            value={warrantyFilter}
+            onChange={(e) => handleWarrantyFilterChange(e.target.value)}
+            className="h-10 rounded-lg bg-white border border-[#E7E7E3] px-3 text-xs text-[#111] focus:outline-none focus:ring-2 focus:border-[#111] focus:ring-0"
+          >
+            <option value="all">Bảo hành: Tất cả</option>
+            <option value="warranty">🛡️ Còn BH</option>
+            <option value="no_warranty">Hết BH</option>
+          </select>
+
           {/* Archive Filter */}
           <select
             value={archiveFilter}
@@ -532,6 +561,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                 <th className="py-3 px-4 align-middle">Tên sản phẩm</th>
                 <th className="py-3 px-4 align-middle">Danh mục</th>
                 <th className="py-3 px-4 align-middle">Giá bán</th>
+                <th className="py-3 px-4 align-middle text-center">Bảo hành</th>
                 <th className="py-3 px-4 align-middle text-center">Nổi bật</th>
                 <th className="py-3 px-4 align-middle text-center">Tồn kho</th>
                 <th className="py-3 px-4 align-middle text-right">Thao tác</th>
@@ -540,7 +570,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             <tbody className="divide-y divide-zinc-800/60">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-[#74746E]">
+                  <td colSpan={8} className="py-12 text-center text-[#74746E]">
                     <Package className="w-10 h-10 mx-auto mb-3 text-[#A3A39D]" />
                     <p className="text-sm font-medium">Không tìm thấy sản phẩm nào phù hợp</p>
                     <p className="text-xs text-[#A3A39D] mt-1">
@@ -597,22 +627,6 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                                 <span>Lưu kho</span>
                               </span>
                             )}
-                            {product.isNew && !product.isArchived && (
-                              <span className="h-5 px-1.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-300 text-[10px] font-semibold inline-flex items-center shrink-0">
-                                Mới
-                              </span>
-                            )}
-                            {hasWarranty(product) && (
-                              <button
-                                type="button"
-                                onClick={() => setViewingWarrantyProduct(product)}
-                                className="h-5 px-1.5 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 text-[10px] font-semibold inline-flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
-                                title="Hồ sơ bảo hành"
-                              >
-                                <ShieldCheck className="w-3 h-3 text-blue-600" />
-                                <span>BH</span>
-                              </button>
-                            )}
                           </div>
                           <div className="text-xs font-mono text-[#74746E] truncate mt-0.5">
                             /{product.slug}
@@ -661,6 +675,25 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             </div>
                           ) : null}
                         </div>
+                      </td>
+
+                      {/* Warranty */}
+                      <td className="py-3 px-4 align-middle text-center">
+                        {hasWarranty(product) ? (
+                          <button
+                            type="button"
+                            onClick={() => setViewingWarrantyProduct(product)}
+                            className="h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-medium transition-colors cursor-pointer"
+                            title="Bấm để xem hồ sơ bảo hành & ảnh hóa đơn"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                            <span>Còn BH</span>
+                          </button>
+                        ) : (
+                          <span className="text-xs text-[#A3A39D] font-medium">
+                            Hết BH
+                          </span>
+                        )}
                       </td>
 
                       {/* Quick-Toggle Featured */}
