@@ -528,13 +528,13 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           <table className="w-full text-left text-sm text-[#111]">
             <thead className="bg-[#FAFAFA] border-b border-[#E7E7E3] text-xs font-semibold uppercase text-[#74746E] tracking-wider">
               <tr>
-                <th className="py-3.5 px-4 w-16">Ảnh</th>
-                <th className="py-3.5 px-4">Tên sản phẩm</th>
-                <th className="py-3.5 px-4">Danh mục</th>
-                <th className="py-3.5 px-4">Giá bán</th>
-                <th className="py-3.5 px-4 text-center">Nổi bật</th>
-                <th className="py-3.5 px-4 text-center">Tồn kho</th>
-                <th className="py-3.5 px-4 text-right">Thao tác</th>
+                <th className="py-3 px-4 w-16 align-middle">Ảnh</th>
+                <th className="py-3 px-4 align-middle">Tên sản phẩm</th>
+                <th className="py-3 px-4 align-middle">Danh mục</th>
+                <th className="py-3 px-4 align-middle">Giá bán</th>
+                <th className="py-3 px-4 align-middle text-center">Nổi bật</th>
+                <th className="py-3 px-4 align-middle text-center">Tồn kho</th>
+                <th className="py-3 px-4 align-middle text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800/60">
@@ -561,10 +561,10 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   return (
                     <tr
                       key={product.id}
-                      className="hover:bg-white transition-colors group"
+                      className="hover:bg-[#FAFAFA]/70 transition-colors group"
                     >
                       {/* Image */}
-                      <td className="py-3.5 px-4">
+                      <td className="py-3 px-4 align-middle">
                         <div className="w-12 h-12 rounded-lg bg-[#111111] border border-[#E7E7E3] overflow-hidden flex items-center justify-center group-hover:border-[#111] transition-colors">
                           {firstImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -585,82 +585,86 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       </td>
 
                       {/* Name & Slug */}
-                      <td className="py-3.5 px-4 max-w-xs sm:max-w-sm">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-[#111] group-hover:text-[#111] transition-colors line-clamp-1">
-                            {product.name}
-                          </span>
-                          {product.isArchived && (
-                            <span className="h-5 px-2 rounded-md bg-amber-50 text-amber-800 border border-amber-300 text-[11px] font-semibold inline-flex items-center gap-1 shrink-0">
-                              <Archive className="w-2.5 h-2.5" />
-                              <span>Lưu kho</span>
+                      <td className="py-3 px-4 align-middle max-w-xs sm:max-w-sm">
+                        <div className="flex flex-col justify-center">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-semibold text-[#111] group-hover:text-[#111] transition-colors line-clamp-1">
+                              {product.name}
                             </span>
-                          )}
-                          {product.isNew && !product.isArchived && (
-                            <span className="h-5 px-2 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-300 text-[11px] font-semibold inline-flex items-center shrink-0">
-                              Mới
-                            </span>
-                          )}
-                          {hasWarranty(product) && (
-                            <button
-                              type="button"
-                              onClick={() => setViewingWarrantyProduct(product)}
-                              className="h-5 px-2 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 text-[11px] font-semibold inline-flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
-                              title="Hồ sơ bảo hành"
-                            >
-                              <ShieldCheck className="w-3 h-3 text-blue-600" />
-                              <span>BH</span>
-                            </button>
-                          )}
-                        </div>
-                        <div className="text-xs font-mono text-[#74746E] truncate mt-0.5">
-                          /{product.slug}
+                            {product.isArchived && (
+                              <span className="h-5 px-1.5 rounded-md bg-amber-50 text-amber-800 border border-amber-300 text-[10px] font-semibold inline-flex items-center gap-1 shrink-0">
+                                <Archive className="w-2.5 h-2.5" />
+                                <span>Lưu kho</span>
+                              </span>
+                            )}
+                            {product.isNew && !product.isArchived && (
+                              <span className="h-5 px-1.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-300 text-[10px] font-semibold inline-flex items-center shrink-0">
+                                Mới
+                              </span>
+                            )}
+                            {hasWarranty(product) && (
+                              <button
+                                type="button"
+                                onClick={() => setViewingWarrantyProduct(product)}
+                                className="h-5 px-1.5 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 text-[10px] font-semibold inline-flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
+                                title="Hồ sơ bảo hành"
+                              >
+                                <ShieldCheck className="w-3 h-3 text-blue-600" />
+                                <span>BH</span>
+                              </button>
+                            )}
+                          </div>
+                          <div className="text-xs font-mono text-[#74746E] truncate mt-0.5">
+                            /{product.slug}
+                          </div>
                         </div>
                       </td>
 
                       {/* Category */}
-                      <td className="py-3.5 px-4">
-                        <span className="h-6 px-2.5 rounded-md bg-[#FAFAFA] text-[#555550] border border-[#E7E7E3] text-[11px] font-medium inline-flex items-center">
+                      <td className="py-3 px-4 align-middle">
+                        <span className="text-xs font-medium text-[#555550]">
                           {product.category.name}
                         </span>
                       </td>
 
                       {/* Price */}
-                      <td className="py-3.5 px-4 font-mono">
-                        <div className="font-bold text-[#111]">
-                          {formatPrice(product.price)}
-                        </div>
-                        {product.costPrice && product.costPrice > 0 ? (
-                          <button
-                            type="button"
-                            onClick={() => setViewingInternalNoteProduct(product)}
-                            className="text-[11px] text-[#74746E] hover:text-[#111] inline-flex items-center gap-1 font-sans mt-0.5 transition-colors cursor-pointer text-left"
-                            title="Sổ tính & Ghi chú"
-                          >
-                            <span>Vốn: <span className="font-mono text-[#555550]">{formatPrice(product.costPrice)}</span></span>
-                            {product.internalNote && (
-                              <FileText className="w-3 h-3 text-indigo-600 shrink-0" />
-                            )}
-                          </button>
-                        ) : product.internalNote ? (
-                          <button
-                            type="button"
-                            onClick={() => setViewingInternalNoteProduct(product)}
-                            className="text-[11px] text-[#74746E] hover:text-[#111] inline-flex items-center gap-1 font-sans mt-0.5 transition-colors cursor-pointer text-left"
-                            title="Ghi chú nội bộ"
-                          >
-                            <FileText className="w-3 h-3 text-indigo-600 shrink-0" />
-                            <span>Ghi chú</span>
-                          </button>
-                        ) : product.originalPrice && product.originalPrice > product.price ? (
-                          <div className="text-xs text-[#74746E] line-through">
-                            {formatPrice(product.originalPrice)}
+                      <td className="py-3 px-4 align-middle font-mono">
+                        <div className="flex flex-col justify-center">
+                          <div className="font-bold text-[#111]">
+                            {formatPrice(product.price)}
                           </div>
-                        ) : null}
+                          {product.costPrice && product.costPrice > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => setViewingInternalNoteProduct(product)}
+                              className="text-[11px] text-[#74746E] hover:text-[#111] inline-flex items-center gap-1 font-sans mt-0.5 transition-colors cursor-pointer text-left"
+                              title="Sổ tính & Ghi chú"
+                            >
+                              <span>Vốn: <span className="font-mono text-[#555550]">{formatPrice(product.costPrice)}</span></span>
+                              {product.internalNote && (
+                                <FileText className="w-3 h-3 text-indigo-600 shrink-0" />
+                              )}
+                            </button>
+                          ) : product.internalNote ? (
+                            <button
+                              type="button"
+                              onClick={() => setViewingInternalNoteProduct(product)}
+                              className="text-[11px] text-[#74746E] hover:text-[#111] inline-flex items-center gap-1 font-sans mt-0.5 transition-colors cursor-pointer text-left"
+                              title="Ghi chú nội bộ"
+                            >
+                              <FileText className="w-3 h-3 text-indigo-600 shrink-0" />
+                              <span>Ghi chú</span>
+                            </button>
+                          ) : product.originalPrice && product.originalPrice > product.price ? (
+                            <div className="text-xs text-[#74746E] line-through">
+                              {formatPrice(product.originalPrice)}
+                            </div>
+                          ) : null}
+                        </div>
                       </td>
 
                       {/* Quick-Toggle Featured */}
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="py-3 px-4 align-middle text-center">
                         <button
                           type="button"
                           onClick={() => handleToggleFeatured(product)}
@@ -673,7 +677,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                           className={`h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-all ${
                             product.isFeatured
                               ? "bg-amber-50 border-amber-300 text-amber-600 hover:bg-amber-100"
-                              : "bg-white border-[#E7E7E3] text-[#74746E] hover:text-[#111] hover:bg-[#FAFAFA]"
+                              : "bg-white border-[#E7E7E3] text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1]"
                           }`}
                         >
                           {togglingFeaturedId === product.id ? (
@@ -689,13 +693,13 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       </td>
 
                       {/* Quick-Toggle Stock */}
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="py-3 px-4 align-middle text-center">
                         <button
                           type="button"
                           onClick={() => handleToggleStock(product)}
                           disabled={togglingStockId === product.id}
                           title="Bấm 1-Click để đổi trạng thái Còn hàng / Hết hàng"
-                          className={`h-8 inline-flex items-center gap-1.5 px-3 rounded-lg text-xs font-medium border transition-all ${
+                          className={`h-8 inline-flex items-center justify-center gap-1.5 px-3 rounded-lg text-xs font-medium border transition-all ${
                             product.inStock
                               ? "bg-emerald-50 text-[#21A366] border-emerald-200 hover:bg-emerald-100"
                               : "bg-red-50 text-[#D94A4A] border-red-200 hover:bg-red-100"
@@ -713,7 +717,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-3 px-4 align-middle text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           {/* 1-Click Toggle Lưu kho */}
                           <button
@@ -740,30 +744,31 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             )}
                           </button>
 
+                          {/* Chỉnh sửa */}
                           <Link href={`/admin/products/${product.id}/edit`}>
-                            <Button
-                              size="sm"
-                              variant="ghost"
+                            <button
+                              type="button"
                               title="Chỉnh sửa sản phẩm"
-                              className="h-8 w-8 p-0 text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1]"
+                              className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] transition-all"
                             >
-                              <Edit3 className="w-4 h-4" />
-                            </Button>
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
                           </Link>
-                          <Button
-                            size="sm"
-                            variant="ghost"
+
+                          {/* Xóa */}
+                          <button
+                            type="button"
                             onClick={() => handleDelete(product)}
                             disabled={deletingId === product.id}
                             title="Xóa sản phẩm"
-                            className="h-8 w-8 p-0 text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50"
+                            className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50 hover:border-red-200 transition-all"
                           >
                             {deletingId === product.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-[#D94A4A]" />
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D94A4A]" />
                             ) : (
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             )}
-                          </Button>
+                          </button>
                         </div>
                       </td>
                     </tr>

@@ -157,12 +157,12 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                     className="hover:bg-[#FAFAFA] h-14 border-b border-[#E7E7E3] transition-colors group"
                   >
                     {/* Thứ tự */}
-                    <td className="py-4 px-4 text-center text-xs text-[#74746E] font-semibold">
+                    <td className="py-3 px-4 align-middle text-center text-xs text-[#74746E] font-semibold">
                       #{cat.orderIndex}
                     </td>
 
                     {/* Ảnh / Icon */}
-                    <td className="py-4 px-4">
+                    <td className="py-3 px-4 align-middle">
                       <div className="w-11 h-11 rounded-lg bg-[#F3F3F1] border border-[#E7E7E3] overflow-hidden flex items-center justify-center flex-shrink-0 transition-colors">
                         {cat.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -181,7 +181,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                     </td>
 
                     {/* Tên & Mô tả */}
-                    <td className="py-4 px-4">
+                    <td className="py-3 px-4 align-middle">
                       <div className="font-semibold text-[#111] transition-colors">
                         {cat.name}
                       </div>
@@ -193,20 +193,20 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                     </td>
 
                     {/* Slug */}
-                    <td className="py-4 px-4">
-                      <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-[#FAFAFA] text-[#74746E] border border-[#E7E7E3]">
+                    <td className="py-3 px-4 align-middle">
+                      <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-[#FAFAFA] text-[#74746E] border border-[#E7E7E3]">
                         /{cat.slug}
                       </span>
                     </td>
 
                     {/* Số sản phẩm */}
-                    <td className="py-4 px-4 text-center">
+                    <td className="py-3 px-4 align-middle text-center">
                       <Badge
                         variant={cat._count.products > 0 ? "secondary" : "outline"}
                         className={
                           cat._count.products > 0
-                            ? "bg-[#111] text-white border border-[#111]"
-                            : "text-[#74746E] border-[#E7E7E3]"
+                            ? "bg-[#111] text-white border border-[#111] rounded-md text-xs"
+                            : "text-[#74746E] border-[#E7E7E3] rounded-md text-xs"
                         }
                       >
                         {cat._count.products} sản phẩm
@@ -214,30 +214,28 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-4 px-4 text-right">
+                    <td className="py-3 px-4 align-middle text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleOpenMegaMenu(cat)}
                           title="Cấu hình nhóm & liên kết Menu con (Mega Menu)"
-                          className="h-8 px-2.5 text-xs text-[#111] border-[#D5D5D0] hover:border-[#111] hover:bg-[#F3F3F1] flex items-center gap-1.5"
+                          className="h-8 px-2.5 text-xs text-[#111] border-[#E7E7E3] bg-white hover:border-[#111] hover:bg-[#F3F3F1] flex items-center gap-1.5 rounded-lg"
                         >
                           <Sliders className="w-3.5 h-3.5 text-[#111]" />
                           <span>Menu con</span>
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
+                        <button
+                          type="button"
                           onClick={() => handleEdit(cat)}
                           title="Chỉnh sửa danh mục"
-                          className="h-8 w-8 p-0 text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1]"
+                          className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] transition-all"
                         >
-                          <Edit3 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => handleDelete(cat)}
                           disabled={deletingId === cat.id || cat._count.products > 0}
                           title={
@@ -245,14 +243,14 @@ export function CategoryTable({ categories }: CategoryTableProps) {
                               ? "Không thể xóa danh mục đang có sản phẩm"
                               : "Xóa danh mục"
                           }
-                          className="h-8 w-8 p-0 text-[#D94A4A] hover:text-[#D94A4A] hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50 hover:border-red-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                         >
                           {deletingId === cat.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-[#D94A4A]" />
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D94A4A]" />
                           ) : (
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           )}
-                        </Button>
+                        </button>
                       </div>
                     </td>
                   </tr>

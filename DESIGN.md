@@ -942,8 +942,8 @@ Hệ thống nút được thiết kế đồng bộ theo lưới chiều cao (h
 | **Toolbar Action** | `40px` (`h-10`) | `px-4` (`16px`) | `12px` (`text-xs font-medium`) | `8px` (`rounded-lg`) | Nút thêm mới trên thanh công cụ (Thêm sản phẩm, Thêm danh mục, Thêm banner, Tạo tài khoản). **Bắt buộc đồng bộ cùng `h-10` với Search Input và Select Filters**. |
 | **Form Header CTA** | `40px` (`h-10`) | `px-4` (`16px`) | `12px` (`text-xs font-medium`) | `8px` (`rounded-lg`) | Các nút ở header biểu mẫu: Lưu thay đổi, Tạo sản phẩm, Hủy, Danh sách. |
 | **Storefront Primary CTA** | `44px`–`48px` (`h-11`/`h-12`) | `px-6` (`24px`) | `14px` (`text-sm font-semibold`) | `8px` (`rounded-lg`) | Nút mua hàng, thêm vào giỏ, hoàn tất đơn hàng trên giao diện Storefront. |
-| **Table Action Icon** | `32x32px` (`h-8 w-8`) | `p-0` | Icon `14-16px` | `8px` (`rounded-lg`) | Các thao tác trên từng dòng bảng (Chỉnh sửa, Xóa, Cất vào kho, Nổi bật). |
-| **Table Status Toggle** | `32px` (`h-8`) | `px-3` | `12px` (`text-xs font-medium`) | `8px` (`rounded-lg`) | Bật tắt nhanh Còn hàng / Hết hàng trên bảng. **Đồng bộ `rounded-lg` và `h-8` với các nút thao tác khác, không dùng `rounded-full`.** |
+| **Table Action Icon** | `32x32px` (`h-8 w-8`) | `p-0` | Icon `14px` (`w-3.5 h-3.5`) | `8px` (`rounded-lg`) | Các nút thao tác trên từng dòng bảng (Chỉnh sửa, Xóa, Cất vào kho, Nổi bật). **Bắt buộc đồng nhất viền `border border-[#E7E7E3] bg-white rounded-lg`, không dùng lẫn lộn nút không viền (ghost) và nút có viền.** |
+| **Table Status Toggle** | `32px` (`h-8`) | `px-3` | `12px` (`text-xs font-medium`) | `8px` (`rounded-lg`) | Bật tắt nhanh Còn hàng / Hết hàng trên bảng. **Bắt buộc cùng chiều cao `h-8` và cùng bo góc `rounded-lg` với các nút action bên cạnh, tuyệt đối không dùng `rounded-full` hình viên thuốc.** |
 
 ## 29.2 Phân cấp kiểu dáng (Variants)
 
@@ -961,25 +961,29 @@ Hệ thống nút được thiết kế đồng bộ theo lưới chiều cao (h
 - **Border**: `1px solid #E7E7E3`
 - **Border radius**: `8px` (`rounded-lg`)
 
-### Ghost (Tối giản / Thao tác bảng)
+### Ghost (Tối giản)
 - **Background**: Transparent
 - **Hover**: `#F3F3F1`
 - **Color**: `#74746E` (hover: `#111111`)
 - **Border radius**: `8px` (`rounded-lg`)
+- *Lưu ý: Chỉ dùng cho menu điều hướng hoặc toolbar độc lập; không dùng lẫn lộn trong cùng một cụm action buttons trong bảng dữ liệu.*
 
-### Danger (Cảnh báo / Xóa)
-- **Color**: `#D94A4A`
-- **Hover**: `bg-red-50`
-- Không dùng button nền đỏ nếu chỉ là action nhỏ trong bảng.
+### Danger (Cảnh báo / Xóa trong bảng)
+- **Background**: `#FFFFFF`, viền `1px solid #E7E7E3` (khi bình thường đồng bộ với các nút khác).
+- **Hover**: `bg-red-50 border-red-200 text-[#D94A4A]`.
+- Giữ toàn bộ hàng nút thẳng hàng, sạch sẽ và không gây giật thị giác trước khi hover.
 
-## 29.3 Quy chuẩn Badges / Nhãn phụ trên bảng
+## 29.3 Quy chuẩn Badges / Nhãn trạng thái và Danh mục trên bảng
 
-- **Đồng bộ hình học (No Mixed Radius)**: Tất cả huy hiệu/nhãn cạnh tên sản phẩm (`[Mới]`, `[🛡️ BH]`, `[Lưu kho]`) và nhãn danh mục đều sử dụng chung:
-  - Chiều cao: `20px`–`24px` (`h-5` / `h-6`)
+- **Huy hiệu trạng thái sản phẩm (`[Mới]`, `[🛡️ BH]`, `[Lưu kho]`)**:
+  - Chiều cao: `20px` (`h-5`)
   - Bo góc: **`rounded-md`** (`6px`)
-  - Font chữ: `11px` (`text-[11px] font-semibold`)
-  - Padding: `px-2`
-  - Tuyệt đối KHÔNG kết hợp một cái bo tròn viên thuốc (`rounded-full`) cạnh một cái hình chữ nhật sắc cạnh (`rounded`), phải đồng nhất toàn bộ là `rounded-md`.
+  - Font chữ: `10px` (`text-[10px] font-semibold`)
+  - Padding: `px-1.5`
+  - Đặt inline ngay cạnh tên sản phẩm trên cùng một dòng.
+- **Cột Danh mục (Category Column)**:
+  - Hiển thị dưới dạng **văn bản thuần túy** (`text-xs font-medium text-[#555550]`).
+  - **KHÔNG đóng khung hay đổ màu nền giả làm badge/button**, tránh tình trạng người dùng nhầm lẫn với nút bấm hoặc thấy kích thước lệch lạc so với các huy hiệu trạng thái bên cạnh.
 
 ---
 
@@ -1033,6 +1037,12 @@ Không dùng card bao quanh từng row.
 
 - **Không đóng khung (Frameless)**: Các số liệu và ghi chú phụ nội bộ (như ô **Giá vốn**, **Ghi chú nội bộ**) hiển thị dưới dạng văn bản tự nhiên (`text-[11px] text-[#74746E]`), KHÔNG dùng khung viền (`border`) và KHÔNG dùng nền màu (`background box`).
 - Tránh làm ô bảng bị nặng nề, giữ bảng dữ liệu phẳng (flat), thanh lịch và chuẩn phong cách tối giản (Minimal Editorial).
+
+## 31.2 Quy chuẩn Trục căn giữa hàng (Vertical Alignment — `align-middle`)
+
+- **Bắt buộc `align-middle` trên toàn bộ các thẻ `<td>` và `<th>`**:
+  - Mỗi ô trong cùng một dòng bảng chứa nội dung có độ cao khác nhau (ô Tên có 2 dòng Tên + Slug, ô Giá có 2 dòng Giá + Vốn, trong khi ô Nổi bật, Tồn kho, Thao tác chỉ có 1 nút bấm đơn lẻ).
+  - Thuộc tính `align-middle` (`vertical-align: middle`) đảm bảo tâm điểm thị giác của tất cả các cột luôn nằm chính xác trên cùng một trục nằm ngang xuyên suốt từ trái sang phải, triệt tiêu hoàn toàn lỗi hiển thị "mỗi cái một hàng" (ô thì dính sát mép trên, ô thì rớt xuống mép dưới).
 
 ---
 
