@@ -234,11 +234,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             <h1 className="text-xl font-bold text-[#111]">
               {isEditing ? `Sửa: ${initialData?.name}` : "Thêm sản phẩm mới"}
             </h1>
-            <p className="text-xs text-[#74746E]">
-              {isEditing
-                ? "Cập nhật giá, ảnh, thông số kỹ thuật và trạng thái"
-                : "Tạo sản phẩm gaming gear mới với đầy đủ thông số và gallery"}
-            </p>
           </div>
         </div>
 
@@ -315,14 +310,11 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 placeholder="chuot-dragonfly-f1-pro-max"
                 disabled={isPending}
               />
-              <p className="text-[11px] text-[#74746E] mt-1">
-                Đường dẫn tĩnh cho sản phẩm: tringuyengear.vn/products/{slug || "slug-mau"}
-              </p>
             </div>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Mô tả ngắn (Hiển thị cạnh ảnh & trên phần chính sách)
+                Mô tả ngắn
               </label>
               <textarea
                 value={shortDescription}
@@ -336,13 +328,13 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Mô tả chi tiết sản phẩm (Hiển thị tại tab Mô tả phía dưới)
+                Mô tả chi tiết
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Mô tả chi tiết các tính năng, ngoại hình, thông số, quà tặng kèm theo..."
-                rows={5}
+                rows={4}
                 disabled={isPending}
                 className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all resize-y"
               />
@@ -352,7 +344,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           {/* Card: Bộ sưu tập hình ảnh */}
           <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
             <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
-              Bộ sưu tập hình ảnh (CDN Gallery)
+              Bộ sưu tập hình ảnh
             </h2>
             <ImageGalleryEditor
               images={images}
@@ -371,34 +363,29 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             />
           </div>
 
-          {/* Card: Hồ sơ bảo hành (Chuyên lưu Serial, tem & hóa đơn bảo hành) */}
+          {/* Card: Hồ sơ bảo hành */}
           <div className="rounded-xl border border-blue-200 bg-blue-50/20 p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
-                <div>
-                  <h2 className="text-sm font-bold text-blue-950 uppercase tracking-wider">
-                    Hồ sơ bảo hành (Số Serial & Hóa đơn VAT)
-                  </h2>
-                  <p className="text-xs text-blue-800">
-                    Chuyên lưu đối soát bảo hành. Khi điền mục này, danh sách ngoài bảng sẽ hiện huy hiệu <span className="font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">BH</span> để không bị xóa nhầm.
-                  </p>
-                </div>
+                <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
+                <h2 className="text-sm font-semibold text-blue-950 uppercase tracking-wider">
+                  Hồ sơ bảo hành
+                </h2>
               </div>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 shrink-0 self-start sm:self-auto">
-                🔒 Không hiển thị ngoài web
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 shrink-0">
+                🔒 Nội bộ
               </span>
             </div>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Số Serial / IMEI & Thời hạn bảo hành hãng
+                Số Serial / Ghi chú bảo hành
               </label>
               <textarea
                 value={warrantyNote}
                 onChange={(e) => setWarrantyNote(e.target.value)}
-                placeholder="VD: Serial: SN-982348719, hóa đơn VAT mua ngày 15/01/2026 tại APShop, bảo hành 12 tháng đến 15/01/2027, liên hệ NPP Mai Hoàng..."
-                rows={3}
+                placeholder="Serial, thời hạn bảo hành hãng, ngày mua VAT..."
+                rows={2}
                 disabled={isPending}
                 className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-y"
               />
@@ -406,7 +393,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Ảnh chụp tem bảo hành, số Serial & Hóa đơn chứng từ (Chỉ Admin xem)
+                Ảnh tem, số Serial & Hóa đơn
               </label>
               <ImageGalleryEditor
                 images={warrantyImages}
@@ -414,9 +401,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 allowSetMain={false}
                 disabled={isPending}
               />
-              <p className="text-[11px] text-[#74746E] mt-1.5">
-                * Tải lên hoặc chụp ảnh tem bảo hành, mã vạch serial, hóa đơn đỏ hoặc phiếu bảo hành. Hình ảnh này được bảo mật nội bộ và không bao giờ xuất hiện trên cửa hàng trực tuyến.
-              </p>
             </div>
           </div>
         </div>
@@ -446,9 +430,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                   </option>
                 ))}
               </select>
-              <p className="text-[11px] text-[#74746E] mt-1">
-                Chọn danh mục để tự động gợi ý mẫu thông số kỹ thuật
-              </p>
             </div>
           </div>
 
@@ -460,7 +441,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Giá khuyến mãi / Giá bán (VNĐ) <span className="text-[#D94A4A]">*</span>
+                Giá bán (VNĐ) <span className="text-[#D94A4A]">*</span>
               </label>
               <Input
                 type="number"
@@ -490,129 +471,91 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 <p className="text-xs font-mono text-[#74746E] line-through mt-1">
                   Giá cũ: {formatPrice(originalPrice)}
                 </p>
-              ) : (
-                <p className="text-[11px] text-[#74746E] mt-1">
-                  Nếu có giảm giá, giá gốc sẽ được hiển thị gạch ngang
-                </p>
-              )}
+              ) : null}
             </div>
           </div>
 
           {/* Trạng thái hiển thị */}
-          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-3">
             <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Trạng thái & Hiển thị
             </h2>
 
             {/* Tồn kho */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+            <label className="flex items-center gap-3 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={inStock}
                 onChange={(e) => setInStock(e.target.checked)}
                 disabled={isPending}
-                className="mt-0.5 rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
+                className="rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
               />
-              <div>
-                <span className="text-sm font-semibold text-[#111]">
-                  Còn hàng trong kho
-                </span>
-                <p className="text-xs text-[#74746E]">
-                  Khách hàng có thể bấm liên hệ đặt mua sản phẩm này
-                </p>
-              </div>
+              <span className="text-sm font-medium text-[#111]">
+                Còn hàng trong kho
+              </span>
             </label>
 
             {/* Nổi bật */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+            <label className="flex items-center gap-3 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
                 disabled={isPending}
-                className="mt-0.5 rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
+                className="rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
               />
-              <div>
-                <span className="text-sm font-semibold text-[#111]">
-                  Sản phẩm Nổi bật (Featured)
-                </span>
-                <p className="text-xs text-[#74746E]">
-                  Ghim sản phẩm vào mục nổi bật ở đầu trang chủ
-                </p>
-              </div>
+              <span className="text-sm font-medium text-[#111]">
+                Sản phẩm nổi bật (Trang chủ)
+              </span>
             </label>
 
             {/* Mới về */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
+            <label className="flex items-center gap-3 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
               <input
                 type="checkbox"
                 checked={isNew}
                 onChange={(e) => setIsNew(e.target.checked)}
                 disabled={isPending}
-                className="mt-0.5 rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
+                className="rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
               />
-              <div>
-                <span className="text-sm font-semibold text-[#111]">
-                  Gắn nhãn Hàng Mới (New)
-                </span>
-                <p className="text-xs text-[#74746E]">
-                  Hiển thị huy hiệu &quot;Mới&quot; trên thẻ sản phẩm
-                </p>
-              </div>
+              <span className="text-sm font-medium text-[#111]">
+                Gắn nhãn Hàng mới
+              </span>
             </label>
 
             {/* Lưu kho / Ẩn khỏi website */}
-            <label className="flex items-start gap-3 p-3 rounded-lg bg-amber-50/60 border border-amber-200 cursor-pointer hover:border-amber-300 transition-colors">
+            <label className="flex items-center gap-3 p-2.5 rounded-lg bg-amber-50/60 border border-amber-200 cursor-pointer hover:border-amber-300 transition-colors">
               <input
                 type="checkbox"
                 checked={isArchived}
                 onChange={(e) => setIsArchived(e.target.checked)}
                 disabled={isPending}
-                className="mt-0.5 rounded border-amber-300 text-amber-600 focus:border-amber-600 focus:ring-0"
+                className="rounded border-amber-300 text-amber-600 focus:border-amber-600 focus:ring-0"
               />
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-semibold text-amber-950">
-                    Lưu kho / Ẩn khỏi website
-                  </span>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.2 rounded bg-amber-200 text-amber-800">
-                    Kho nội bộ
-                  </span>
-                </div>
-                <p className="text-xs text-amber-800 mt-0.5">
-                  Tích chọn khi món đồ <strong>đã bán</strong> hoặc muốn cất vào kho. Sản phẩm sẽ bị ẩn hoàn toàn ngoài website nhưng vẫn lưu lại trong trang Quản trị để tra cứu thông tin bảo hành, hóa đơn và serial sau này.
-                </p>
-              </div>
+              <span className="text-sm font-medium text-amber-950">
+                Lưu kho (Ẩn khỏi website)
+              </span>
             </label>
           </div>
 
-          {/* Card: Sổ tính & Ghi chú nội bộ (Giá thu / Bán / Trade) */}
+          {/* Card: Sổ tính & Ghi chú nội bộ */}
           <div className="rounded-xl border border-indigo-200 bg-indigo-50/20 p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BadgeDollarSign className="w-5 h-5 text-indigo-600 shrink-0" />
-                <div>
-                  <h2 className="text-sm font-bold text-indigo-950 uppercase tracking-wider">
-                    Sổ tính & Ghi chú nội bộ (Thu / Bán / Trade)
-                  </h2>
-                  <p className="text-xs text-indigo-800">
-                    Quản lý giá vốn, thỏa thuận bù trừ trade. Hoàn toàn độc lập, KHÔNG hiện chữ BH.
-                  </p>
-                </div>
+                <BadgeDollarSign className="w-4 h-4 text-indigo-600 shrink-0" />
+                <h2 className="text-sm font-semibold text-indigo-950 uppercase tracking-wider">
+                  Sổ tính & Ghi chú nội bộ
+                </h2>
               </div>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0 self-start sm:self-auto">
-                🔒 Chỉ Admin thấy
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">
+                🔒 Nội bộ
               </span>
             </div>
-
-            <p className="text-xs text-indigo-900/80 leading-relaxed">
-              Ghi chép giá thu vào (vốn), lịch sử giao lưu trade bù trừ, thỏa thuận giá với khách... để kiểm soát dòng tiền và lợi nhuận từng món gear.
-            </p>
 
             {/* Giá thu vào / Giá vốn */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Giá thu vào / Giá vốn (VNĐ, tùy chọn)
+                Giá thu vào / Giá vốn (VNĐ)
               </label>
               <Input
                 type="number"
@@ -625,7 +568,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
               {costPrice !== "" && !isNaN(Number(costPrice)) && Number(costPrice) > 0 ? (
                 <div className="mt-2.5 p-3 rounded-lg bg-white border border-indigo-100 space-y-1.5 shadow-sm">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#74746E]">Giá vốn / Giá thu:</span>
+                    <span className="text-[#74746E]">Giá vốn:</span>
                     <span className="font-mono font-semibold text-indigo-950">
                       {formatPrice(Number(costPrice))}
                     </span>
@@ -638,7 +581,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                         ) : (
                           <TrendingDown className="w-3.5 h-3.5 text-rose-600" />
                         )}
-                        <span>Chênh lệch / Lời dự kiến:</span>
+                        <span>Lời dự kiến:</span>
                       </span>
                       {Number(price) - Number(costPrice) >= 0 ? (
                         <span className="font-mono font-bold text-emerald-600">
@@ -658,19 +601,16 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             {/* Ghi chú Thu / Bán / Trade */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Ghi chú Thu / Bán / Trade / Khách hàng
+                Ghi chú Thu / Bán / Trade
               </label>
               <textarea
                 value={internalNote}
                 onChange={(e) => setInternalNote(e.target.value)}
-                placeholder="VD:&#10;• Thu của Nam FB ngày 25/10 giá 800k fullbox.&#10;• Khách trade từ phím RK61 bù thêm 350k.&#10;• Bán khách quen fix 1200k freeship..."
-                rows={4}
+                placeholder="VD: Thu của Nam FB 800k fullbox, trade phím bù 350k..."
+                rows={3}
                 disabled={isPending}
                 className="w-full rounded-lg bg-white border border-[#E7E7E3] px-3.5 py-2.5 text-sm text-[#111] placeholder:text-[#A3A39D] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-y"
               />
-              <p className="text-[11px] text-[#74746E] mt-1.5">
-                * Toàn bộ giá thu và ghi chú trade này hoàn toàn bảo mật nội bộ, khách hàng xem ngoài website sẽ không bao giờ thấy.
-              </p>
             </div>
           </div>
         </div>

@@ -606,7 +606,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                               type="button"
                               onClick={() => setViewingWarrantyProduct(product)}
                               className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 font-semibold transition-colors cursor-pointer"
-                              title="Sản phẩm có hồ sơ bảo hành / số Serial / ảnh hóa đơn. Bấm để xem và tải về"
+                              title="Hồ sơ bảo hành"
                             >
                               <ShieldCheck className="w-3 h-3 text-blue-600" />
                               <span>BH</span>
@@ -638,7 +638,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             type="button"
                             onClick={() => setViewingInternalNoteProduct(product)}
                             className="text-[11px] text-indigo-700 hover:text-indigo-950 inline-flex items-center gap-1 font-sans mt-1 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition-colors cursor-pointer"
-                            title="Bấm để xem Sổ tính giá vốn & Ghi chú nội bộ"
+                            title="Sổ tính & Ghi chú"
                           >
                             <span>Vốn: {formatPrice(product.costPrice)}</span>
                             {product.internalNote && (
@@ -650,7 +650,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             type="button"
                             onClick={() => setViewingInternalNoteProduct(product)}
                             className="text-[11px] text-indigo-700 hover:text-indigo-950 inline-flex items-center gap-1 font-sans mt-1 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition-colors cursor-pointer"
-                            title="Bấm để xem Ghi chú nội bộ / Trade"
+                            title="Ghi chú nội bộ"
                           >
                             <FileText className="w-3 h-3 text-indigo-600" />
                             <span>Ghi chú</span>
@@ -898,9 +898,6 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   <h2 className="text-base font-bold text-[#111] line-clamp-1">
                     Hồ sơ bảo hành: {viewingWarrantyProduct.name}
                   </h2>
-                  <p className="text-xs text-blue-700 font-medium">
-                    Số Serial, tem hãng & hóa đơn VAT • Không hiển thị ngoài web
-                  </p>
                 </div>
               </div>
               <button
@@ -917,7 +914,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
               {/* Ghi chú bảo hành */}
               <div>
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-2">
-                  Ghi chú bảo hành / Số Serial / Hóa đơn
+                  Số Serial & Ghi chú bảo hành
                 </h3>
                 {viewingWarrantyProduct.warrantyNote ? (
                   <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 text-sm text-amber-950 font-mono whitespace-pre-wrap leading-relaxed select-text">
@@ -945,13 +942,8 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-xs font-semibold uppercase tracking-wider text-[#74746E]">
-                        Ảnh chụp hóa đơn, tem & số serial ({warrantyImgList.length})
+                        Ảnh tem & hóa đơn ({warrantyImgList.length})
                       </h3>
-                      {warrantyImgList.length > 0 && (
-                        <span className="text-[11px] text-[#74746E]">
-                          Bấm vào ảnh để xem lớn hoặc tải về máy
-                        </span>
-                      )}
                     </div>
 
                     {warrantyImgList.length === 0 ? (
@@ -1069,9 +1061,6 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                   <h2 className="text-base font-bold text-indigo-950 line-clamp-1">
                     Sổ tính & Ghi chú: {viewingInternalNoteProduct.name}
                   </h2>
-                  <p className="text-xs text-indigo-700/80">
-                    Dữ liệu kinh doanh nội bộ • Chỉ Admin thấy
-                  </p>
                 </div>
               </div>
               <button
@@ -1110,7 +1099,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       ) : (
                         <TrendingDown className="w-4 h-4 text-rose-600" />
                       )}
-                      <span>Chênh lệch / Lời dự kiến:</span>
+                      <span>Lời dự kiến:</span>
                     </span>
                     {viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice >= 0 ? (
                       <span className="text-sm font-bold font-mono text-emerald-600">
@@ -1132,7 +1121,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
               {/* Internal Note */}
               <div>
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                  Ghi chú Thu / Bán / Trade / Nguồn nhập
+                  Ghi chú Thu / Bán / Trade
                 </h3>
                 {viewingInternalNoteProduct.internalNote ? (
                   <div className="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-200 text-sm text-indigo-950 font-mono whitespace-pre-wrap leading-relaxed select-text">
