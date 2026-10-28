@@ -459,7 +459,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Tìm kiếm sản phẩm theo tên, slug, thương hiệu..."
-            className="pl-10"
+            className="pl-10 h-10 rounded-lg border-[#E7E7E3] text-xs bg-white text-[#111]"
           />
         </div>
 
@@ -514,9 +514,9 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
           {/* Add Product Button */}
           <Link href="/admin/products/new">
-            <Button className="bg-[#111] hover:bg-[#1A1A1A] text-white rounded-lg h-10 px-4 text-xs font-medium gap-2">
+            <Button className="bg-[#111] hover:bg-[#1A1A1A] text-white rounded-lg h-10 px-4 text-xs font-medium gap-2 shrink-0">
               <Plus className="w-4 h-4" />
-              Thêm sản phẩm
+              <span>Thêm sản phẩm</span>
             </Button>
           </Link>
         </div>
@@ -591,21 +591,21 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                             {product.name}
                           </span>
                           {product.isArchived && (
-                            <Badge className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] px-1.5 py-0 flex items-center gap-1 font-semibold">
+                            <span className="h-5 px-2 rounded-md bg-amber-50 text-amber-800 border border-amber-300 text-[11px] font-semibold inline-flex items-center gap-1 shrink-0">
                               <Archive className="w-2.5 h-2.5" />
-                              Lưu kho
-                            </Badge>
+                              <span>Lưu kho</span>
+                            </span>
                           )}
                           {product.isNew && !product.isArchived && (
-                            <Badge className="bg-[#F3F3F1] text-[#21A366] border border-[#21A366] text-[10px] px-1.5 py-0">
+                            <span className="h-5 px-2 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-300 text-[11px] font-semibold inline-flex items-center shrink-0">
                               Mới
-                            </Badge>
+                            </span>
                           )}
                           {hasWarranty(product) && (
                             <button
                               type="button"
                               onClick={() => setViewingWarrantyProduct(product)}
-                              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 font-semibold transition-colors cursor-pointer"
+                              className="h-5 px-2 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 text-[11px] font-semibold inline-flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
                               title="Hồ sơ bảo hành"
                             >
                               <ShieldCheck className="w-3 h-3 text-blue-600" />
@@ -620,12 +620,9 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
                       {/* Category */}
                       <td className="py-3.5 px-4">
-                        <Badge
-                          variant="secondary"
-                          className="bg-[#FAFAFA] text-[#111] border-[#E7E7E3] text-xs"
-                        >
+                        <span className="h-6 px-2.5 rounded-md bg-[#FAFAFA] text-[#555550] border border-[#E7E7E3] text-[11px] font-medium inline-flex items-center">
                           {product.category.name}
-                        </Badge>
+                        </span>
                       </td>
 
                       {/* Price */}
@@ -673,18 +670,18 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                               ? "Bấm để tắt Nổi bật"
                               : "Bấm để đưa lên trang chủ Nổi bật"
                           }
-                          className={`p-1.5 rounded-lg border transition-all ${
+                          className={`h-8 w-8 inline-flex items-center justify-center rounded-lg border transition-all ${
                             product.isFeatured
-                              ? "bg-[#FAFAFA] border-[#D99A24] text-[#D99A24] hover:bg-[#F3F3F1] "
-                              : "bg-white border-[#D5D5D0] text-[#74746E] hover:text-[#111] hover:bg-[#FAFAFA]"
+                              ? "bg-amber-50 border-amber-300 text-amber-600 hover:bg-amber-100"
+                              : "bg-white border-[#E7E7E3] text-[#74746E] hover:text-[#111] hover:bg-[#FAFAFA]"
                           }`}
                         >
                           {togglingFeaturedId === product.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-[#D99A24]" />
+                            <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
                           ) : (
                             <Star
                               className={`w-4 h-4 ${
-                                product.isFeatured ? "fill-[#D99A24]" : ""
+                                product.isFeatured ? "fill-amber-500 text-amber-500" : ""
                               }`}
                             />
                           )}
@@ -698,18 +695,18 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                           onClick={() => handleToggleStock(product)}
                           disabled={togglingStockId === product.id}
                           title="Bấm 1-Click để đổi trạng thái Còn hàng / Hết hàng"
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                          className={`h-8 inline-flex items-center gap-1.5 px-3 rounded-lg text-xs font-medium border transition-all ${
                             product.inStock
-                              ? "bg-[#F3F3F1] text-[#21A366] border-[#21A366] hover:bg-[#E7E7E3]"
-                              : "bg-[#F3F3F1] text-[#D94A4A] border-[#D94A4A] hover:bg-[#E7E7E3]"
+                              ? "bg-emerald-50 text-[#21A366] border-emerald-200 hover:bg-emerald-100"
+                              : "bg-red-50 text-[#D94A4A] border-red-200 hover:bg-red-100"
                           }`}
                         >
                           {togglingStockId === product.id ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           ) : product.inStock ? (
-                            <CheckCircle2 className="w-3 h-3" />
+                            <CheckCircle2 className="w-3.5 h-3.5" />
                           ) : (
-                            <XCircle className="w-3 h-3" />
+                            <XCircle className="w-3.5 h-3.5" />
                           )}
                           <span>{product.inStock ? "Còn hàng" : "Hết hàng"}</span>
                         </button>
