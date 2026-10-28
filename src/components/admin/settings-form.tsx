@@ -430,6 +430,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            <p className="text-[11px] text-amber-700 mt-1 font-medium">
+              ⚠️ Chú ý: Đây là mã 16 chữ cái tạo từ link hướng dẫn phía trên, KHÔNG dùng mật khẩu đăng nhập tài khoản Google.
+            </p>
           </div>
 
           {/* Tên người gửi hiển thị */}

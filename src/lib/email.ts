@@ -81,13 +81,28 @@ export async function getEmailConfig(): Promise<EmailConfig> {
 function createTransporter(config: EmailConfig) {
   // Loại bỏ khoảng trắng thường gặp khi copy mật khẩu ứng dụng Google (ví dụ: "abcd efgh ijkl mnop" -> "abcdefghijklmnop")
   const cleanPass = config.smtpPass.replace(/\s+/g, "");
+  const cleanUser = config.smtpUser.trim().toLowerCase();
+
+  const isGmail =
+    config.smtpHost === "smtp.gmail.com" ||
+    cleanUser.endsWith("@gmail.com");
+
+  if (isGmail) {
+    return nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: cleanUser,
+        pass: cleanPass,
+      },
+    });
+  }
 
   return nodemailer.createTransport({
     host: config.smtpHost,
     port: config.smtpPort,
     secure: config.smtpPort === 465, // true cho port 465 SSL, false cho port 587 STARTTLS
     auth: {
-      user: config.smtpUser.trim(),
+      user: cleanUser,
       pass: cleanPass,
     },
     tls: {
