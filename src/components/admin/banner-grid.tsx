@@ -119,7 +119,7 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
             Hiện có <span className="text-[#111] font-semibold">{banners.length}</span> banner trong hệ thống
           </p>
         </div>
-        <Button onClick={handleAddNew} className="bg-[#111] text-white rounded-lg h-11 px-[18px] gap-2">
+        <Button onClick={handleAddNew} className="bg-[#111] hover:bg-[#1A1A1A] text-white rounded-lg h-10 px-4 text-xs font-medium gap-2">
           <Plus className="w-4 h-4" />
           Thêm banner mới
         </Button>

@@ -223,8 +223,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             <Button
               type="button"
               variant="outline"
-              size="sm"
-              className="h-9 border-[#E7E7E3] text-[#74746E] hover:text-[#111]"
+              className="h-10 px-3.5 border-[#E7E7E3] text-[#74746E] hover:text-[#111] rounded-lg text-xs"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
               Danh sách
@@ -239,13 +238,18 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
         <div className="flex items-center gap-2">
           <Link href="/admin/products">
-            <Button type="button" variant="outline" disabled={isPending}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              className="h-10 px-4 text-xs font-medium rounded-lg border-[#E7E7E3] text-[#74746E] hover:text-[#111]"
+            >
               Hủy
             </Button>
           </Link>
           <Button
             type="submit"
-            className="bg-[#111] text-white rounded-lg h-11 px-[18px] gap-2 min-w-[130px]"
+            className="bg-[#111] hover:bg-[#1A1A1A] text-white rounded-lg h-10 px-4 text-xs font-medium gap-2 min-w-[125px]"
             disabled={isPending}
           >
             {isPending ? (

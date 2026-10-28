@@ -931,33 +931,46 @@ System settings
 
 ---
 
-# 29. Buttons
+# 29. Buttons & Button System (Quy chuẩn hệ thống nút)
 
-## Primary
+Hệ thống nút được thiết kế đồng bộ theo lưới chiều cao (height rhythm), phân cấp chức năng rõ ràng, không có tình trạng nút trong cùng một hàng bị lệch kích thước.
 
-```css
-background: #111111;
-color: #FFFFFF;
-height: 44px;
-padding: 0 18px;
-border-radius: 8px;
-```
+## 29.1 Phân cấp kích thước nút (Size Hierarchy)
 
-## Secondary
+| Phân loại | Chiều cao (Height) | Padding | Typography | Border Radius | Ứng dụng chính |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Toolbar Action** | `40px` (`h-10`) | `px-4` (`16px`) | `12px` (`text-xs font-medium`) | `8px` (`rounded-lg`) | Nút thêm mới trên thanh công cụ (Thêm sản phẩm, Thêm danh mục, Thêm banner, Tạo tài khoản). **Bắt buộc đồng bộ cùng `h-10` với Search Input và Select Filters**. |
+| **Form Header CTA** | `40px` (`h-10`) | `px-4` (`16px`) | `12px` (`text-xs font-medium`) | `8px` (`rounded-lg`) | Các nút ở header biểu mẫu: Lưu thay đổi, Tạo sản phẩm, Hủy, Danh sách. |
+| **Storefront Primary CTA** | `44px`–`48px` (`h-11`/`h-12`) | `px-6` (`24px`) | `14px` (`text-sm font-semibold`) | `8px` (`rounded-lg`) | Nút mua hàng, thêm vào giỏ, hoàn tất đơn hàng trên giao diện Storefront. |
+| **Table Action Icon** | `32x32px` (`h-8 w-8`) | `p-0` | Icon `14-16px` | `8px` (`rounded-lg`) | Các thao tác trên từng dòng bảng (Chỉnh sửa, Xóa, Cất vào kho). |
+| **Table Status Toggle** | `28px` (`h-7`) | `px-2.5` | `12px` (`text-xs font-medium`) | `9999px` (`rounded-full`) | Bật tắt nhanh Còn hàng / Hết hàng trên bảng. |
 
-```css
-background: #FFFFFF;
-color: #111111;
-border: 1px solid #D5D5D0;
-```
+## 29.2 Phân cấp kiểu dáng (Variants)
 
-## Danger
+### Primary (Chính)
+- **Background**: `#111111`
+- **Hover**: `#1A1A1A`
+- **Color**: `#FFFFFF`
+- **Border radius**: `8px` (`rounded-lg`)
+- **Icon**: `16x16px` (`w-4 h-4`), khoảng cách `gap-2` (`8px`)
 
-```css
-color: #D94A4A;
-```
+### Secondary / Outline (Phụ)
+- **Background**: `#FFFFFF`
+- **Hover**: `#F3F3F1`
+- **Color**: `#111111`
+- **Border**: `1px solid #E7E7E3`
+- **Border radius**: `8px` (`rounded-lg`)
 
-Không cần button nền đỏ nếu chỉ là action nhỏ.
+### Ghost (Tối giản / Thao tác bảng)
+- **Background**: Transparent
+- **Hover**: `#F3F3F1`
+- **Color**: `#74746E` (hover: `#111111`)
+- **Border radius**: `8px` (`rounded-lg`)
+
+### Danger (Cảnh báo / Xóa)
+- **Color**: `#D94A4A`
+- **Hover**: `bg-red-50`
+- Không dùng button nền đỏ nếu chỉ là action nhỏ trong bảng.
 
 ---
 
@@ -1006,6 +1019,11 @@ Hover:
 ```
 
 Không dùng card bao quanh từng row.
+
+## 31.1 Quy chuẩn hiển thị dữ liệu phụ (Frameless Secondary Data)
+
+- **Không đóng khung (Frameless)**: Các số liệu và ghi chú phụ nội bộ (như ô **Giá vốn**, **Ghi chú nội bộ**) hiển thị dưới dạng văn bản tự nhiên (`text-[11px] text-[#74746E]`), KHÔNG dùng khung viền (`border`) và KHÔNG dùng nền màu (`background box`).
+- Tránh làm ô bảng bị nặng nề, giữ bảng dữ liệu phẳng (flat), thanh lịch và chuẩn phong cách tối giản (Minimal Editorial).
 
 ---
 

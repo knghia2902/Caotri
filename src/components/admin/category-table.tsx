@@ -112,10 +112,10 @@ export function CategoryTable({ categories }: CategoryTableProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Tìm theo tên danh mục, slug..."
-            className="pl-10 h-11 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-[#111]"
+            className="pl-10 h-10 bg-white border-[#E7E7E3] focus:border-[#111] rounded-lg text-xs text-[#111]"
           />
         </div>
-        <Button onClick={handleAddNew} className="gap-2 bg-[#111] text-white rounded-lg h-11 px-[18px]">
+        <Button onClick={handleAddNew} className="gap-2 bg-[#111] hover:bg-[#1A1A1A] text-white rounded-lg h-10 px-4 text-xs font-medium">
           <Plus className="w-4 h-4" />
           Thêm danh mục
         </Button>

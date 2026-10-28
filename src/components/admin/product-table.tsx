@@ -514,7 +514,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
 
           {/* Add Product Button */}
           <Link href="/admin/products/new">
-            <Button className="bg-[#111] text-white rounded-lg h-11 px-4 gap-2">
+            <Button className="bg-[#111] hover:bg-[#1A1A1A] text-white rounded-lg h-10 px-4 text-xs font-medium gap-2">
               <Plus className="w-4 h-4" />
               Thêm sản phẩm
             </Button>
@@ -637,22 +637,22 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                           <button
                             type="button"
                             onClick={() => setViewingInternalNoteProduct(product)}
-                            className="text-[11px] text-indigo-700 hover:text-indigo-950 inline-flex items-center gap-1 font-sans mt-1 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition-colors cursor-pointer"
+                            className="text-[11px] text-[#74746E] hover:text-[#111] inline-flex items-center gap-1 font-sans mt-0.5 transition-colors cursor-pointer text-left"
                             title="Sổ tính & Ghi chú"
                           >
-                            <span>Vốn: {formatPrice(product.costPrice)}</span>
+                            <span>Vốn: <span className="font-mono text-[#555550]">{formatPrice(product.costPrice)}</span></span>
                             {product.internalNote && (
-                              <FileText className="w-3 h-3 text-indigo-500" />
+                              <FileText className="w-3 h-3 text-indigo-600 shrink-0" />
                             )}
                           </button>
                         ) : product.internalNote ? (
                           <button
                             type="button"
                             onClick={() => setViewingInternalNoteProduct(product)}
-                            className="text-[11px] text-indigo-700 hover:text-indigo-950 inline-flex items-center gap-1 font-sans mt-1 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded border border-indigo-200 transition-colors cursor-pointer"
+                            className="text-[11px] text-[#74746E] hover:text-[#111] inline-flex items-center gap-1 font-sans mt-0.5 transition-colors cursor-pointer text-left"
                             title="Ghi chú nội bộ"
                           >
-                            <FileText className="w-3 h-3 text-indigo-600" />
+                            <FileText className="w-3 h-3 text-indigo-600 shrink-0" />
                             <span>Ghi chú</span>
                           </button>
                         ) : product.originalPrice && product.originalPrice > product.price ? (
