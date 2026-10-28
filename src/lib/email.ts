@@ -367,12 +367,18 @@ export async function sendNewOrderNotification(order: {
 </html>
     `;
 
-    await sendEmail({
+    const result = await sendEmail({
       to: config.adminNotifyEmail,
       subject: `🔔 [ĐƠN HÀNG MỚI] #${order.orderNumber} - ${order.customerName} (${formatVND(order.totalAmount)})`,
       html: htmlContent,
       text: `Có đơn hàng mới #${order.orderNumber} từ ${order.customerName} (${order.customerPhone}) - Tổng: ${formatVND(order.totalAmount)}. Vui lòng truy cập admin: ${adminOrderUrl}`,
     });
+
+    if (!result.success) {
+      console.error(`[Email Alert] Gửi email thông báo đơn #${order.orderNumber} thất bại:`, result.error);
+    } else {
+      console.log(`[Email Alert] Đã gửi thông báo đơn hàng #${order.orderNumber} thành công tới ${config.adminNotifyEmail}`);
+    }
   } catch (error) {
     console.error("[Email Notification Failed]:", error);
   }
