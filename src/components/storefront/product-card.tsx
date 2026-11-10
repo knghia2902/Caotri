@@ -68,14 +68,6 @@ export function ProductCard({ product }: ProductCardProps) {
           loading="lazy"
         />
 
-        {/* Badges Container */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-          {product.isNew && (
-            <span className="bg-[#F3F3F1] text-[#555550] text-[10px] font-medium px-2 py-0.5 rounded-sm">
-              Mới
-            </span>
-          )}
-        </div>
 
         {/* Stock Status Badge */}
         {!product.inStock && (

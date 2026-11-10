@@ -107,7 +107,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
   const [inStock, setInStock] = useState(initialData ? initialData.inStock : true);
   const [isFeatured, setIsFeatured] = useState(initialData ? initialData.isFeatured : false);
-  const [isNew, setIsNew] = useState(initialData ? initialData.isNew : true);
   const [isArchived, setIsArchived] = useState(initialData?.isArchived ?? false);
 
   // Sổ tính giá thu / vốn & ghi chú trade nội bộ (Chỉ Admin thấy)
@@ -184,7 +183,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         specs,
         inStock,
         isFeatured,
-        isNew,
+        isNew: false,
         isArchived,
         costPrice:
           costPrice !== "" && !isNaN(Number(costPrice))
@@ -513,19 +512,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
               </span>
             </label>
 
-            {/* Mới về */}
-            <label className="flex items-center gap-3 p-2.5 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] cursor-pointer hover:border-[#D5D5D0] transition-colors">
-              <input
-                type="checkbox"
-                checked={isNew}
-                onChange={(e) => setIsNew(e.target.checked)}
-                disabled={isPending}
-                className="rounded border-[#D5D5D0] text-[#111] focus:border-[#111] focus:ring-0"
-              />
-              <span className="text-sm font-medium text-[#111]">
-                Gắn nhãn Hàng mới
-              </span>
-            </label>
 
             {/* Lưu kho / Ẩn khỏi website */}
             <label className="flex items-center gap-3 p-2.5 rounded-lg bg-amber-50/60 border border-amber-200 cursor-pointer hover:border-amber-300 transition-colors">

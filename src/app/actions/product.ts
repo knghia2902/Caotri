@@ -92,7 +92,7 @@ export async function createProduct(data: ProductFormData) {
         specs: Object.keys(cleanSpecs).length > 0 ? JSON.stringify(cleanSpecs) : null,
         inStock: data.inStock ?? true,
         isFeatured: data.isFeatured ?? false,
-        isNew: data.isNew ?? true,
+        isNew: data.isNew ?? false,
         isArchived: data.isArchived ?? false,
         costPrice: data.costPrice !== undefined && data.costPrice !== null && !isNaN(Number(data.costPrice)) ? Number(data.costPrice) : null,
         internalNote: data.internalNote?.trim() || null,
