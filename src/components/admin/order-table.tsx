@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -17,6 +17,12 @@ import { toast } from "sonner";
 import { formatVND } from "@/lib/utils";
 import { OrderStatus } from "@/types";
 import { updateOrderStatusAction } from "@/app/actions/order";
+import {
+  ORDER_CHANNELS,
+  ORDER_CHANNEL_LABELS,
+  getChannelLabel,
+  getPaymentMethodLabel,
+} from "@/lib/finance-schema";
 import { CancelOrderDialog } from "./cancel-order-dialog";
 
 export interface OrderItemSummary {
@@ -36,6 +42,8 @@ export interface AdminOrderRecord {
   adminNotes: string | null;
   totalAmount: number;
   status: string;
+  channel: string;
+  paymentMethod: string;
   createdAt: Date | string;
   items: OrderItemSummary[];
 }
@@ -53,6 +61,7 @@ interface OrderTableProps {
     CANCELLED: number;
   };
   currentStatus: string;
+  currentChannel: string;
   searchQuery: string;
 }
 
@@ -65,12 +74,29 @@ const STATUS_TABS: { key: string; label: string }[] = [
   { key: "CANCELLED", label: "Đã hủy" },
 ];
 
+function getChannelBadgeStyle(channel?: string | null): string {
+  switch (channel) {
+    case "OFFLINE":
+      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    case "ZALO":
+      return "bg-blue-50 text-blue-700 border-blue-200";
+    case "FACEBOOK":
+      return "bg-indigo-50 text-indigo-700 border-indigo-200";
+    case "OTHER":
+      return "bg-amber-50 text-amber-700 border-amber-200";
+    case "WEB":
+    default:
+      return "bg-zinc-100 text-zinc-700 border-zinc-200";
+  }
+}
+
 export function OrderTable({
   orders: initialOrders,
   totalOrders,
   currentPage,
   statusCounts,
   currentStatus,
+  currentChannel,
   searchQuery,
 }: OrderTableProps) {
   const router = useRouter();
@@ -88,10 +114,10 @@ export function OrderTable({
   } | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
-  // Synchronize orders if prop changes
-  if (initialOrders !== orders && initialOrders.length !== orders.length) {
+  // Synchronize orders whenever server props change
+  useEffect(() => {
     setOrders(initialOrders);
-  }
+  }, [initialOrders]);
 
   const navigateWithParams = (newParams: Record<string, string | number | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -110,6 +136,13 @@ export function OrderTable({
   const handleTabClick = (tabKey: string) => {
     navigateWithParams({
       status: tabKey === "ALL" ? null : tabKey,
+      page: 1,
+    });
+  };
+
+  const handleChannelChange = (channelKey: string) => {
+    navigateWithParams({
+      channel: channelKey === "ALL" ? null : channelKey,
       page: 1,
     });
   };
@@ -243,31 +276,65 @@ export function OrderTable({
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
-        <form
-          onSubmit={handleSearchSubmit}
-          className="relative flex-1 max-w-md"
-        >
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#74746E]" />
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Tìm theo mã đơn (#DH-...), số điện thoại, tên khách..."
-            className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-[#E7E7E3] bg-white text-[#111] placeholder:text-[#74746E] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all"
-          />
-          {searchInput && (
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="relative flex-1 max-w-md"
+          >
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#74746E]" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Tìm theo mã đơn (#DH-...), số điện thoại, tên khách..."
+              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-[#E7E7E3] bg-white text-[#111] placeholder:text-[#74746E] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all"
+            />
+            {searchInput && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#74746E] hover:text-[#111] p-0.5"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </form>
+
+          {/* Channel Filter Pills */}
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none bg-[#F7F7F5] p-1 rounded-xl border border-[#E7E7E3]">
             <button
               type="button"
-              onClick={handleClearSearch}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#74746E] hover:text-[#111] p-0.5"
+              onClick={() => handleChannelChange("ALL")}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                !currentChannel || currentChannel === "ALL"
+                  ? "bg-white text-[#111] shadow-xs border border-[#E7E7E3]"
+                  : "text-[#74746E] hover:text-[#111]"
+              }`}
             >
-              <X className="w-3.5 h-3.5" />
+              Tất cả kênh
             </button>
-          )}
-        </form>
+            {ORDER_CHANNELS.map((ch) => {
+              const isActive = currentChannel === ch;
+              return (
+                <button
+                  key={ch}
+                  type="button"
+                  onClick={() => handleChannelChange(ch)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                    isActive
+                      ? "bg-white text-[#111] shadow-xs border border-[#E7E7E3]"
+                      : "text-[#74746E] hover:text-[#111]"
+                  }`}
+                >
+                  {ORDER_CHANNEL_LABELS[ch]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-        <div className="text-xs text-[#74746E] flex items-center justify-between sm:justify-end gap-2">
+        <div className="text-xs text-[#74746E] flex items-center justify-between lg:justify-end gap-2 shrink-0">
           {isPending && (
             <span className="flex items-center gap-1.5 text-zinc-500 text-xs">
               <Loader2 className="w-3.5 h-3.5 animate-spin" /> Đang tải...
@@ -326,7 +393,7 @@ export function OrderTable({
                       key={order.id}
                       className="hover:bg-zinc-50/80 transition-colors group"
                     >
-                      {/* Order Number & Date */}
+                      {/* Order Number, Channel & Payment Badges, Date */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <Link
                           href={`/admin/orders/${order.id}`}
@@ -334,7 +401,19 @@ export function OrderTable({
                         >
                           #{order.orderNumber}
                         </Link>
-                        <div className="text-[11px] text-[#74746E] mt-0.5">
+                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                          <span
+                            className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${getChannelBadgeStyle(
+                              order.channel
+                            )}`}
+                          >
+                            {getChannelLabel(order.channel)}
+                          </span>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#F7F7F5] text-[#74746E] border border-[#E7E7E3]">
+                            {getPaymentMethodLabel(order.paymentMethod)}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-[#74746E] mt-1">
                           {formatDate(order.createdAt)}
                         </div>
                       </td>

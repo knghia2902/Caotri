@@ -1,6 +1,10 @@
 import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { OrderTable } from "@/components/admin/order-table";
+import { OfflineOrderTrigger } from "@/components/admin/offline-order-trigger";
+import type { OfflineProductOption } from "@/components/admin/offline-order-modal";
+import { ORDER_CHANNELS } from "@/lib/finance-schema";
+import { normalizeImageUrl } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +12,7 @@ export const dynamic = "force-dynamic";
 interface AdminOrdersPageProps {
   searchParams: Promise<{
     status?: string;
+    channel?: string;
     q?: string;
     page?: string;
   }>;
@@ -21,23 +26,48 @@ const VALID_STATUSES = [
   "CANCELLED",
 ];
 
+function parseFirstThumbnail(images: string | null | undefined): string | null {
+  if (!images) return null;
+  try {
+    const parsed = JSON.parse(images);
+    if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === "string") {
+      return normalizeImageUrl(parsed[0]);
+    }
+  } catch {
+    if (images.startsWith("http") || images.startsWith("/")) {
+      return normalizeImageUrl(images);
+    }
+  }
+  return null;
+}
+
 export default async function AdminOrdersPage({
   searchParams,
 }: AdminOrdersPageProps) {
   // Đảm bảo chỉ ADMIN hoặc STAFF mới truy cập được
-  await requireRole(["ADMIN", "STAFF"]);
+  const session = await requireRole(["ADMIN", "STAFF"]);
+  const isAdmin = session.role === "ADMIN";
 
   const params = await searchParams;
   const statusParam = params.status?.trim().toUpperCase();
+  const channelParam = params.channel?.trim().toUpperCase();
   const rawQ = params.q?.trim();
   const page = Math.max(1, parseInt(params.page || "1", 10) || 1);
   const pageSize = 10;
 
+  const isValidChannel =
+    !!channelParam &&
+    (ORDER_CHANNELS as readonly string[]).includes(channelParam);
+
   // Xây dựng điều kiện lọc Prisma
-  const where: any = {};
+  const where: Record<string, unknown> = {};
 
   if (statusParam && VALID_STATUSES.includes(statusParam)) {
     where.status = statusParam;
+  }
+
+  if (isValidChannel) {
+    where.channel = channelParam;
   }
 
   if (rawQ) {
@@ -49,30 +79,68 @@ export default async function AdminOrdersPage({
   }
 
   // Chạy các truy vấn CSDL đồng thời
-  const [orders, totalOrders, statusGroups, totalAllOrders] = await Promise.all([
-    prisma.order.findMany({
-      where,
-      take: pageSize,
-      skip: (page - 1) * pageSize,
-      orderBy: { createdAt: "desc" },
-      include: {
-        items: {
-          select: {
-            id: true,
-            productName: true,
-            price: true,
-            quantity: true,
+  const [orders, totalOrders, statusGroups, totalAllOrders, rawOfflineProducts] =
+    await Promise.all([
+      prisma.order.findMany({
+        where,
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          orderNumber: true,
+          customerName: true,
+          customerPhone: true,
+          customerAddress: true,
+          customerNotes: true,
+          adminNotes: true,
+          totalAmount: true,
+          status: true,
+          channel: true,
+          paymentMethod: true,
+          createdAt: true,
+          items: {
+            select: {
+              id: true,
+              productName: true,
+              price: true,
+              quantity: true,
+            },
           },
         },
-      },
-    }),
-    prisma.order.count({ where }),
-    prisma.order.groupBy({
-      by: ["status"],
-      _count: true,
-    }),
-    prisma.order.count(),
-  ]);
+      }),
+      prisma.order.count({ where }),
+      prisma.order.groupBy({
+        by: ["status"],
+        _count: true,
+      }),
+      prisma.order.count(),
+      isAdmin
+        ? prisma.product.findMany({
+            where: { isArchived: false },
+            orderBy: [{ inStock: "desc" }, { updatedAt: "desc" }],
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              costPrice: true,
+              inStock: true,
+              images: true,
+            },
+          })
+        : Promise.resolve([]),
+    ]);
+
+  const offlineProducts: OfflineProductOption[] = isAdmin
+    ? rawOfflineProducts.map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        costPrice: p.costPrice,
+        inStock: p.inStock,
+        thumbnail: parseFirstThumbnail(p.images),
+      }))
+    : [];
 
   // Chuẩn hóa bộ đếm trạng thái cho tabs
   const statusCounts = {
@@ -104,15 +172,29 @@ export default async function AdminOrdersPage({
             xử lý giao hàng.
           </p>
         </div>
+
+        {isAdmin && (
+          <div className="flex items-center gap-2 shrink-0">
+            <OfflineOrderTrigger
+              products={offlineProducts}
+              variant="primary"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Main Order Table with Tabs, Search, and Pagination */}
+      {/* Main Order Table with Tabs, Channel Filter, Search, and Pagination */}
       <OrderTable
         orders={orders}
         totalOrders={totalOrders}
         currentPage={page}
         statusCounts={statusCounts}
-        currentStatus={statusParam && VALID_STATUSES.includes(statusParam) ? statusParam : "ALL"}
+        currentStatus={
+          statusParam && VALID_STATUSES.includes(statusParam)
+            ? statusParam
+            : "ALL"
+        }
+        currentChannel={isValidChannel && channelParam ? channelParam : "ALL"}
         searchQuery={rawQ || ""}
       />
     </div>

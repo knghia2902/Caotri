@@ -18,6 +18,7 @@ import {
   Cloud,
   ShieldCheck,
   Activity,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +47,12 @@ const navItems: NavItem[] = [
     title: "Đơn hàng",
     href: "/admin/orders",
     icon: ShoppingBag,
+  },
+  {
+    title: "Tài chính & Dòng tiền",
+    href: "/admin/finance",
+    icon: Wallet,
+    adminOnly: true,
   },
   {
     title: "Sản phẩm",

@@ -11,20 +11,40 @@ import {
   Wallet,
   Users,
   Coins,
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, normalizeImageUrl } from "@/lib/utils";
 import { computeDailyRevenue } from "@/lib/order-analytics";
 import { RevenueBarChart } from "@/components/admin/revenue-bar-chart";
 import { getTrafficOverview } from "@/lib/traffic";
 import { VpsMonitorCard } from "@/components/admin/vps-monitor-card";
+import { getDashboardFinanceSnapshot } from "@/lib/finance-analytics";
+import { OfflineOrderTrigger } from "@/components/admin/offline-order-trigger";
+import type { OfflineProductOption } from "@/components/admin/offline-order-modal";
 
 export const metadata = {
   title: "Dashboard Quản trị | TringuyenGear",
 };
 
+function parseFirstThumbnail(images: string | null | undefined): string | null {
+  if (!images) return null;
+  try {
+    const parsed = JSON.parse(images);
+    if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === "string") {
+      return normalizeImageUrl(parsed[0]);
+    }
+  } catch {
+    if (images.startsWith("http") || images.startsWith("/")) {
+      return normalizeImageUrl(images);
+    }
+  }
+  return null;
+}
+
 export default async function AdminDashboardPage() {
   const session = await getCurrentSession();
+  const isAdmin = session?.role === "ADMIN";
 
   // Mốc 6 ngày trước tính từ 00:00:00 để lấy trọn vẹn 7 ngày gần nhất
   const sevenDaysAgo = new Date();
@@ -42,6 +62,8 @@ export default async function AdminDashboardPage() {
     ordersIn7Days,
     recentOrders,
     trafficOverview,
+    financeSnapshot,
+    rawOfflineProducts,
   ] = await Promise.all([
     // 1. Doanh thu thực tế (COMPLETED)
     prisma.order.aggregate({
@@ -93,13 +115,49 @@ export default async function AdminDashboardPage() {
       take: 6,
       orderBy: { createdAt: "desc" },
       include: {
-        items: true,
+        items: {
+          select: {
+            id: true,
+            productName: true,
+            quantity: true,
+          },
+        },
       },
     }),
 
     // 9. Thống kê lưu lượng truy cập thực tế
     getTrafficOverview(),
+
+    // 10. Snapshot tài chính (CHỈ ADMIN)
+    isAdmin ? getDashboardFinanceSnapshot() : Promise.resolve(null),
+
+    // 11. Danh sách sản phẩm cho modal tạo đơn bán ngoài (CHỈ ADMIN)
+    isAdmin
+      ? prisma.product.findMany({
+          where: { isArchived: false },
+          orderBy: [{ inStock: "desc" }, { updatedAt: "desc" }],
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            costPrice: true,
+            inStock: true,
+            images: true,
+          },
+        })
+      : Promise.resolve([]),
   ]);
+
+  const offlineProducts: OfflineProductOption[] = isAdmin
+    ? rawOfflineProducts.map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        costPrice: p.costPrice,
+        inStock: p.inStock,
+        thumbnail: parseFirstThumbnail(p.images),
+      }))
+    : [];
 
   const completedRevenue = completedRevenueAgg._sum.totalAmount || 0;
   const pendingRevenue = pendingRevenueAgg._sum.totalAmount || 0;
@@ -163,7 +221,13 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {isAdmin && (
+              <OfflineOrderTrigger
+                products={offlineProducts}
+                variant="secondary"
+              />
+            )}
             <Link
               href="/admin/orders"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#111] hover:bg-black text-white text-xs font-semibold transition-colors"
@@ -176,7 +240,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* VPS System Resource Monitor */}
-      {session?.role === "ADMIN" && <VpsMonitorCard />}
+      {isAdmin && <VpsMonitorCard />}
 
       {/* Overview Stat Cards (5 Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
@@ -294,6 +358,91 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Snapshot Tài chính hôm nay & tháng này (ADMIN ONLY) */}
+      {isAdmin && financeSnapshot && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-sm font-bold text-[#111]">
+                  Tài chính hôm nay &amp; tháng này
+                </h3>
+                {financeSnapshot.thisMonth.missingCostItemsCount > 0 && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                    {financeSnapshot.thisMonth.missingCostItemsCount} món chưa có giá vốn
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-1 text-xs text-[#74746E]">
+                <span>
+                  DT hôm nay:{" "}
+                  <strong className="text-sm font-bold text-[#111]">
+                    {formatPrice(financeSnapshot.today.revenue)}
+                  </strong>
+                </span>
+                <span>•</span>
+                <span>
+                  Lợi nhuận ròng hôm nay:{" "}
+                  <strong
+                    className={`font-semibold ${
+                      financeSnapshot.today.netProfit >= 0
+                        ? "text-[#21A366]"
+                        : "text-[#D94A4A]"
+                    }`}
+                  >
+                    {formatPrice(financeSnapshot.today.netProfit)}
+                  </strong>
+                </span>
+                <span className="hidden sm:inline">•</span>
+                <span className="hidden sm:inline">
+                  Tháng này: DT{" "}
+                  <strong className="font-semibold text-[#111]">
+                    {formatPrice(financeSnapshot.thisMonth.revenue)}
+                  </strong>{" "}
+                  / LN{" "}
+                  <strong
+                    className={`font-semibold ${
+                      financeSnapshot.thisMonth.netProfit >= 0
+                        ? "text-[#21A366]"
+                        : "text-[#D94A4A]"
+                    }`}
+                  >
+                    {formatPrice(financeSnapshot.thisMonth.netProfit)}
+                  </strong>
+                </span>
+                <span className="hidden xl:inline">•</span>
+                <span className="hidden xl:inline">
+                  Dòng tiền ròng tháng:{" "}
+                  <strong
+                    className={`font-semibold ${
+                      financeSnapshot.thisMonth.netCashflow >= 0
+                        ? "text-[#21A366]"
+                        : "text-[#D94A4A]"
+                    }`}
+                  >
+                    {financeSnapshot.thisMonth.netCashflow > 0 ? "+" : ""}
+                    {formatPrice(financeSnapshot.thisMonth.netCashflow)}
+                  </strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E7E7E3]">
+            <Link
+              href="/admin/finance"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[#E7E7E3] hover:border-[#111] bg-white text-xs font-semibold text-[#111] hover:bg-[#F7F7F5] transition-colors"
+            >
+              <span>Chi tiết Tài chính</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Snapshot Lưu lượng truy cập */}
       <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] flex flex-col md:flex-row md:items-center justify-between gap-4">

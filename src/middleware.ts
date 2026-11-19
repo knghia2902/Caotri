@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyJWT, COOKIE_NAME } from "@/lib/auth";
 
-const ADMIN_ONLY_ROUTES = ["/admin/banners", "/admin/settings", "/admin/backups"];
+const ADMIN_ONLY_ROUTES = [
+  "/admin/banners",
+  "/admin/settings",
+  "/admin/backups",
+  "/admin/finance",
+  "/admin/users",
+];
 
 function getTargetUrl(path: string, req: NextRequest): URL {
   const forwardedHost = req.headers.get("x-forwarded-host");

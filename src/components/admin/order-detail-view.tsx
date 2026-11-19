@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -17,6 +17,11 @@ import {
   FileText,
   AlertCircle,
   ExternalLink,
+  Pencil,
+  Check,
+  X,
+  CheckCircle2,
+  TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatVND, getStatusLabel, normalizeImageUrl } from "@/lib/utils";
@@ -24,15 +29,21 @@ import { OrderStatus } from "@/types";
 import {
   updateOrderStatusAction,
   updateOrderNotesAction,
+  updateOrderItemCostAction,
 } from "@/app/actions/order";
+import {
+  getChannelLabel,
+  getPaymentMethodLabel,
+} from "@/lib/finance-schema";
 import { OrderStatusBadge } from "./order-status-badge";
 import { CancelOrderDialog } from "./cancel-order-dialog";
 
 export interface OrderDetailItem {
   id: string;
-  productId: string;
+  productId: string | null;
   productName: string;
   price: number;
+  costPrice?: number | null;
   quantity: number;
   product?: {
     id: string;
@@ -52,6 +63,11 @@ export interface OrderDetailData {
   adminNotes: string | null;
   totalAmount: number;
   status: string;
+  channel?: string;
+  paymentMethod?: string;
+  discount?: number;
+  shippingFee?: number;
+  soldAt?: Date | string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
   items: OrderDetailItem[];
@@ -59,19 +75,118 @@ export interface OrderDetailData {
 
 interface OrderDetailViewProps {
   order: OrderDetailData;
+  isAdmin?: boolean;
 }
 
-export function OrderDetailView({ order }: OrderDetailViewProps) {
+function getChannelBadgeStyle(channel?: string | null): string {
+  switch (channel) {
+    case "OFFLINE":
+      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    case "ZALO":
+      return "bg-blue-50 text-blue-700 border-blue-200";
+    case "FACEBOOK":
+      return "bg-indigo-50 text-indigo-700 border-indigo-200";
+    case "OTHER":
+      return "bg-amber-50 text-amber-700 border-amber-200";
+    case "WEB":
+    default:
+      return "bg-zinc-100 text-zinc-700 border-zinc-200";
+  }
+}
+
+export function OrderDetailView({ order, isAdmin = false }: OrderDetailViewProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const [currentStatus, setCurrentStatus] = useState<string>(order.status);
   const [adminNotes, setAdminNotes] = useState<string>(order.adminNotes || "");
+  const [items, setItems] = useState<OrderDetailItem[]>(order.items);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
 
+  // Inline costPrice editing state (ADMIN ONLY)
+  const [editingCostItemId, setEditingCostItemId] = useState<string | null>(null);
+  const [editingCostValue, setEditingCostValue] = useState<string>("");
+  const [isSavingCost, setIsSavingCost] = useState(false);
+
+  useEffect(() => {
+    setItems(order.items);
+  }, [order.items]);
+
   const cleanPhone = order.customerPhone.replace(/\D/g, "");
+
+  const startEditCost = (item: OrderDetailItem) => {
+    setEditingCostItemId(item.id);
+    setEditingCostValue(
+      item.costPrice !== null && item.costPrice !== undefined
+        ? String(item.costPrice)
+        : ""
+    );
+  };
+
+  const cancelEditCost = () => {
+    setEditingCostItemId(null);
+    setEditingCostValue("");
+  };
+
+  const handleSaveCost = async (itemId: string) => {
+    const trimmed = editingCostValue.trim();
+    let parsedCost: number | null = null;
+    if (trimmed !== "") {
+      const num = Number(trimmed);
+      if (Number.isNaN(num) || num < 0) {
+        toast.error("Giá vốn phải là số không âm");
+        return;
+      }
+      parsedCost = num;
+    }
+
+    setIsSavingCost(true);
+    try {
+      const res = await updateOrderItemCostAction({
+        orderItemId: itemId,
+        costPrice: parsedCost,
+      });
+
+      if (res.success) {
+        toast.success(res.message || "Đã cập nhật giá vốn");
+        setItems((prev) =>
+          prev.map((it) =>
+            it.id === itemId ? { ...it, costPrice: parsedCost } : it
+          )
+        );
+        setEditingCostItemId(null);
+        setEditingCostValue("");
+        startTransition(() => {
+          router.refresh();
+        });
+      } else {
+        toast.error(res.error || "Không thể cập nhật giá vốn");
+      }
+    } catch {
+      toast.error("Đã xảy ra lỗi khi cập nhật giá vốn");
+    } finally {
+      setIsSavingCost(false);
+    }
+  };
+
+  const itemsSubtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const discountAmount = order.discount ?? 0;
+  const shippingFeeAmount = order.shippingFee ?? 0;
+
+  // Admin-only COGS & Gross Profit
+  const totalCogs = isAdmin
+    ? items.reduce((s, i) => s + (i.costPrice ?? 0) * i.quantity, 0)
+    : 0;
+  const missingCostCount = isAdmin
+    ? items.filter((i) => i.costPrice === null || i.costPrice === undefined).length
+    : 0;
+  const grossProfit = isAdmin ? order.totalAmount - totalCogs : 0;
+  const grossMarginPct =
+    isAdmin && order.totalAmount > 0
+      ? Math.round((grossProfit / order.totalAmount) * 1000) / 10
+      : 0;
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     if (newStatus === "CANCELLED") {
@@ -194,16 +309,34 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
               <span>Quay lại danh sách đơn</span>
             </Link>
 
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-2.5 pt-1">
               <h1 className="text-xl sm:text-2xl font-bold text-[#111]">
                 Đơn hàng #{order.orderNumber}
               </h1>
               <OrderStatusBadge status={currentStatus} />
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${getChannelBadgeStyle(
+                  order.channel
+                )}`}
+              >
+                {getChannelLabel(order.channel)}
+              </span>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F7F7F5] text-[#74746E] border border-[#E7E7E3]">
+                {getPaymentMethodLabel(order.paymentMethod)}
+              </span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-[#74746E]">
-              <Clock className="w-3.5 h-3.5" />
-              <span>Đặt hàng vào lúc {formatDate(order.createdAt)}</span>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#74746E]">
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Tạo đơn lúc {formatDate(order.createdAt)}</span>
+              </span>
+              {order.soldAt && (
+                <span className="inline-flex items-center gap-1.5 text-[#21A366] font-medium">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Ghi nhận bán lúc {formatDate(order.soldAt)}</span>
+                </span>
+              )}
             </div>
           </div>
 
@@ -250,10 +383,10 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
               <div className="px-5 py-4 border-b border-[#E7E7E3] flex items-center justify-between">
                 <h2 className="font-bold text-sm text-[#111] flex items-center gap-2">
                   <Package className="w-4 h-4 text-[#111]" />
-                  Danh sách linh kiện ({order.items.length} mặt hàng)
+                  Danh sách linh kiện ({items.length} mặt hàng)
                 </h2>
                 <span className="text-xs text-[#74746E]">
-                  Tổng SL: {order.items.reduce((s, i) => s + i.quantity, 0)} món
+                  Tổng SL: {items.reduce((s, i) => s + i.quantity, 0)} món
                 </span>
               </div>
 
@@ -263,13 +396,17 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                     <tr>
                       <th className="py-3 px-5">Sản phẩm</th>
                       <th className="py-3 px-4 text-right">Đơn giá</th>
+                      {isAdmin && (
+                        <th className="py-3 px-4 text-right">Giá vốn</th>
+                      )}
                       <th className="py-3 px-4 text-center">SL</th>
                       <th className="py-3 px-5 text-right">Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E7E7E3]">
-                    {order.items.map((item) => {
+                    {items.map((item) => {
                       const img = getProductImage(item);
+                      const isEditingThisCost = editingCostItemId === item.id;
                       return (
                         <tr key={item.id} className="hover:bg-zinc-50/60">
                           <td className="py-3.5 px-5">
@@ -302,9 +439,17 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                                     {item.productName}
                                   </div>
                                 )}
-                                <div className="text-[11px] text-[#74746E] mt-0.5 font-mono">
-                                  ID: {item.productId}
-                                </div>
+                                {item.productId ? (
+                                  <div className="text-[11px] text-[#74746E] mt-0.5 font-mono">
+                                    ID: {item.productId}
+                                  </div>
+                                ) : (
+                                  <div className="mt-1">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-zinc-100 text-[#74746E] border border-[#E7E7E3]">
+                                      Món ngoài kho
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </td>
@@ -312,6 +457,78 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                           <td className="py-3.5 px-4 text-right whitespace-nowrap font-medium text-[#111]">
                             {formatVND(item.price)}
                           </td>
+
+                          {isAdmin && (
+                            <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                              {isEditingThisCost ? (
+                                <div className="inline-flex items-center justify-end gap-1">
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    step={1000}
+                                    value={editingCostValue}
+                                    onChange={(e) =>
+                                      setEditingCostValue(e.target.value)
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        handleSaveCost(item.id);
+                                      } else if (e.key === "Escape") {
+                                        cancelEditCost();
+                                      }
+                                    }}
+                                    placeholder="Giá vốn..."
+                                    autoFocus
+                                    className="w-24 px-2 py-1 text-right text-xs rounded-md border border-[#111] bg-white text-[#111] focus:outline-none"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSaveCost(item.id)}
+                                    disabled={isSavingCost}
+                                    title="Lưu giá vốn"
+                                    className="p-1 rounded-md bg-[#111] text-white hover:bg-black disabled:opacity-50 cursor-pointer"
+                                  >
+                                    {isSavingCost ? (
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                    ) : (
+                                      <Check className="w-3 h-3" />
+                                    )}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={cancelEditCost}
+                                    disabled={isSavingCost}
+                                    title="Hủy"
+                                    className="p-1 rounded-md border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] cursor-pointer"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center justify-end gap-1.5 group">
+                                  {item.costPrice !== null &&
+                                  item.costPrice !== undefined ? (
+                                    <span className="font-medium text-[#74746E]">
+                                      {formatVND(item.costPrice)}
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                      Chưa nhập
+                                    </span>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => startEditCost(item)}
+                                    title="Chỉnh sửa giá vốn"
+                                    className="p-1 rounded text-[#74746E] hover:text-[#111] hover:bg-zinc-100 transition-colors cursor-pointer"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                          )}
 
                           <td className="py-3.5 px-4 text-center whitespace-nowrap font-semibold text-[#111]">
                             x{item.quantity}
@@ -332,28 +549,86 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                 <div className="flex items-center justify-between text-xs text-[#74746E]">
                   <span>Tạm tính linh kiện:</span>
                   <span className="font-medium text-[#111]">
-                    {formatVND(order.totalAmount)}
+                    {formatVND(itemsSubtotal)}
                   </span>
                 </div>
+
+                {discountAmount > 0 && (
+                  <div className="flex items-center justify-between text-xs text-[#74746E]">
+                    <span>Giảm giá:</span>
+                    <span className="font-medium text-[#D94A4A]">
+                      -{formatVND(discountAmount)}
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between text-xs text-[#74746E]">
                   <span>Phí vận chuyển:</span>
-                  <span className="font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                    Khách chịu (thanh toán khi nhận)
-                  </span>
+                  {shippingFeeAmount > 0 ? (
+                    <span className="font-medium text-[#111]">
+                      {formatVND(shippingFeeAmount)}
+                    </span>
+                  ) : order.paymentMethod === "COD" || !order.paymentMethod ? (
+                    <span className="font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                      Khách chịu (thanh toán khi nhận)
+                    </span>
+                  ) : (
+                    <span className="font-medium text-[#74746E]">
+                      0đ (Tại shop / Miễn phí)
+                    </span>
+                  )}
                 </div>
+
                 <div className="flex items-center justify-between pt-2 border-t border-[#E7E7E3]">
                   <div>
                     <span className="font-bold text-sm text-[#111]">
-                      Tổng tiền thu hộ (COD):
+                      Tổng thanh toán ({getPaymentMethodLabel(order.paymentMethod)}):
                     </span>
                     <p className="text-[11px] text-[#74746E]">
-                      Khách hàng thanh toán tiền mặt khi nhận hàng
+                      Kênh bán: {getChannelLabel(order.channel)}
                     </p>
                   </div>
                   <span className="font-bold text-lg text-[#111]">
                     {formatVND(order.totalAmount)}
                   </span>
                 </div>
+
+                {/* Admin-only COGS & Gross Profit Summary */}
+                {isAdmin && (
+                  <div className="mt-3 pt-3 border-t border-dashed border-[#D5D5D0] space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-[#74746E] flex items-center gap-1.5 font-medium">
+                        <TrendingUp className="w-3.5 h-3.5 text-[#111]" />
+                        <span>Tổng giá vốn (COGS):</span>
+                      </span>
+                      <span className="font-semibold text-[#111]">
+                        {formatVND(totalCogs)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-[#74746E] font-medium">
+                        Lãi gộp ước tính:
+                      </span>
+                      <span
+                        className={`font-bold text-sm ${
+                          grossProfit >= 0 ? "text-[#21A366]" : "text-[#D94A4A]"
+                        }`}
+                      >
+                        {formatVND(grossProfit)}
+                        {order.totalAmount > 0 && (
+                          <span className="text-[11px] font-medium ml-1.5 opacity-80">
+                            ({grossMarginPct}%)
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    {missingCostCount > 0 && (
+                      <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 mt-1">
+                        Lưu ý: Có {missingCostCount} mặt hàng chưa có giá vốn. Bấm biểu tượng bút ở cột Giá vốn để cập nhật cho báo cáo lợi nhuận chính xác.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 

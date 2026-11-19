@@ -15,7 +15,8 @@ export default async function AdminOrderDetailPage({
   params,
 }: AdminOrderDetailPageProps) {
   // Chỉ ADMIN hoặc STAFF mới được xem chi tiết đơn hàng
-  await requireRole(["ADMIN", "STAFF"]);
+  const session = await requireRole(["ADMIN", "STAFF"]);
+  const isAdmin = session.role === "ADMIN";
 
   const { id } = await params;
 
@@ -41,5 +42,34 @@ export default async function AdminOrderDetailPage({
     notFound();
   }
 
-  return <OrderDetailView order={order} />;
+  // Bảo mật: Tuyệt đối không gửi costPrice xuống Client Component nếu không phải ADMIN
+  const sanitizedOrder = {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    customerName: order.customerName,
+    customerPhone: order.customerPhone,
+    customerAddress: order.customerAddress,
+    customerNotes: order.customerNotes,
+    adminNotes: order.adminNotes,
+    totalAmount: order.totalAmount,
+    status: order.status,
+    channel: order.channel,
+    paymentMethod: order.paymentMethod,
+    discount: order.discount,
+    shippingFee: order.shippingFee,
+    soldAt: order.soldAt,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    items: order.items.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      productName: item.productName,
+      price: item.price,
+      quantity: item.quantity,
+      product: item.product,
+      ...(isAdmin ? { costPrice: item.costPrice } : {}),
+    })),
+  };
+
+  return <OrderDetailView order={sanitizedOrder} isAdmin={isAdmin} />;
 }

@@ -25,9 +25,11 @@ interface AdminHeaderProps {
 const pathTitles: Record<string, string> = {
   "/admin": "Tổng quan Dashboard",
   "/admin/orders": "Quản lý Đơn hàng",
+  "/admin/finance": "Tài chính & Dòng tiền",
   "/admin/products": "Quản lý Sản phẩm",
   "/admin/categories": "Quản lý Danh mục",
   "/admin/banners": "Quản lý Banners",
+  "/admin/traffic": "Thống kê Lượt truy cập",
   "/admin/settings": "Cài đặt Cửa hàng",
   "/admin/profile": "Hồ sơ cá nhân",
 };

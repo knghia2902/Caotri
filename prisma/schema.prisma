@@ -9,13 +9,15 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   @default("STAFF") // "ADMIN" | "STAFF"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String          @id @default(cuid())
+  email            String          @unique
+  password         String
+  name             String
+  role             String          @default("STAFF") // "ADMIN" | "STAFF"
+  createdOrders    Order[]         @relation("OrderCreatedBy")
+  createdCashflows CashflowEntry[] @relation("CashflowCreatedBy")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 }
 
 model Category {
@@ -56,29 +58,63 @@ model Product {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique // e.g. "DH-100234"
+  id              String          @id @default(cuid())
+  orderNumber     String          @unique // e.g. "DH-100234"
   customerName    String
   customerPhone   String
   customerAddress String
   customerNotes   String?
   adminNotes      String?
   totalAmount     Float
-  status          String      @default("PENDING") // "PENDING" | "CONTACTED" | "SHIPPING" | "COMPLETED" | "CANCELLED"
+  status          String          @default("PENDING") // "PENDING" | "CONTACTED" | "SHIPPING" | "COMPLETED" | "CANCELLED"
+  channel         String          @default("WEB") // "WEB" | "OFFLINE" | "ZALO" | "FACEBOOK" | "OTHER"
+  paymentMethod   String          @default("COD") // "COD" | "CASH" | "BANK_TRANSFER" | "OTHER"
+  discount        Float           @default(0)
+  shippingFee     Float           @default(0)
+  soldAt          DateTime?
+  createdById     String?
+  createdBy       User?           @relation("OrderCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   items           OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  cashflowEntries CashflowEntry[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([status, soldAt])
+  @@index([channel, createdAt])
 }
 
 model OrderItem {
   id          String   @id @default(cuid())
   orderId     String
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id])
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
   productName String
   price       Float
+  costPrice   Float?   // Snapshot giá vốn tại thời điểm bán (null = chưa nhập giá vốn)
   quantity    Int      @default(1)
+}
+
+model CashflowEntry {
+  id            String   @id @default(cuid())
+  type          String   // "IN" | "OUT"
+  category      String   // IN: ORDER_SALE | OFFLINE_SALE | OTHER_IN; OUT: INVENTORY_IMPORT | SHIPPING | MARKETING | OPERATING | SALARY | REFUND | OTHER_OUT
+  amount        Float
+  paymentMethod String   @default("CASH") // "CASH" | "BANK_TRANSFER" | "COD" | "OTHER"
+  occurredAt    DateTime @default(now())
+  dateKey       String   // "YYYY-MM-DD" theo múi giờ Việt Nam (UTC+7)
+  note          String?
+  orderId       String?
+  order         Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdById   String?
+  createdBy     User?    @relation("CashflowCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([dateKey])
+  @@index([type, dateKey])
+  @@index([category, dateKey])
+  @@index([orderId])
 }
 
 model Banner {

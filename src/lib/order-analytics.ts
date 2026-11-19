@@ -1,7 +1,14 @@
+import {
+  addDaysToDateKey,
+  formatVnShortDate,
+  getVnDateKey,
+  getVnDayOfWeekLabel,
+} from "@/lib/date-vn";
+
 export interface DailyRevenuePoint {
-  date: string;       // "YYYY-MM-DD"
+  date: string;       // "YYYY-MM-DD" (theo múi giờ Việt Nam UTC+7)
   label: string;      // "DD/MM"
-  dayOfWeek: string;  // "Th 2", "Th 3", ..., "CN"
+  dayOfWeek: string;  // "Th 2", "Th 3", ..., "CN", "Hôm nay"
   completedRevenue: number;
   pendingRevenue: number;
   totalRevenue: number;
@@ -12,27 +19,16 @@ export function computeDailyRevenue(
   orders: { totalAmount: number; createdAt: Date; status: string }[]
 ): DailyRevenuePoint[] {
   const result: DailyRevenuePoint[] = [];
-  const daysOfWeekMap = ["CN", "Th 2", "Th 3", "Th 4", "Th 5", "Th 6", "Th 7"];
+  const todayKey = getVnDateKey(new Date());
 
   for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    d.setHours(0, 0, 0, 0);
+    const dateKey = addDaysToDateKey(todayKey, -i);
+    const label = formatVnShortDate(dateKey);
+    const dayOfWeek = getVnDayOfWeekLabel(dateKey, todayKey);
 
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    const dateKey = `${year}-${month}-${day}`;
-    const label = `${day}/${month}`;
-    const dayOfWeek = i === 0 ? "Hôm nay" : daysOfWeekMap[d.getDay()];
-
-    const matchingOrders = orders.filter((o) => {
-      const orderDate = new Date(o.createdAt);
-      const oYear = orderDate.getFullYear();
-      const oMonth = String(orderDate.getMonth() + 1).padStart(2, "0");
-      const oDay = String(orderDate.getDate()).padStart(2, "0");
-      return `${oYear}-${oMonth}-${oDay}` === dateKey;
-    });
+    const matchingOrders = orders.filter(
+      (o) => getVnDateKey(o.createdAt) === dateKey
+    );
 
     const completedRevenue = matchingOrders
       .filter((o) => o.status === "COMPLETED")
