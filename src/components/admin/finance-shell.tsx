@@ -96,7 +96,7 @@ export function FinanceShell({
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#111] flex items-center gap-2.5 tracking-tight">
             <Wallet className="w-6 h-6 text-[#111]" />
-            Tài chính &amp; Dòng tiền
+            Dòng tiền
           </h1>
           <p className="text-xs text-[#74746E] mt-1">
             Theo dõi doanh thu, giá vốn, lợi nhuận ròng và sổ quỹ thu/chi theo
@@ -104,20 +104,22 @@ export function FinanceShell({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <Button
             type="button"
+            size="sm"
             onClick={() => setOfflineModalOpen(true)}
-            className="h-10 px-4 rounded-lg bg-white text-[#111] border border-[#D5D5D0] hover:bg-[#F7F7F5] hover:border-[#111] text-xs sm:text-sm font-medium inline-flex items-center gap-1.5"
+            className="h-9 px-3.5 rounded-[8px] bg-white text-[#111] border border-[#D5D5D0] hover:bg-[#F7F7F5] hover:border-[#111] text-xs font-medium inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
           >
-            <ShoppingBag className="w-4 h-4" />+ Tạo đơn bán ngoài
+            <ShoppingBag className="w-3.5 h-3.5 shrink-0" />+ Tạo đơn bán ngoài
           </Button>
           <Button
             type="button"
+            size="sm"
             onClick={handleOpenNewCashflow}
-            className="h-10 px-4 rounded-lg bg-[#111] hover:bg-black text-white text-xs sm:text-sm font-medium inline-flex items-center gap-1.5"
+            className="h-9 px-3.5 rounded-[8px] bg-[#111] hover:bg-black text-white text-xs font-medium inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5 shrink-0" />
             Ghi Thu / Chi
           </Button>
         </div>

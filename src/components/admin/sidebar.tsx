@@ -12,9 +12,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Gamepad2,
   X,
-  Users,
   Cloud,
   ShieldCheck,
   Activity,
@@ -28,6 +26,7 @@ interface SidebarProps {
   setIsCollapsed: (collapsed: boolean) => void;
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
+  pendingOrdersCount?: number;
 }
 
 interface NavItem {
@@ -49,7 +48,7 @@ const navItems: NavItem[] = [
     icon: ShoppingBag,
   },
   {
-    title: "Tài chính & Dòng tiền",
+    title: "Dòng tiền",
     href: "/admin/finance",
     icon: Wallet,
     adminOnly: true,
@@ -101,6 +100,7 @@ export function AdminSidebar({
   setIsCollapsed,
   mobileOpen,
   setMobileOpen,
+  pendingOrdersCount = 0,
 }: SidebarProps) {
   const pathname = usePathname();
 
@@ -145,13 +145,22 @@ export function AdminSidebar({
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
+      <div
+        className={cn(
+          "flex-1 py-4 px-3 space-y-1",
+          isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden"
+        )}
+      >
         {filteredNavItems.map((item) => {
           const Icon = item.icon;
           const isActive =
             item.href === "/admin"
               ? pathname === "/admin"
               : pathname.startsWith(item.href);
+          const showPendingBadge =
+            item.href === "/admin/orders" && pendingOrdersCount > 0;
+          const badgeLabel =
+            pendingOrdersCount > 99 ? "99+" : String(pendingOrdersCount);
 
           return (
             <Link
@@ -167,18 +176,33 @@ export function AdminSidebar({
               )}
               title={isCollapsed ? item.title : undefined}
             >
-              <Icon
-                className={cn(
-                  "w-5 h-5 shrink-0 transition-colors",
-                  isActive ? "text-white" : "text-white/70 group-hover:text-white"
+              <div className="relative shrink-0">
+                <Icon
+                  className={cn(
+                    "w-5 h-5 transition-colors",
+                    isActive ? "text-white" : "text-white/70 group-hover:text-white"
+                  )}
+                />
+                {isCollapsed && showPendingBadge && (
+                  <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-amber-400 text-[#111111] text-[10px] font-bold leading-4 text-center tabular-nums">
+                    {badgeLabel}
+                  </span>
                 )}
-              />
-              {!isCollapsed && <span>{item.title}</span>}
+              </div>
+              {!isCollapsed && (
+                <span className="flex-1 truncate">{item.title}</span>
+              )}
+              {!isCollapsed && showPendingBadge && (
+                <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-amber-400 text-[#111111] text-[11px] font-semibold tabular-nums">
+                  {badgeLabel}
+                </span>
+              )}
 
               {/* Tooltip khi thu gọn */}
               {isCollapsed && (
-                <span className="absolute left-full ml-3 px-2 py-1 bg-white text-[#111] text-xs font-medium rounded-md shadow-[0_8px_30px_rgba(0,0,0,0.05)] border border-[#E7E7E3] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap">
+                <span className="absolute left-full ml-3 px-2.5 py-1 bg-white text-[#111111] text-xs font-medium rounded-md shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-[#E7E7E3] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap">
                   {item.title}
+                  {showPendingBadge ? ` (${badgeLabel})` : ""}
                 </span>
               )}
             </Link>

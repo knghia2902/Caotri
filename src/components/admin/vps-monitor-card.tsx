@@ -51,13 +51,13 @@ export function VpsMonitorCard() {
 
   if (loading && !metrics) {
     return (
-      <div className="p-6 rounded-2xl bg-white border border-[#E7E7E3] animate-pulse">
+      <div className="p-6 rounded-[10px] bg-white border border-[#E7E7E3] animate-pulse">
         <div className="h-6 w-48 bg-zinc-200 rounded mb-4" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="h-28 bg-zinc-100 rounded-xl" />
-          <div className="h-28 bg-zinc-100 rounded-xl" />
-          <div className="h-28 bg-zinc-100 rounded-xl" />
-          <div className="h-28 bg-zinc-100 rounded-xl" />
+          <div className="h-28 bg-zinc-100 rounded-[10px]" />
+          <div className="h-28 bg-zinc-100 rounded-[10px]" />
+          <div className="h-28 bg-zinc-100 rounded-[10px]" />
+          <div className="h-28 bg-zinc-100 rounded-[10px]" />
         </div>
       </div>
     );
@@ -94,22 +94,22 @@ export function VpsMonitorCard() {
   };
 
   return (
-    <div className="p-6 rounded-2xl bg-white border border-[#E7E7E3] space-y-5">
+    <div className="p-6 rounded-[10px] bg-white border border-[#E7E7E3] space-y-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E7E7E3]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-zinc-900 text-white flex items-center justify-center">
+          <div className="w-10 h-10 rounded-[10px] bg-[#111111] text-white flex items-center justify-center">
             <Server className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-[#111]">Giám sát Tài nguyên VPS</h2>
+              <h2 className="text-base font-bold text-[#111111]">Giám sát Tài nguyên VPS</h2>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live
               </span>
             </div>
-            <p className="text-xs text-[#74746E] mt-0.5">
+            <p className="text-xs text-[#74746E] mt-0.5 tabular-nums">
               {metrics.system.distro} • Node {metrics.system.nodeVersion} • Uptime: {metrics.system.uptimeFormatted}
             </p>
           </div>
@@ -117,7 +117,7 @@ export function VpsMonitorCard() {
 
         <div className="flex items-center gap-2">
           {metrics.pm2Process && (
-            <div className="hidden md:flex items-center gap-1.5 text-xs text-[#74746E] bg-[#FAFAFA] border border-[#E7E7E3] px-2.5 py-1.5 rounded-lg">
+            <div className="hidden md:flex items-center gap-1.5 text-xs text-[#74746E] bg-[#F7F7F5] border border-[#E7E7E3] px-2.5 py-1.5 rounded-[8px] tabular-nums">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
               <span>PM2: <strong>{metrics.pm2Process.name}</strong> ({metrics.pm2Process.memoryFormatted})</span>
             </div>
@@ -127,7 +127,7 @@ export function VpsMonitorCard() {
             variant="outline"
             onClick={() => fetchMetrics(true)}
             disabled={refreshing}
-            className="h-8 gap-1.5 text-xs border-[#E7E7E3]"
+            className="h-8 gap-1.5 text-xs border-[#E7E7E3] rounded-[8px]"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
             <span>Làm mới</span>
@@ -136,9 +136,9 @@ export function VpsMonitorCard() {
       </div>
 
       {/* Grid 4 Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 tabular-nums">
         {/* 1. Ổ đĩa Disk */}
-        <div className="p-4 rounded-xl border border-[#E7E7E3] bg-[#FAFAFA] flex flex-col justify-between">
+        <div className="p-4 rounded-[10px] border border-[#E7E7E3] bg-[#F7F7F5] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#74746E]">
               <HardDrive className="w-4 h-4 text-cyan-600" />
@@ -149,7 +149,7 @@ export function VpsMonitorCard() {
 
           <div>
             <div className="flex items-baseline justify-between mt-1">
-              <span className="text-xl font-bold text-[#111]">{metrics.disk.usedFormatted}</span>
+              <span className="text-xl font-bold text-[#111111]">{metrics.disk.usedFormatted}</span>
               <span className="text-xs text-[#74746E]">/ {metrics.disk.totalFormatted}</span>
             </div>
 
@@ -169,7 +169,7 @@ export function VpsMonitorCard() {
         </div>
 
         {/* 2. Bộ nhớ RAM */}
-        <div className="p-4 rounded-xl border border-[#E7E7E3] bg-[#FAFAFA] flex flex-col justify-between">
+        <div className="p-4 rounded-[10px] border border-[#E7E7E3] bg-[#F7F7F5] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#74746E]">
               <Activity className="w-4 h-4 text-indigo-600" />
@@ -180,7 +180,7 @@ export function VpsMonitorCard() {
 
           <div>
             <div className="flex items-baseline justify-between mt-1">
-              <span className="text-xl font-bold text-[#111]">{metrics.memory.usedFormatted}</span>
+              <span className="text-xl font-bold text-[#111111]">{metrics.memory.usedFormatted}</span>
               <span className="text-xs text-[#74746E]">/ {metrics.memory.totalFormatted}</span>
             </div>
 
@@ -200,7 +200,7 @@ export function VpsMonitorCard() {
         </div>
 
         {/* 3. CPU & Tải hệ thống */}
-        <div className="p-4 rounded-xl border border-[#E7E7E3] bg-[#FAFAFA] flex flex-col justify-between">
+        <div className="p-4 rounded-[10px] border border-[#E7E7E3] bg-[#F7F7F5] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#74746E]">
               <Cpu className="w-4 h-4 text-emerald-600" />
@@ -213,7 +213,7 @@ export function VpsMonitorCard() {
 
           <div>
             <div className="mt-1">
-              <span className="text-xl font-bold text-[#111]">{metrics.cpu.loadAvg[0] ?? 0}</span>
+              <span className="text-xl font-bold text-[#111111]">{metrics.cpu.loadAvg[0] ?? 0}</span>
               <span className="text-xs text-[#74746E] ml-1.5">(Load 1m)</span>
             </div>
 
@@ -229,7 +229,7 @@ export function VpsMonitorCard() {
         </div>
 
         {/* 4. Thư mục Hình ảnh Web */}
-        <div className="p-4 rounded-xl border border-[#E7E7E3] bg-[#FAFAFA] flex flex-col justify-between">
+        <div className="p-4 rounded-[10px] border border-[#E7E7E3] bg-[#F7F7F5] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#74746E]">
               <ImageIcon className="w-4 h-4 text-amber-600" />
@@ -242,7 +242,7 @@ export function VpsMonitorCard() {
 
           <div>
             <div className="flex items-baseline justify-between mt-1">
-              <span className="text-xl font-bold text-[#111]">{metrics.uploads.totalFormatted}</span>
+              <span className="text-xl font-bold text-[#111111]">{metrics.uploads.totalFormatted}</span>
               <span className="text-xs text-[#74746E]">/public/uploads</span>
             </div>
 
@@ -256,7 +256,7 @@ export function VpsMonitorCard() {
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-[#74746E] mt-2">
-              <span>Tổng cộng: <strong className="text-[#111]">{metrics.uploads.totalFiles} ảnh</strong></span>
+              <span>Tổng cộng: <strong className="text-[#111111]">{metrics.uploads.totalFiles} ảnh</strong></span>
               <span className="text-emerald-700 font-medium">Nén Sharp</span>
             </div>
           </div>

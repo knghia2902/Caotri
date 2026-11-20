@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import {
   BackupConfig,
   BackupItem,
@@ -51,7 +52,24 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tokenInput, setTokenInput] = useState("");
   const [isSavingToken, setIsSavingToken] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<
+    | { type: "delete"; filename: string }
+    | { type: "disconnect" }
+    | null
+  >(null);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isSavingToken) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen, isSavingToken]);
 
   useEffect(() => {
     if (searchParams.get("gdrive") === "connected") {
@@ -104,20 +122,8 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
   };
 
   // 3. Xóa bản sao lưu
-  const handleDeleteBackup = async (filename: string) => {
-    if (!confirm(`Bạn có chắc chắn muốn xóa bản sao lưu "${filename}" không?`)) return;
-
-    try {
-      const res = await deleteBackupAction(filename);
-      if (res.success) {
-        toast.success("Đã xóa bản sao lưu thành công");
-        setBackups((prev) => prev.filter((b) => b.filename !== filename));
-      } else {
-        toast.error(res.error || "Không thể xóa bản sao lưu");
-      }
-    } catch {
-      toast.error("Lỗi khi xóa bản sao lưu");
-    }
+  const handleDeleteBackup = (filename: string) => {
+    setConfirmAction({ type: "delete", filename });
   };
 
   // 4. Kiểm tra kết nối Google Drive
@@ -138,19 +144,40 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
   };
 
   // 5. Hủy liên kết Google Drive
-  const handleDisconnectDrive = async () => {
-    if (!confirm("Bạn có chắc chắn muốn hủy liên kết tài khoản Google Drive hiện tại không?")) return;
+  const handleDisconnectDrive = () => {
+    setConfirmAction({ type: "disconnect" });
+  };
 
+  const handleConfirmAction = async () => {
+    if (!confirmAction) return;
+    setIsConfirmLoading(true);
     try {
-      const res = await disconnectGoogleDriveAction();
-      if (res.success) {
-        toast.success("Đã hủy liên kết Google Drive");
-        setConfig((prev) => ({ ...prev, gdrive_connected: false, backup_upload_gdrive: false }));
+      if (confirmAction.type === "delete") {
+        const res = await deleteBackupAction(confirmAction.filename);
+        if (res.success) {
+          toast.success("Đã xóa bản sao lưu thành công");
+          setBackups((prev) => prev.filter((b) => b.filename !== confirmAction.filename));
+        } else {
+          toast.error(res.error || "Không thể xóa bản sao lưu");
+        }
       } else {
-        toast.error(res.error || "Không thể hủy liên kết");
+        const res = await disconnectGoogleDriveAction();
+        if (res.success) {
+          toast.success("Đã hủy liên kết Google Drive");
+          setConfig((prev) => ({ ...prev, gdrive_connected: false, backup_upload_gdrive: false }));
+        } else {
+          toast.error(res.error || "Không thể hủy liên kết");
+        }
       }
     } catch {
-      toast.error("Lỗi khi hủy liên kết");
+      toast.error(
+        confirmAction.type === "delete"
+          ? "Lỗi khi xóa bản sao lưu"
+          : "Lỗi khi hủy liên kết"
+      );
+    } finally {
+      setIsConfirmLoading(false);
+      setConfirmAction(null);
     }
   };
 
@@ -197,7 +224,7 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
   return (
     <div className="space-y-8 max-w-5xl">
       {/* 1. KHỐI GOOGLE DRIVE */}
-      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 shadow-xs">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E7E3]">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
@@ -283,7 +310,7 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
       </div>
 
       {/* 2. KHỐI CHÍNH SÁCH VÀ CẤU HÌNH SAO LƯU */}
-      <form onSubmit={handleSaveConfig} className="rounded-2xl border border-[#E7E7E3] bg-white p-6 shadow-xs space-y-6">
+      <form onSubmit={handleSaveConfig} className="rounded-[10px] border border-[#E7E7E3] bg-white p-6 space-y-6">
         <div className="flex items-center justify-between pb-4 border-b border-[#E7E7E3]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600">
@@ -460,7 +487,7 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
       </form>
 
       {/* 3. KHỐI QUẢN LÝ CÁC BẢN SAO LƯU */}
-      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 shadow-xs space-y-5">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E7E7E3]">
           <div>
             <div className="flex items-center gap-2">
@@ -574,8 +601,16 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
 
       {/* MODAL KẾT NỐI GOOGLE DRIVE */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl border border-[#E7E7E3] max-w-lg w-full p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => {
+            if (!isSavingToken) setIsModalOpen(false);
+          }}
+        >
+          <div
+            className="bg-white rounded-[10px] border border-[#E7E7E3] max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-[#E7E7E3]">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
@@ -690,6 +725,31 @@ export function BackupManager({ initialConfig, initialBackups }: BackupManagerPr
           </div>
         </div>
       )}
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        open={Boolean(confirmAction)}
+        title={
+          confirmAction?.type === "delete"
+            ? "Xóa bản sao lưu"
+            : "Hủy liên kết Google Drive"
+        }
+        description={
+          confirmAction?.type === "delete"
+            ? `Bạn có chắc chắn muốn xóa bản sao lưu "${confirmAction.filename}" không? Thao tác này không thể hoàn tác.`
+            : "Bạn có chắc chắn muốn hủy liên kết tài khoản Google Drive hiện tại không?"
+        }
+        confirmLabel={
+          confirmAction?.type === "delete" ? "Xóa bản sao lưu" : "Hủy liên kết"
+        }
+        cancelLabel="Hủy"
+        variant="danger"
+        loading={isConfirmLoading}
+        onConfirm={handleConfirmAction}
+        onCancel={() => {
+          if (!isConfirmLoading) setConfirmAction(null);
+        }}
+      />
     </div>
   );
 }

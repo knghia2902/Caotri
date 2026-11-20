@@ -7,10 +7,15 @@ import { AdminHeader } from "./header";
 
 interface AdminShellProps {
   session: SessionPayload;
+  pendingOrdersCount?: number;
   children: React.ReactNode;
 }
 
-export function AdminShell({ session, children }: AdminShellProps) {
+export function AdminShell({
+  session,
+  pendingOrdersCount = 0,
+  children,
+}: AdminShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -23,6 +28,7 @@ export function AdminShell({ session, children }: AdminShellProps) {
         setIsCollapsed={setIsCollapsed}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
+        pendingOrdersCount={pendingOrdersCount}
       />
 
       {/* Main content area */}

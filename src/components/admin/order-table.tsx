@@ -288,7 +288,7 @@ export function OrderTable({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Tìm theo mã đơn (#DH-...), số điện thoại, tên khách..."
-              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-[#E7E7E3] bg-white text-[#111] placeholder:text-[#74746E] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all"
+              className="w-full pl-9 pr-8 py-2 text-xs rounded-[10px] border border-[#E7E7E3] bg-white text-[#111] placeholder:text-[#74746E] focus:outline-none focus:border-[#111] focus:ring-1 focus:ring-[#111] transition-all"
             />
             {searchInput && (
               <button
@@ -302,7 +302,7 @@ export function OrderTable({
           </form>
 
           {/* Channel Filter Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none bg-[#F7F7F5] p-1 rounded-xl border border-[#E7E7E3]">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none bg-[#F7F7F5] p-1 rounded-[10px] border border-[#E7E7E3]">
             <button
               type="button"
               onClick={() => handleChannelChange("ALL")}
@@ -348,7 +348,7 @@ export function OrderTable({
       </div>
 
       {/* Order Table Container */}
-      <div className="bg-white border border-[#E7E7E3] rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#E7E7E3] rounded-[10px] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-[#111]">
             <thead className="bg-[#F7F7F5] border-b border-[#E7E7E3] text-[#74746E] uppercase font-semibold text-[11px] tracking-wider">
@@ -441,29 +441,37 @@ export function OrderTable({
 
                       {/* Phone & Quick Actions */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="font-mono text-xs text-[#111]">
-                          {order.customerPhone}
-                        </div>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <a
-                            href={`tel:${order.customerPhone}`}
-                            title="Gọi điện trực tiếp"
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors"
-                          >
-                            <Phone className="w-3 h-3 text-[#111]" />
-                            <span>Gọi</span>
-                          </a>
-                          <a
-                            href={`https://zalo.me/${cleanPhone}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Nhắn tin Zalo"
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                          >
-                            <MessageSquare className="w-3 h-3 text-blue-600" />
-                            <span>Zalo</span>
-                          </a>
-                        </div>
+                        {order.customerPhone?.trim() ? (
+                          <>
+                            <div className="font-mono tabular-nums text-xs text-[#111]">
+                              {order.customerPhone}
+                            </div>
+                            {cleanPhone && (
+                              <div className="flex items-center gap-1.5 mt-1">
+                                <a
+                                  href={`tel:${order.customerPhone}`}
+                                  title="Gọi điện trực tiếp"
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors"
+                                >
+                                  <Phone className="w-3 h-3 text-[#111]" />
+                                  <span>Gọi</span>
+                                </a>
+                                <a
+                                  href={`https://zalo.me/${cleanPhone}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Nhắn tin Zalo"
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
+                                >
+                                  <MessageSquare className="w-3 h-3 text-blue-600" />
+                                  <span>Zalo</span>
+                                </a>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-xs text-[#A3A39D]">—</span>
+                        )}
                       </td>
 
                       {/* Items */}
@@ -484,7 +492,7 @@ export function OrderTable({
 
                       {/* Total Amount */}
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <div className="font-bold text-[#111] text-sm">
+                        <div className="font-bold text-[#111] text-sm tabular-nums">
                           {formatVND(order.totalAmount)}
                         </div>
                       </td>

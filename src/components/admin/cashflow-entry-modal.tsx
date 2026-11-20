@@ -97,6 +97,17 @@ export function CashflowEntryModal({
     }
   }, [open, entry]);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isPending) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, isPending, onClose]);
+
   if (!open) return null;
 
   const availableCategories: readonly CashflowCategory[] =
@@ -160,8 +171,16 @@ export function CashflowEntryModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-      <div className="relative w-full max-w-lg rounded-[10px] bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-6 text-[#111]">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+      onClick={() => {
+        if (!isPending) onClose();
+      }}
+    >
+      <div
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[10px] bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-6 text-[#111]"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-4 mb-5 border-b border-[#E7E7E3]">
           <div>

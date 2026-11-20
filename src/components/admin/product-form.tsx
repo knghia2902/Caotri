@@ -17,6 +17,7 @@ import {
   ArrowRightLeft,
   TrendingUp,
   TrendingDown,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   const [slug, setSlug] = useState(initialData?.slug || "");
   const [isCustomSlug, setIsCustomSlug] = useState(Boolean(initialData?.slug));
   const [shortDescription, setShortDescription] = useState(
-    initialData?.shortDescription || initialData?.description || ""
+    initialData?.shortDescription || ""
   );
   const [description, setDescription] = useState(initialData?.description || "");
   const [categoryId, setCategoryId] = useState(
@@ -133,6 +134,29 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   const [warrantyImages, setWarrantyImages] = useState<string[]>(initialWarrantyImages);
 
   const [isPending, startTransition] = useTransition();
+  const [submitMode, setSubmitMode] = useState<"save" | "save_and_new">("save");
+
+  const resetFormForNextEntry = () => {
+    setName("");
+    setSlug("");
+    setIsCustomSlug(false);
+    setShortDescription("");
+    setDescription("");
+    setPrice("");
+    setOriginalPrice("");
+    setImages([]);
+    setSpecs({});
+    setInStock(true);
+    setIsFeatured(false);
+    setIsArchived(false);
+    setCostPrice("");
+    setInternalNote("");
+    setWarrantyNote("");
+    setWarrantyImages([]);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   // Find currently selected category slug for specs presets
   const selectedCategoryObj = categories.find((c) => c.id === categoryId);
@@ -151,9 +175,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     setSlug(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const submitProduct = (saveAndNew: boolean) => {
     if (!name.trim()) {
       toast.error("Vui lòng nhập tên sản phẩm");
       return;
@@ -168,6 +190,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
       return;
     }
 
+    setSubmitMode(saveAndNew ? "save_and_new" : "save");
     startTransition(async () => {
       const payload: ProductFormData = {
         name: name.trim(),
@@ -200,17 +223,28 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         : await createProduct(payload);
 
       if (res.success) {
-        toast.success(
-          isEditing
-            ? `Cập nhật sản phẩm "${name}" thành công`
-            : `Đã tạo sản phẩm "${name}" thành công`
-        );
-        router.push("/admin/products");
-        router.refresh();
+        if (!isEditing && saveAndNew) {
+          toast.success(`Đã tạo "${name.trim()}" — sẵn sàng nhập sản phẩm tiếp theo`);
+          resetFormForNextEntry();
+          router.refresh();
+        } else {
+          toast.success(
+            isEditing
+              ? `Cập nhật sản phẩm "${name}" thành công`
+              : `Đã tạo sản phẩm "${name}" thành công`
+          );
+          router.push("/admin/products");
+          router.refresh();
+        }
       } else {
         toast.error(res.error || "Không thể lưu sản phẩm");
       }
     });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitProduct(false);
   };
 
   return (
@@ -271,7 +305,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         {/* Left 2 Cols: Main Details, Gallery & Specs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Card: Thông tin cơ bản */}
-          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+          <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-5 space-y-4">
             <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Thông tin cơ bản
             </h2>
@@ -345,7 +379,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Card: Bộ sưu tập hình ảnh */}
-          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+          <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-5 space-y-4">
             <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Bộ sưu tập hình ảnh
             </h2>
@@ -357,7 +391,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Card: Thông số kỹ thuật */}
-          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5">
+          <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-5">
             <SpecsEditor
               specs={specs}
               onChange={setSpecs}
@@ -367,7 +401,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Card: Hồ sơ bảo hành */}
-          <div className="rounded-xl border border-blue-200 bg-blue-50/20 p-5 space-y-4">
+          <div className="rounded-[10px] border border-blue-200 bg-blue-50/20 p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
@@ -411,7 +445,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         {/* Right 1 Col: Category, Pricing, Visibility */}
         <div className="space-y-6">
           {/* Phân loại danh mục */}
-          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+          <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-5 space-y-4">
             <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Phân loại ngành hàng
             </h2>
@@ -437,7 +471,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Thiết lập giá bán */}
-          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-4">
+          <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-5 space-y-4">
             <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Giá bán sản phẩm
             </h2>
@@ -454,7 +488,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 disabled={isPending}
                 required
               />
-              <p className="text-xs font-mono text-[#111] mt-1 font-semibold">
+              <p className="text-xs font-mono tabular-nums text-[#111] mt-1 font-semibold">
                 Hiển thị: {formatPrice(price || 0)}
               </p>
             </div>
@@ -471,7 +505,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 disabled={isPending}
               />
               {originalPrice ? (
-                <p className="text-xs font-mono text-[#74746E] line-through mt-1">
+                <p className="text-xs font-mono tabular-nums text-[#74746E] line-through mt-1">
                   Giá cũ: {formatPrice(originalPrice)}
                 </p>
               ) : null}
@@ -479,7 +513,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Trạng thái hiển thị */}
-          <div className="rounded-xl border border-[#E7E7E3] bg-white p-5 space-y-3">
+          <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-5 space-y-3">
             <h2 className="text-sm font-semibold text-[#111] uppercase tracking-wider">
               Trạng thái & Hiển thị
             </h2>
@@ -529,7 +563,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </div>
 
           {/* Card: Sổ tính & Ghi chú nội bộ */}
-          <div className="rounded-xl border border-indigo-200 bg-indigo-50/20 p-5 space-y-4">
+          <div className="rounded-[10px] border border-indigo-200 bg-indigo-50/20 p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BadgeDollarSign className="w-4 h-4 text-indigo-600 shrink-0" />
@@ -556,10 +590,10 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 className="bg-white"
               />
               {costPrice !== "" && !isNaN(Number(costPrice)) && Number(costPrice) > 0 ? (
-                <div className="mt-2.5 p-3 rounded-lg bg-white border border-indigo-100 space-y-1.5 shadow-sm">
+                <div className="mt-2.5 p-3 rounded-lg bg-white border border-indigo-100 space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-[#74746E]">Giá vốn:</span>
-                    <span className="font-mono font-semibold text-indigo-950">
+                    <span className="font-mono tabular-nums font-semibold text-indigo-950">
                       {formatPrice(Number(costPrice))}
                     </span>
                   </div>
@@ -574,11 +608,11 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                         <span>Lời dự kiến:</span>
                       </span>
                       {Number(price) - Number(costPrice) >= 0 ? (
-                        <span className="font-mono font-bold text-emerald-600">
+                        <span className="font-mono tabular-nums font-bold text-emerald-600">
                           +{formatPrice(Number(price) - Number(costPrice))} ({(((Number(price) - Number(costPrice)) / Number(costPrice)) * 100).toFixed(1)}%)
                         </span>
                       ) : (
-                        <span className="font-mono font-bold text-rose-600">
+                        <span className="font-mono tabular-nums font-bold text-rose-600">
                           {formatPrice(Number(price) - Number(costPrice))}
                         </span>
                       )}
@@ -603,6 +637,67 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
               />
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Sticky Bottom Action Bar */}
+      <div className="sticky bottom-4 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-[10px] border border-[#E7E7E3] bg-white/95 backdrop-blur px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+        <div className="text-xs text-[#74746E]">
+          {isEditing ? (
+            <span>Đang chỉnh sửa <strong className="text-[#111]">{initialData?.name}</strong></span>
+          ) : (
+            <span>Nhập xong bấm <strong className="text-[#111]">Lưu &amp; Thêm tiếp</strong> để lên đồ 2nd-hand liên tục</span>
+          )}
+        </div>
+        <div className="flex items-center justify-end gap-2">
+          <Link href="/admin/products">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              className="h-10 px-4 text-xs font-medium rounded-lg border-[#E7E7E3] text-[#74746E] hover:text-[#111]"
+            >
+              Hủy
+            </Button>
+          </Link>
+          {!isEditing && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => submitProduct(true)}
+              disabled={isPending}
+              className="h-10 px-4 text-xs font-medium rounded-lg border-[#111] text-[#111] hover:bg-[#F3F3F1] gap-1.5"
+            >
+              {isPending && submitMode === "save_and_new" ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Đang lưu...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  Lưu &amp; Thêm tiếp
+                </>
+              )}
+            </Button>
+          )}
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="bg-[#111] hover:bg-[#1A1A1A] text-white rounded-lg h-10 px-5 text-xs font-medium gap-2 min-w-[110px]"
+          >
+            {isPending && submitMode === "save" ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Đang lưu...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Lưu
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </form>

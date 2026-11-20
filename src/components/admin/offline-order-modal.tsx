@@ -12,11 +12,13 @@ import {
   Package,
   ShoppingBag,
   AlertTriangle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatPrice, normalizeImageUrl } from "@/lib/utils";
+import { formatVND, normalizeImageUrl } from "@/lib/utils";
 import { VN_OFFSET_MS } from "@/lib/date-vn";
 import {
   PAYMENT_METHOD_LABELS,
@@ -88,7 +90,6 @@ export function OfflineOrderModal({
   const [channel, setChannel] = useState<OrderChannel>("OFFLINE");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CASH");
   const [soldAt, setSoldAt] = useState<string>("");
-  const [completeImmediately, setCompleteImmediately] = useState<boolean>(true);
 
   const [items, setItems] = useState<DraftOrderItem[]>([]);
   const [productQuery, setProductQuery] = useState("");
@@ -101,13 +102,13 @@ export function OfflineOrderModal({
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [adminNotes, setAdminNotes] = useState("");
+  const [showExtraCustomer, setShowExtraCustomer] = useState(false);
 
   useEffect(() => {
     if (open) {
       setChannel("OFFLINE");
       setPaymentMethod("CASH");
       setSoldAt(getCurrentVnDateTimeLocal());
-      setCompleteImmediately(true);
       setItems([]);
       setProductQuery("");
       setShowDropdown(false);
@@ -117,8 +118,20 @@ export function OfflineOrderModal({
       setCustomerPhone("");
       setCustomerAddress("");
       setAdminNotes("");
+      setShowExtraCustomer(false);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isPending) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, isPending, onClose]);
 
   const filteredProducts = useMemo(() => {
     const q = productQuery.trim().toLowerCase();
@@ -128,47 +141,60 @@ export function OfflineOrderModal({
       .slice(0, 15);
   }, [products, productQuery]);
 
-  const { subtotal, totalAmount, totalCogs, missingCostCount, grossProfit } =
-    useMemo(() => {
-      const sub = items.reduce(
-        (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
-        0
-      );
-      const disc = Math.max(0, Number(discount) || 0);
-      const ship = Math.max(0, Number(shippingFee) || 0);
-      const total = Math.max(0, sub - disc + ship);
+  const {
+    subtotal,
+    discountAmount,
+    shippingFeeAmount,
+    totalAmount,
+    totalCogs,
+    missingCostCount,
+    grossProfit,
+    profitMargin,
+    totalQuantity,
+  } = useMemo(() => {
+    const sub = items.reduce(
+      (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
+      0
+    );
+    const qty = items.reduce((sum, item) => sum + item.quantity, 0);
+    const disc = Math.max(0, Number(discount) || 0);
+    const ship = Math.max(0, Number(shippingFee) || 0);
+    const total = Math.max(0, sub - disc + ship);
 
-      let cogs = 0;
-      let missing = 0;
-      for (const item of items) {
-        const parsedCost =
-          item.costPrice.trim() === "" ? null : Number(item.costPrice);
-        if (parsedCost === null || Number.isNaN(parsedCost)) {
-          missing += 1;
-        } else {
-          cogs += parsedCost * item.quantity;
-        }
+    let cogs = 0;
+    let missing = 0;
+    for (const item of items) {
+      const parsedCost =
+        item.costPrice.trim() === "" ? null : Number(item.costPrice);
+      if (parsedCost === null || Number.isNaN(parsedCost)) {
+        missing += 1;
+      } else {
+        cogs += parsedCost * item.quantity;
       }
+    }
 
-      return {
-        subtotal: sub,
-        totalAmount: total,
-        totalCogs: cogs,
-        missingCostCount: missing,
-        grossProfit: total - cogs,
-      };
-    }, [items, discount, shippingFee]);
+    const profit = total - cogs;
+    const margin = total > 0 ? (profit / total) * 100 : 0;
+
+    return {
+      subtotal: sub,
+      discountAmount: disc,
+      shippingFeeAmount: ship,
+      totalAmount: total,
+      totalCogs: cogs,
+      missingCostCount: missing,
+      grossProfit: profit,
+      profitMargin: margin,
+      totalQuantity: qty,
+    };
+  }, [items, discount, shippingFee]);
 
   if (!open) return null;
 
-  const handlePaymentMethodChange = (method: PaymentMethod) => {
-    setPaymentMethod(method);
-    if (method === "COD") {
-      setCompleteImmediately(false);
-    } else if (method === "CASH" || method === "BANK_TRANSFER") {
-      setCompleteImmediately(true);
-    }
-  };
+  const isExtraCustomerExpanded =
+    showExtraCustomer ||
+    customerAddress.trim().length > 0 ||
+    adminNotes.trim().length > 0;
 
   const handleAddCatalogProduct = (product: OfflineProductOption) => {
     setItems((prev) => {
@@ -193,7 +219,7 @@ export function OfflineOrderModal({
               ? String(product.costPrice)
               : "",
           quantity: 1,
-          markOutOfStock: false,
+          markOutOfStock: true,
           thumbnail: product.thumbnail ?? null,
         },
       ];
@@ -263,7 +289,7 @@ export function OfflineOrderModal({
         channel,
         paymentMethod,
         soldAt: soldAt || undefined,
-        completeImmediately,
+        completeImmediately: paymentMethod !== "COD",
         discount: Math.max(0, Number(discount) || 0),
         shippingFee: Math.max(0, Number(shippingFee) || 0),
         customerName: customerName.trim() || "Khách lẻ tại shop",
@@ -295,19 +321,27 @@ export function OfflineOrderModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-[10px] bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] text-[#111]">
-        {/* Sticky Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E7E3] shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-[#111] text-white flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/40"
+      onClick={() => {
+        if (!isPending) onClose();
+      }}
+    >
+      <div
+        className="relative w-[95vw] max-w-5xl max-h-[90vh] flex flex-col overflow-hidden rounded-[10px] bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] text-[#111111]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E7E3] bg-white shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-[8px] bg-[#111111] text-white flex items-center justify-center shrink-0">
               <ShoppingBag className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-base font-bold text-[#111]">
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold tracking-tight text-[#111111] truncate">
                 Tạo đơn bán ngoài / Tại shop
               </h3>
-              <p className="text-xs text-[#74746E]">
+              <p className="text-xs text-[#74746E] truncate">
                 Ghi nhận nhanh đơn bán trực tiếp, Zalo, Facebook và đồng bộ sổ quỹ
               </p>
             </div>
@@ -316,231 +350,164 @@ export function OfflineOrderModal({
             type="button"
             onClick={onClose}
             disabled={isPending}
-            className="rounded-lg p-1.5 text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] transition-colors"
+            className="rounded-[8px] p-2 text-[#74746E] hover:text-[#111111] hover:bg-[#F3F3F1] transition-colors shrink-0"
             aria-label="Đóng"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Scrollable Body */}
+        {/* 2-Column POS Body */}
         <form
           id="offline-order-form"
           onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto px-6 py-5 space-y-5"
+          className="flex-1 min-h-0 overflow-y-auto lg:overflow-hidden grid grid-cols-1 lg:grid-cols-12"
         >
-          {/* Block 1: Kênh bán & Thanh toán */}
-          <div className="space-y-4 p-4 rounded-[10px] bg-[#F7F7F5] border border-[#E7E7E3]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-2">
-                  Kênh bán hàng
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {OFFLINE_CHANNEL_OPTIONS.map((opt) => {
-                    const active = channel === opt.value;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => setChannel(opt.value)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                          active
-                            ? "bg-[#111] text-white border-[#111]"
-                            : "bg-white text-[#555550] border-[#D5D5D0] hover:border-[#111] hover:text-[#111]"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-2">
-                  Phương thức thanh toán
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {PAYMENT_METHOD_OPTIONS.map((opt) => {
-                    const active = paymentMethod === opt.value;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => handlePaymentMethodChange(opt.value)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                          active
-                            ? "bg-[#111] text-white border-[#111]"
-                            : "bg-white text-[#555550] border-[#D5D5D0] hover:border-[#111] hover:text-[#111]"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-1">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                  Thời gian bán (giờ VN)
-                </label>
-                <Input
-                  type="datetime-local"
-                  value={soldAt}
-                  onChange={(e) => setSoldAt(e.target.value)}
-                  disabled={isPending}
-                  className="h-10 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm text-[#111]"
-                />
-              </div>
-
-              <label className="flex items-start gap-2.5 pt-4 sm:pt-5 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={completeImmediately}
-                  onChange={(e) => setCompleteImmediately(e.target.checked)}
-                  disabled={isPending}
-                  className="mt-0.5 w-4 h-4 rounded border-[#D5D5D0] accent-[#111]"
-                />
-                <span className="text-xs leading-snug text-[#111]">
-                  <span className="font-semibold block">
-                    Hoàn thành &amp; ghi nhận thu ngay
-                  </span>
-                  <span className="text-[#74746E]">
-                    Tự động cộng tiền vào Sổ Quỹ và tính doanh thu ngay lập tức
-                  </span>
-                </span>
-              </label>
-            </div>
-          </div>
-
-          {/* Block 2: Sản phẩm */}
-          <div className="space-y-3">
+          {/* Left Column: Chọn sản phẩm */}
+          <div className="lg:col-span-7 bg-white p-5 sm:p-6 space-y-5 lg:overflow-y-auto">
             <div className="flex items-center justify-between gap-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-[#74746E]">
-                Sản phẩm trong đơn <span className="text-[#D94A4A]">*</span>
-              </label>
+              <div className="flex items-center gap-2 min-w-0">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#74746E] whitespace-nowrap">
+                  Chọn sản phẩm <span className="text-[#D94A4A]">*</span>
+                </h4>
+                {items.length > 0 && (
+                  <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-[#F3F3F1] text-[#555550] tabular-nums whitespace-nowrap shrink-0">
+                    {items.length} món · {totalQuantity} SP
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Searchable product picker bar + Add ad-hoc button */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1 min-w-0">
+                <Search className="w-4 h-4 text-[#74746E] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Input
+                  value={productQuery}
+                  onChange={(e) => {
+                    setProductQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => {
+                    setTimeout(() => setShowDropdown(false), 180);
+                  }}
+                  placeholder="Tìm sản phẩm trong kho theo tên..."
+                  disabled={isPending}
+                  className="h-11 pl-10 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm text-[#111111]"
+                />
+
+                {showDropdown && (
+                  <div className="absolute left-0 right-0 top-full mt-1.5 z-30 max-h-72 overflow-y-auto rounded-[10px] bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] divide-y divide-[#F3F3F1]">
+                    {filteredProducts.length === 0 ? (
+                      <div className="px-4 py-4 text-xs text-[#74746E]">
+                        Không tìm thấy sản phẩm phù hợp. Bạn có thể bấm{" "}
+                        <span className="font-semibold text-[#111111] whitespace-nowrap">
+                          + Thêm món ngoài
+                        </span>
+                        .
+                      </div>
+                    ) : (
+                      filteredProducts.map((product) => (
+                        <button
+                          key={product.id}
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleAddCatalogProduct(product);
+                          }}
+                          className="w-full flex items-center gap-3.5 px-4 py-3 text-left hover:bg-[#F7F7F5] transition-colors"
+                        >
+                          <div className="w-10 h-10 rounded-[6px] bg-[#F3F3F1] border border-[#E7E7E3] overflow-hidden shrink-0 flex items-center justify-center">
+                            {product.thumbnail ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={normalizeImageUrl(product.thumbnail)}
+                                alt={product.name}
+                                referrerPolicy="no-referrer"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Package className="w-4 h-4 text-[#A3A39D]" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-[#111111] truncate">
+                              {product.name}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-[#74746E] mt-0.5 tabular-nums">
+                              <span className="font-semibold text-[#111111] whitespace-nowrap">
+                                {formatVND(product.price)}
+                              </span>
+                              {product.costPrice !== null && (
+                                <span className="whitespace-nowrap">
+                                  · Vốn: {formatVND(product.costPrice)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <span
+                            className={`text-[11px] font-medium px-2 py-0.5 rounded-[6px] shrink-0 whitespace-nowrap ${
+                              product.inStock
+                                ? "bg-emerald-50 text-[#21A366]"
+                                : "bg-[#F3F3F1] text-[#74746E]"
+                            }`}
+                          >
+                            {product.inStock ? "Còn hàng" : "Hết hàng"}
+                          </span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={handleAddAdHocItem}
                 disabled={isPending}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-[#111] bg-white border border-[#D5D5D0] hover:border-[#111] hover:bg-[#F7F7F5] px-3 py-1.5 rounded-lg transition-colors"
+                className="h-11 shrink-0 whitespace-nowrap inline-flex items-center justify-center gap-1.5 text-sm font-medium text-[#111111] bg-white border border-[#D5D5D0] hover:border-[#111111] hover:bg-[#F7F7F5] px-3.5 rounded-[8px] transition-colors disabled:opacity-50"
               >
-                <Plus className="w-3.5 h-3.5" />
-                Thêm món ngoài kho
+                <Plus className="w-4 h-4 shrink-0" />
+                Thêm món ngoài
               </button>
-            </div>
-
-            {/* Searchable catalog combobox */}
-            <div className="relative">
-              <Search className="w-4 h-4 text-[#74746E] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <Input
-                value={productQuery}
-                onChange={(e) => {
-                  setProductQuery(e.target.value);
-                  setShowDropdown(true);
-                }}
-                onFocus={() => setShowDropdown(true)}
-                onBlur={() => {
-                  // Delay nhỏ để click chọn item kịp chạy trước khi đóng
-                  setTimeout(() => setShowDropdown(false), 180);
-                }}
-                placeholder="Tìm sản phẩm trong kho theo tên..."
-                disabled={isPending}
-                className="h-10 pl-9 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm text-[#111]"
-              />
-
-              {showDropdown && (
-                <div className="absolute left-0 right-0 top-full mt-1 z-20 max-h-60 overflow-y-auto rounded-[10px] bg-white border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] divide-y divide-[#F3F3F1]">
-                  {filteredProducts.length === 0 ? (
-                    <div className="px-4 py-3 text-xs text-[#74746E]">
-                      Không tìm thấy sản phẩm phù hợp. Bạn có thể bấm{" "}
-                      <span className="font-semibold text-[#111]">
-                        + Thêm món ngoài kho
-                      </span>
-                      .
-                    </div>
-                  ) : (
-                    filteredProducts.map((product) => (
-                      <button
-                        key={product.id}
-                        type="button"
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          handleAddCatalogProduct(product);
-                        }}
-                        className="w-full flex items-center gap-3 px-3.5 py-2.5 text-left hover:bg-[#F7F7F5] transition-colors"
-                      >
-                        <div className="w-9 h-9 rounded-md bg-[#F3F3F1] border border-[#E7E7E3] overflow-hidden shrink-0 flex items-center justify-center">
-                          {product.thumbnail ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={normalizeImageUrl(product.thumbnail)}
-                              alt={product.name}
-                              referrerPolicy="no-referrer"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Package className="w-4 h-4 text-[#A3A39D]" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-[#111] truncate">
-                            {product.name}
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-[#74746E] mt-0.5">
-                            <span className="font-semibold text-[#111]">
-                              {formatPrice(product.price)}
-                            </span>
-                            {product.costPrice !== null && (
-                              <span>· Vốn: {formatPrice(product.costPrice)}</span>
-                            )}
-                          </div>
-                        </div>
-                        <span
-                          className={`text-[11px] font-medium px-2 py-0.5 rounded-md shrink-0 ${
-                            product.inStock
-                              ? "bg-emerald-50 text-[#21A366]"
-                              : "bg-[#F3F3F1] text-[#74746E]"
-                          }`}
-                        >
-                          {product.inStock ? "Còn hàng" : "Hết hàng"}
-                        </span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Selected Items List */}
             {items.length === 0 ? (
-              <div className="rounded-[10px] border border-dashed border-[#D5D5D0] py-6 px-4 text-center text-xs text-[#74746E]">
-                Chưa có sản phẩm nào. Tìm từ kho ở ô trên hoặc bấm{" "}
-                <strong className="text-[#111]">+ Thêm món ngoài kho</strong>.
+              <div className="rounded-[10px] border border-dashed border-[#D5D5D0] bg-[#FAFAFA] py-14 px-6 text-center space-y-2.5">
+                <div className="w-10 h-10 rounded-[8px] bg-[#F3F3F1] text-[#74746E] flex items-center justify-center mx-auto">
+                  <Package className="w-5 h-5" />
+                </div>
+                <div className="text-sm font-medium text-[#111111]">
+                  Chưa có sản phẩm nào trong đơn
+                </div>
+                <p className="text-xs text-[#74746E] max-w-sm mx-auto leading-relaxed">
+                  Tìm sản phẩm có sẵn từ thanh tìm kiếm ở trên hoặc bấm{" "}
+                  <strong className="font-semibold text-[#111111] whitespace-nowrap">
+                    + Thêm món ngoài
+                  </strong>{" "}
+                  để nhập nhanh mặt hàng lẻ.
+                </p>
               </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {items.map((item) => {
                   const lineTotal = (Number(item.price) || 0) * item.quantity;
                   return (
                     <div
                       key={item.key}
-                      className="rounded-[10px] border border-[#E7E7E3] bg-white p-3.5 space-y-3"
+                      className="rounded-[10px] border border-[#E7E7E3] p-4 bg-white space-y-3.5"
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
+                      {/* Top row */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0 space-y-2">
                           {item.productId ? (
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-[#111] truncate">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-sm font-semibold text-[#111111] leading-snug">
                                 {item.productName}
                               </span>
-                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F3F3F1] text-[#555550] shrink-0">
+                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-[6px] bg-[#F3F3F1] text-[#555550] shrink-0 whitespace-nowrap">
                                 Trong kho
                               </span>
                             </div>
@@ -555,32 +522,51 @@ export function OfflineOrderModal({
                                 }
                                 placeholder="Nhập tên món ngoài kho (VD: Pad cũ, vệ sinh phím...)"
                                 disabled={isPending}
-                                className="h-9 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
+                                className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm min-w-0"
                               />
-                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-50 text-[#D99A24] shrink-0">
+                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-[6px] bg-amber-50 text-[#D99A24] shrink-0 whitespace-nowrap">
                                 Ngoài kho
                               </span>
                             </div>
                           )}
+
+                          {item.productId && (
+                            <label className="inline-flex items-center gap-2 text-xs text-[#555550] cursor-pointer select-none whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={item.markOutOfStock}
+                                onChange={(e) =>
+                                  updateItem(item.key, {
+                                    markOutOfStock: e.target.checked,
+                                  })
+                                }
+                                disabled={isPending}
+                                className="w-3.5 h-3.5 rounded border-[#D5D5D0] accent-[#111111] shrink-0"
+                              />
+                              Đánh dấu hết hàng
+                            </label>
+                          )}
                         </div>
+
                         <button
                           type="button"
                           onClick={() => removeItem(item.key)}
                           disabled={isPending}
-                          className="p-1.5 rounded-lg text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50 transition-colors"
+                          className="p-1.5 rounded-[8px] text-[#74746E] hover:text-[#D94A4A] hover:bg-red-50 transition-colors shrink-0"
                           aria-label="Xóa dòng"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-12 gap-2.5 items-end">
+                      {/* Bottom row: Số lượng, Đơn giá, Giá vốn, Thành tiền */}
+                      <div className="grid grid-cols-2 sm:grid-cols-[104px_minmax(0,1fr)_minmax(0,1fr)_116px] gap-3 items-end pt-3 border-t border-[#F3F3F1]">
                         {/* Quantity stepper */}
-                        <div className="col-span-4 sm:col-span-3">
-                          <label className="block text-[11px] font-medium text-[#74746E] mb-1">
+                        <div className="min-w-0">
+                          <label className="block text-[11px] font-medium text-[#74746E] mb-1.5 whitespace-nowrap">
                             Số lượng
                           </label>
-                          <div className="flex items-center border border-[#D5D5D0] rounded-lg overflow-hidden h-9 bg-white">
+                          <div className="flex items-center border border-[#D5D5D0] rounded-[8px] overflow-hidden h-9 bg-white">
                             <button
                               type="button"
                               disabled={isPending || item.quantity <= 1}
@@ -589,7 +575,8 @@ export function OfflineOrderModal({
                                   quantity: Math.max(1, item.quantity - 1),
                                 })
                               }
-                              className="w-8 h-full flex items-center justify-center text-[#555550] hover:bg-[#F3F3F1] disabled:opacity-40"
+                              className="w-8 h-full shrink-0 flex items-center justify-center text-[#555550] hover:bg-[#F3F3F1] disabled:opacity-40 transition-colors"
+                              aria-label="Giảm số lượng"
                             >
                               <Minus className="w-3.5 h-3.5" />
                             </button>
@@ -606,7 +593,7 @@ export function OfflineOrderModal({
                                 })
                               }
                               disabled={isPending}
-                              className="w-full text-center text-sm font-medium text-[#111] focus:outline-none"
+                              className="w-full min-w-0 text-center text-sm font-medium text-[#111111] tabular-nums focus:outline-none bg-transparent"
                             />
                             <button
                               type="button"
@@ -616,7 +603,8 @@ export function OfflineOrderModal({
                                   quantity: item.quantity + 1,
                                 })
                               }
-                              className="w-8 h-full flex items-center justify-center text-[#555550] hover:bg-[#F3F3F1]"
+                              className="w-8 h-full shrink-0 flex items-center justify-center text-[#555550] hover:bg-[#F3F3F1] transition-colors"
+                              aria-label="Tăng số lượng"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -624,9 +612,9 @@ export function OfflineOrderModal({
                         </div>
 
                         {/* Unit Price */}
-                        <div className="col-span-4 sm:col-span-3">
-                          <label className="block text-[11px] font-medium text-[#74746E] mb-1">
-                            Giá bán (₫)
+                        <div className="min-w-0">
+                          <label className="block text-[11px] font-medium text-[#74746E] mb-1.5 whitespace-nowrap">
+                            Đơn giá
                           </label>
                           <Input
                             type="number"
@@ -639,14 +627,14 @@ export function OfflineOrderModal({
                               })
                             }
                             disabled={isPending}
-                            className="h-9 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
+                            className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm tabular-nums"
                           />
                         </div>
 
                         {/* Cost Price */}
-                        <div className="col-span-4 sm:col-span-3">
-                          <label className="block text-[11px] font-medium text-[#74746E] mb-1">
-                            Giá vốn (₫)
+                        <div className="min-w-0">
+                          <label className="block text-[11px] font-medium text-[#74746E] mb-1.5 whitespace-nowrap">
+                            Giá vốn
                           </label>
                           <Input
                             type="number"
@@ -660,37 +648,20 @@ export function OfflineOrderModal({
                             }
                             placeholder="Chưa nhập"
                             disabled={isPending}
-                            className="h-9 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
+                            className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm tabular-nums"
                           />
                         </div>
 
                         {/* Line subtotal */}
-                        <div className="col-span-12 sm:col-span-3 text-right">
-                          <span className="block text-[11px] text-[#74746E] mb-1">
+                        <div className="text-right pb-1 min-w-0">
+                          <span className="block text-[11px] font-medium text-[#74746E] mb-1 whitespace-nowrap">
                             Thành tiền
                           </span>
-                          <span className="text-sm font-semibold text-[#111]">
-                            {formatPrice(lineTotal)}
+                          <span className="block text-sm font-semibold text-[#111111] tabular-nums whitespace-nowrap">
+                            {formatVND(lineTotal)}
                           </span>
                         </div>
                       </div>
-
-                      {item.productId && (
-                        <label className="inline-flex items-center gap-2 text-xs text-[#555550] cursor-pointer select-none pt-1">
-                          <input
-                            type="checkbox"
-                            checked={item.markOutOfStock}
-                            onChange={(e) =>
-                              updateItem(item.key, {
-                                markOutOfStock: e.target.checked,
-                              })
-                            }
-                            disabled={isPending}
-                            className="w-3.5 h-3.5 rounded border-[#D5D5D0] accent-[#111]"
-                          />
-                          Đánh dấu sản phẩm này hết hàng sau khi bán
-                        </label>
-                      )}
                     </div>
                   );
                 })}
@@ -698,174 +669,295 @@ export function OfflineOrderModal({
             )}
           </div>
 
-          {/* Block 3: Giảm giá & Phí ship */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Giảm giá / Chiết khấu (₫)
-              </label>
-              <Input
-                type="number"
-                min={0}
-                step={1000}
-                value={discount}
-                onChange={(e) => setDiscount(e.target.value)}
-                disabled={isPending}
-                className="h-10 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5">
-                Phí giao hàng thu khách (₫)
-              </label>
-              <Input
-                type="number"
-                min={0}
-                step={1000}
-                value={shippingFee}
-                onChange={(e) => setShippingFee(e.target.value)}
-                disabled={isPending}
-                className="h-10 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
-              />
-            </div>
-          </div>
+          {/* Right Column: Thông tin & Thanh toán */}
+          <div className="lg:col-span-5 bg-[#FAFAFA] border-t lg:border-t-0 lg:border-l border-[#E7E7E3] flex flex-col justify-between min-h-0 lg:overflow-hidden">
+            {/* Scrollable top section */}
+            <div className="flex-1 lg:overflow-y-auto p-5 sm:p-6 space-y-4">
+              {/* Kênh bán */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-2 whitespace-nowrap">
+                  Kênh bán
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {OFFLINE_CHANNEL_OPTIONS.map((opt) => {
+                    const active = channel === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => setChannel(opt.value)}
+                        className={`px-3 py-2 rounded-[8px] text-xs font-medium border text-center whitespace-nowrap transition-colors ${
+                          active
+                            ? "bg-[#111111] text-white border-[#111111]"
+                            : "bg-white text-[#555550] border-[#D5D5D0] hover:border-[#111111] hover:text-[#111111]"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-          {/* Block 4: Khách hàng & Ghi chú */}
-          <div className="space-y-3 pt-2 border-t border-[#E7E7E3]">
-            <div className="text-xs font-semibold uppercase tracking-wider text-[#74746E]">
-              Thông tin khách hàng &amp; Ghi chú
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Thanh toán */}
               <div>
-                <label className="block text-xs font-medium text-[#555550] mb-1">
-                  Tên khách hàng
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-2 whitespace-nowrap">
+                  Thanh toán
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {PAYMENT_METHOD_OPTIONS.map((opt) => {
+                    const active = paymentMethod === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => setPaymentMethod(opt.value)}
+                        className={`px-3 py-2 rounded-[8px] text-xs font-medium border text-center whitespace-nowrap transition-colors ${
+                          active
+                            ? "bg-[#111111] text-white border-[#111111]"
+                            : "bg-white text-[#555550] border-[#D5D5D0] hover:border-[#111111] hover:text-[#111111]"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Khách hàng */}
+              <div className="space-y-2.5 pt-2 border-t border-[#E7E7E3]">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] whitespace-nowrap">
+                  Khách hàng
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="min-w-0">
+                    <label className="block text-[11px] font-medium text-[#555550] mb-1 whitespace-nowrap">
+                      Tên khách
+                    </label>
+                    <Input
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="Khách lẻ tại shop"
+                      disabled={isPending}
+                      className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <label className="block text-[11px] font-medium text-[#555550] mb-1 whitespace-nowrap">
+                      SĐT
+                    </label>
+                    <Input
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="09xx xxx xxx"
+                      disabled={isPending}
+                      className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowExtraCustomer((prev) => !prev)}
+                  disabled={isPending}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[#555550] hover:text-[#111111] transition-colors pt-0.5 whitespace-nowrap"
+                >
+                  {isExtraCustomerExpanded ? (
+                    <>
+                      <ChevronUp className="w-3.5 h-3.5 shrink-0" />
+                      Ẩn địa chỉ / ghi chú
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-3.5 h-3.5 shrink-0" />
+                      + Thêm địa chỉ / ghi chú
+                    </>
+                  )}
+                </button>
+
+                {isExtraCustomerExpanded && (
+                  <div className="space-y-2.5 pt-1">
+                    <div>
+                      <label className="block text-[11px] font-medium text-[#555550] mb-1 whitespace-nowrap">
+                        Địa chỉ
+                      </label>
+                      <Input
+                        value={customerAddress}
+                        onChange={(e) => setCustomerAddress(e.target.value)}
+                        placeholder="Mua trực tiếp tại cửa hàng"
+                        disabled={isPending}
+                        className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-[#555550] mb-1 whitespace-nowrap">
+                        Ghi chú nội bộ
+                      </label>
+                      <Input
+                        value={adminNotes}
+                        onChange={(e) => setAdminNotes(e.target.value)}
+                        placeholder="VD: Trade phím cũ, khách quen..."
+                        disabled={isPending}
+                        className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Ngày bán */}
+              <div className="pt-2 border-t border-[#E7E7E3]">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#74746E] mb-1.5 whitespace-nowrap">
+                  Ngày bán (giờ VN)
                 </label>
                 <Input
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Khách lẻ tại shop"
+                  type="datetime-local"
+                  value={soldAt}
+                  onChange={(e) => setSoldAt(e.target.value)}
                   disabled={isPending}
-                  className="h-10 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
+                  className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm text-[#111111]"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-medium text-[#555550] mb-1">
-                  Số điện thoại (tùy chọn)
-                </label>
-                <Input
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="09xx xxx xxx"
-                  disabled={isPending}
-                  className="h-10 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
-                />
+
+              {/* Giảm giá & Phí ship */}
+              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#E7E7E3]">
+                <div className="min-w-0">
+                  <label className="block text-[11px] font-medium text-[#555550] mb-1 whitespace-nowrap">
+                    Giảm giá (₫)
+                  </label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1000}
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    disabled={isPending}
+                    className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm tabular-nums"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <label className="block text-[11px] font-medium text-[#555550] mb-1 whitespace-nowrap">
+                    Phí ship (₫)
+                  </label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1000}
+                    value={shippingFee}
+                    onChange={(e) => setShippingFee(e.target.value)}
+                    disabled={isPending}
+                    className="h-9 bg-white border-[#D5D5D0] focus:border-[#111111] rounded-[8px] text-sm tabular-nums"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-[#555550] mb-1">
-                  Địa chỉ (tùy chọn)
-                </label>
-                <Input
-                  value={customerAddress}
-                  onChange={(e) => setCustomerAddress(e.target.value)}
-                  placeholder="Mua trực tiếp tại cửa hàng"
-                  disabled={isPending}
-                  className="h-10 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
-                />
+            {/* Pinned Summary & CTA Footer */}
+            <div className="shrink-0 p-5 border-t border-[#E7E7E3] bg-white space-y-3">
+              {/* Compact breakdown */}
+              <div className="space-y-1 text-xs">
+                <div className="flex items-center justify-between gap-2 text-[#74746E]">
+                  <span className="whitespace-nowrap">Tạm tính</span>
+                  <span className="tabular-nums font-medium text-[#111111] whitespace-nowrap">
+                    {formatVND(subtotal)}
+                  </span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex items-center justify-between gap-2 text-[#74746E]">
+                    <span className="whitespace-nowrap">Giảm giá</span>
+                    <span className="tabular-nums font-medium text-[#D94A4A] whitespace-nowrap">
+                      -{formatVND(discountAmount)}
+                    </span>
+                  </div>
+                )}
+                {shippingFeeAmount > 0 && (
+                  <div className="flex items-center justify-between gap-2 text-[#74746E]">
+                    <span className="whitespace-nowrap">Phí ship</span>
+                    <span className="tabular-nums font-medium text-[#111111] whitespace-nowrap">
+                      +{formatVND(shippingFeeAmount)}
+                    </span>
+                  </div>
+                )}
               </div>
-              <div>
-                <label className="block text-xs font-medium text-[#555550] mb-1">
-                  Ghi chú nội bộ (tùy chọn)
-                </label>
-                <Input
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
-                  placeholder="VD: Trade phím cũ, khách quen..."
+
+              {/* Tổng thanh toán */}
+              <div className="flex items-baseline justify-between gap-2 pt-2 border-t border-[#F3F3F1]">
+                <span className="text-sm font-semibold text-[#111111] whitespace-nowrap">
+                  Tổng thanh toán
+                </span>
+                <span className="text-xl font-bold text-[#111111] tabular-nums whitespace-nowrap">
+                  {formatVND(totalAmount)}
+                </span>
+              </div>
+
+              {/* Subtle profit strip */}
+              <div className="bg-[#F7F7F5] rounded-[8px] px-3 py-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs">
+                <div className="flex items-center gap-1.5 text-[#555550] whitespace-nowrap">
+                  <span className="shrink-0">Giá vốn:</span>
+                  <span className="font-semibold text-[#111111] tabular-nums">
+                    {formatVND(totalCogs)}
+                  </span>
+                  {missingCostCount > 0 && (
+                    <span
+                      className="inline-flex items-center gap-0.5 text-[11px] text-[#D99A24] shrink-0"
+                      title={`${missingCostCount} món chưa nhập giá vốn`}
+                    >
+                      <AlertTriangle className="w-3 h-3" />
+                      {missingCostCount}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 shrink-0 tabular-nums whitespace-nowrap">
+                  <span className="text-[#74746E]">Lãi gộp:</span>
+                  <span
+                    className={`font-semibold ${
+                      grossProfit >= 0 ? "text-[#21A366]" : "text-[#D94A4A]"
+                    }`}
+                  >
+                    {grossProfit >= 0 ? "+" : ""}
+                    {formatVND(grossProfit)}
+                    {totalAmount > 0 && (
+                      <span className="ml-1 text-[11px] font-medium">
+                        ({profitMargin >= 0 ? "+" : ""}
+                        {profitMargin.toFixed(1)}%)
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-2 pt-0.5">
+                <Button
+                  type="submit"
+                  form="offline-order-form"
+                  disabled={isPending || items.length === 0}
+                  className="w-full bg-[#111111] hover:bg-black text-white rounded-[8px] h-11 text-sm font-medium whitespace-nowrap"
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" />
+                      Đang lưu đơn...
+                    </>
+                  ) : (
+                    "Lưu đơn bán ngoài"
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={onClose}
                   disabled={isPending}
-                  className="h-10 bg-white border-[#D5D5D0] focus:border-[#111] rounded-lg text-sm"
-                />
+                  className="w-full bg-white text-[#555550] hover:text-[#111111] border border-[#E7E7E3] hover:bg-[#FAFAFA] rounded-[8px] h-9 text-xs font-medium whitespace-nowrap"
+                >
+                  Hủy
+                </Button>
               </div>
             </div>
           </div>
         </form>
-
-        {/* Sticky Footer */}
-        <div className="px-6 py-4 border-t border-[#E7E7E3] bg-[#F7F7F5] rounded-b-[10px] shrink-0 space-y-3">
-          <div className="grid grid-cols-3 gap-3 text-sm">
-            <div>
-              <div className="text-[11px] uppercase tracking-wider text-[#74746E]">
-                Tổng thu
-              </div>
-              <div className="text-base font-bold text-[#111] mt-0.5">
-                {formatPrice(totalAmount)}
-              </div>
-              {subtotal !== totalAmount && (
-                <div className="text-[11px] text-[#74746E]">
-                  Tạm tính: {formatPrice(subtotal)}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <div className="text-[11px] uppercase tracking-wider text-[#74746E]">
-                Giá vốn
-              </div>
-              <div className="text-base font-semibold text-[#555550] mt-0.5">
-                {formatPrice(totalCogs)}
-              </div>
-              {missingCostCount > 0 && (
-                <div className="inline-flex items-center gap-1 text-[11px] text-[#D99A24]">
-                  <AlertTriangle className="w-3 h-3 shrink-0" />
-                  {missingCostCount} món chưa có vốn
-                </div>
-              )}
-            </div>
-
-            <div className="text-right">
-              <div className="text-[11px] uppercase tracking-wider text-[#74746E]">
-                Lãi gộp dự kiến
-              </div>
-              <div
-                className={`text-base font-bold mt-0.5 ${
-                  grossProfit >= 0 ? "text-[#21A366]" : "text-[#D94A4A]"
-                }`}
-              >
-                {grossProfit >= 0 ? "+" : ""}
-                {formatPrice(grossProfit)}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-[#E7E7E3]">
-            <Button
-              type="button"
-              onClick={onClose}
-              disabled={isPending}
-              className="bg-white text-[#111] border border-[#D5D5D0] hover:bg-[#FAFAFA] rounded-lg h-10 px-4 text-sm"
-            >
-              Hủy
-            </Button>
-            <Button
-              type="submit"
-              form="offline-order-form"
-              disabled={isPending || items.length === 0}
-              className="min-w-[160px] bg-[#111] hover:bg-black text-white rounded-lg h-10 px-5 text-sm font-medium"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Đang tạo đơn...
-                </>
-              ) : completeImmediately ? (
-                "Tạo đơn & Ghi thu"
-              ) : (
-                "Tạo đơn hàng"
-              )}
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );

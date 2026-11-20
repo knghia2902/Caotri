@@ -111,9 +111,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
       {/* Block 1: Logo & Nhận diện thương hiệu */}
-      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
-          <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-[#111]/30 flex items-center justify-center text-[#111]">
+          <div className="w-9 h-9 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] flex items-center justify-center text-[#111111]">
             <ImageIcon className="w-5 h-5" />
           </div>
           <div>
@@ -179,9 +179,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </div>
 
       {/* Block 2: Kênh liên hệ & Chốt đơn */}
-      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
-          <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-[#111]/30 flex items-center justify-center text-[#111]">
+          <div className="w-9 h-9 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] flex items-center justify-center text-[#111111]">
             <Phone className="w-5 h-5" />
           </div>
           <div>
@@ -244,9 +244,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </div>
 
       {/* Block 3: Thông tin cửa hàng */}
-      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-[#21A366]">
+          <div className="w-9 h-9 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] flex items-center justify-center text-[#111111]">
             <Store className="w-5 h-5" />
           </div>
           <div>
@@ -306,10 +306,10 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </div>
 
       {/* Block 4: Cấu hình Thông báo Email khi có đơn hàng (Gmail SMTP) */}
-      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E7E7E3]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-600">
+            <div className="w-9 h-9 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] flex items-center justify-center text-[#111111]">
               <Mail className="w-5 h-5" />
             </div>
             <div>
@@ -380,7 +380,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               Email nhận thông báo đơn hàng (Hòm thư của bạn) <span className="text-[#D94A4A]">*</span>
             </label>
             <Input
-              type="email"
+              type="text"
               value={formData.admin_notify_email}
               onChange={(e) => handleChange("admin_notify_email", e.target.value)}
               placeholder="VD: nguyenlecaotri@gmail.com (hoặc nhiều email cách nhau dấu phẩy)"
@@ -477,9 +477,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       </div>
 
       {/* Block 5: Chính sách & Ghi chú mặc định sản phẩm */}
-      <div className="rounded-2xl border border-[#E7E7E3] bg-white p-6 space-y-5">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white p-6 space-y-5">
         <div className="flex items-center gap-3 pb-3 border-b border-[#E7E7E3]">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-[#21A366]">
+          <div className="w-9 h-9 rounded-lg bg-[#F7F7F5] border border-[#E7E7E3] flex items-center justify-center text-[#111111]">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>

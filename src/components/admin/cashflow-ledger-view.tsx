@@ -30,6 +30,7 @@ import { VN_OFFSET_MS } from "@/lib/date-vn";
 import { formatPrice } from "@/lib/utils";
 import { deleteCashflowEntryAction } from "@/app/actions/cashflow";
 import type { CashflowEntryModalData } from "@/components/admin/cashflow-entry-modal";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 
 interface CashflowLedgerViewProps {
   ledger: CashflowLedgerResult;
@@ -64,6 +65,7 @@ export function CashflowLedgerView({
   const searchParams = useSearchParams();
   const [searchInput, setSearchInput] = useState(filters.q);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const { summary, entries } = ledger;
@@ -97,13 +99,17 @@ export function CashflowLedgerView({
   };
 
   const handleDelete = (entryId: string) => {
-    if (!window.confirm("Bạn có chắc muốn xóa phiếu thu/chi thủ công này?")) {
-      return;
-    }
+    setConfirmDeleteId(entryId);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!confirmDeleteId) return;
+    const entryId = confirmDeleteId;
     setDeletingId(entryId);
     startTransition(async () => {
       const res = await deleteCashflowEntryAction(entryId);
       setDeletingId(null);
+      setConfirmDeleteId(null);
       if (res.success) {
         toast.success(res.message || "Đã xóa phiếu thu/chi");
         router.refresh();
@@ -148,10 +154,10 @@ export function CashflowLedgerView({
               <ArrowDownLeft className="w-4 h-4" />
             </span>
           </div>
-          <div className="text-xl font-bold text-[#21A366] mt-2">
+          <div className="text-xl font-bold text-[#21A366] tabular-nums mt-2">
             +{formatPrice(summary.totalIn)}
           </div>
-          <div className="text-[11px] text-[#74746E] mt-2">
+          <div className="text-[11px] text-[#74746E] tabular-nums mt-2">
             TM: {formatPrice(summary.cashIn)} · CK: {formatPrice(summary.bankIn)}
           </div>
         </div>
@@ -166,10 +172,10 @@ export function CashflowLedgerView({
               <ArrowUpRight className="w-4 h-4" />
             </span>
           </div>
-          <div className="text-xl font-bold text-[#D94A4A] mt-2">
+          <div className="text-xl font-bold text-[#D94A4A] tabular-nums mt-2">
             -{formatPrice(summary.totalOut)}
           </div>
-          <div className="text-[11px] text-[#74746E] mt-2">
+          <div className="text-[11px] text-[#74746E] tabular-nums mt-2">
             {summary.inventoryImportOut > 0 ? (
               <span>
                 Gồm nhập hàng:{" "}
@@ -195,14 +201,14 @@ export function CashflowLedgerView({
             <Wallet className="w-4 h-4 text-[#A3A39D]" />
           </div>
           <div
-            className={`text-xl font-bold mt-2 ${
+            className={`text-xl font-bold tabular-nums mt-2 ${
               summary.netCashflow >= 0 ? "text-[#21A366]" : "text-[#D94A4A]"
             }`}
           >
             {summary.netCashflow > 0 ? "+" : ""}
             {formatPrice(summary.netCashflow)}
           </div>
-          <div className="text-[11px] text-[#74746E] mt-2">
+          <div className="text-[11px] text-[#74746E] tabular-nums mt-2">
             Tổng cộng {summary.count} giao dịch trong kỳ
           </div>
         </div>
@@ -215,14 +221,14 @@ export function CashflowLedgerView({
           <div className="mt-2.5 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#555550]">Tiền mặt (ròng)</span>
-              <span className="font-mono font-semibold text-[#111]">
+              <span className="font-mono tabular-nums font-semibold text-[#111]">
                 {cashNet > 0 ? "+" : ""}
                 {formatPrice(cashNet)}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#555550]">Chuyển khoản (ròng)</span>
-              <span className="font-mono font-semibold text-[#111]">
+              <span className="font-mono tabular-nums font-semibold text-[#111]">
                 {bankNet > 0 ? "+" : ""}
                 {formatPrice(bankNet)}
               </span>
@@ -374,7 +380,7 @@ export function CashflowLedgerView({
                       key={entry.id}
                       className="hover:bg-[#FAFAFA] transition-colors"
                     >
-                      <td className="py-3 px-4 whitespace-nowrap text-xs text-[#555550] font-mono">
+                      <td className="py-3 px-4 whitespace-nowrap text-xs text-[#555550] font-mono tabular-nums">
                         {formatVnDateTime(entry.occurredAt)}
                       </td>
 
@@ -423,7 +429,7 @@ export function CashflowLedgerView({
                       </td>
 
                       <td
-                        className={`py-3 px-4 text-right whitespace-nowrap font-mono text-xs font-bold ${
+                        className={`py-3 px-4 text-right whitespace-nowrap font-mono tabular-nums text-xs font-bold ${
                           isIn ? "text-[#21A366]" : "text-[#D94A4A]"
                         }`}
                       >
@@ -432,7 +438,7 @@ export function CashflowLedgerView({
                       </td>
 
                       <td
-                        className={`py-3 px-4 text-right whitespace-nowrap font-mono text-xs font-semibold ${
+                        className={`py-3 px-4 text-right whitespace-nowrap font-mono tabular-nums text-xs font-semibold ${
                           entry.runningBalance >= 0
                             ? "text-[#111]"
                             : "text-[#D94A4A]"
@@ -495,6 +501,21 @@ export function CashflowLedgerView({
           </table>
         </div>
       </div>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={Boolean(confirmDeleteId)}
+        title="Xóa phiếu thu/chi"
+        description="Bạn có chắc chắn muốn xóa phiếu thu/chi thủ công này không? Thao tác này không thể hoàn tác."
+        confirmLabel="Xóa phiếu"
+        cancelLabel="Hủy"
+        variant="danger"
+        loading={Boolean(deletingId) && isPending}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          if (!deletingId) setConfirmDeleteId(null);
+        }}
+      />
     </div>
   );
 }

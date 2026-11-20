@@ -10,8 +10,8 @@ import {
   DollarSign,
   Wallet,
   Users,
-  Coins,
   TrendingUp,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { formatPrice, normalizeImageUrl } from "@/lib/utils";
@@ -21,6 +21,7 @@ import { getTrafficOverview } from "@/lib/traffic";
 import { VpsMonitorCard } from "@/components/admin/vps-monitor-card";
 import { getDashboardFinanceSnapshot } from "@/lib/finance-analytics";
 import { OfflineOrderTrigger } from "@/components/admin/offline-order-trigger";
+import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import type { OfflineProductOption } from "@/components/admin/offline-order-modal";
 
 export const metadata = {
@@ -31,7 +32,11 @@ function parseFirstThumbnail(images: string | null | undefined): string | null {
   if (!images) return null;
   try {
     const parsed = JSON.parse(images);
-    if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === "string") {
+    if (
+      Array.isArray(parsed) &&
+      parsed.length > 0 &&
+      typeof parsed[0] === "string"
+    ) {
       return normalizeImageUrl(parsed[0]);
     }
   } catch {
@@ -84,18 +89,20 @@ export default async function AdminDashboardPage() {
       where: { status: "PENDING" },
     }),
 
-    // 4. Số sản phẩm trong kho đang kinh doanh
+    // 4. Số sản phẩm trong kho đang kinh doanh (không tính archived)
     prisma.product.count({
-      where: { inStock: true },
+      where: { inStock: true, isArchived: false },
     }),
 
-    // 5. Tổng số sản phẩm trên hệ thống
-    prisma.product.count(),
+    // 5. Tổng số sản phẩm đang kinh doanh (không tính archived)
+    prisma.product.count({
+      where: { isArchived: false },
+    }),
 
-    // 6. Tổng giá trị sản phẩm còn hàng
+    // 6. Tổng giá trị sản phẩm còn hàng (không tính archived)
     prisma.product.aggregate({
       _sum: { price: true },
-      where: { inStock: true },
+      where: { inStock: true, isArchived: false },
     }),
 
     // 7. Đơn hàng trong 7 ngày gần nhất
@@ -166,54 +173,13 @@ export default async function AdminDashboardPage() {
   // Tính toán dữ liệu 7 ngày cho biểu đồ SVG
   const dailyPoints = computeDailyRevenue(ordersIn7Days);
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
-            Chờ xử lý
-          </span>
-        );
-      case "CONTACTED":
-        return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
-            Đã liên hệ
-          </span>
-        );
-      case "SHIPPING":
-        return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
-            Đang giao
-          </span>
-        );
-      case "COMPLETED":
-        return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-            Hoàn thành
-          </span>
-        );
-      case "CANCELLED":
-        return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-zinc-100 text-zinc-600 border border-zinc-200">
-            Đã hủy
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-zinc-100 text-zinc-600 border border-zinc-200">
-            {status}
-          </span>
-        );
-    }
-  };
-
   return (
-    <div className="space-y-8">
-      {/* Welcome Banner */}
-      <div className="p-6 rounded-2xl bg-white border border-[#E7E7E3] relative overflow-hidden">
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6">
+      {/* 1. Welcome Banner with Quick Actions */}
+      <div className="p-6 rounded-[10px] bg-white border border-[#E7E7E3]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#111]">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#111111]">
               Xin chào, {session?.name}!
             </h1>
             <p className="text-sm text-[#74746E] mt-1">
@@ -222,6 +188,13 @@ export default async function AdminDashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            <Link
+              href="/admin/products/new"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] border border-[#E7E7E3] hover:border-[#111111] bg-white hover:bg-[#F7F7F5] text-[#111111] text-xs font-semibold transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Thêm sản phẩm</span>
+            </Link>
             {isAdmin && (
               <OfflineOrderTrigger
                 products={offlineProducts}
@@ -230,7 +203,7 @@ export default async function AdminDashboardPage() {
             )}
             <Link
               href="/admin/orders"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#111] hover:bg-black text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#111111] hover:bg-black text-white text-xs font-semibold transition-colors"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Quản lý Đơn hàng</span>
@@ -239,73 +212,76 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* VPS System Resource Monitor */}
-      {isAdmin && <VpsMonitorCard />}
-
-      {/* Overview Stat Cards (5 Cards) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
-        {/* 1. Doanh thu thực tế (COMPLETED) */}
-        <Card className="bg-white border-[#E7E7E3]">
+      {/* 2. Clean 4-Column KPI Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1: Doanh thu thực tế (COMPLETED) */}
+        <Card className="bg-white border-[#E7E7E3] rounded-[10px] shadow-none">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-medium text-[#74746E]">
               Doanh thu thực tế
             </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-[8px] bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <DollarSign className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#111] tracking-tight">
+            <div className="text-2xl font-bold text-[#111111] tracking-tight tabular-nums">
               {formatPrice(completedRevenue)}
             </div>
             <p className="text-xs text-[#74746E] mt-1 flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#21A366]" />
-              <span className="text-[#21A366] font-medium">Đã thu hoàn tất</span>
+              <span className="text-[#21A366] font-medium">
+                Đã thu hoàn tất
+              </span>
             </p>
           </CardContent>
         </Card>
 
-        {/* 2. Doanh thu đang xử lý (Tiềm năng) */}
-        <Card className="bg-white border-[#E7E7E3]">
+        {/* KPI 2: Doanh thu đang xử lý */}
+        <Card className="bg-white border-[#E7E7E3] rounded-[10px] shadow-none">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-medium text-[#74746E]">
               Doanh thu đang xử lý
             </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-[8px] bg-blue-50 text-blue-700 flex items-center justify-center">
               <Wallet className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#111] tracking-tight">
+            <div className="text-2xl font-bold text-[#111111] tracking-tight tabular-nums">
               {formatPrice(pendingRevenue)}
             </div>
             <p className="text-xs text-[#74746E] mt-1 flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-blue-600" />
-              <span className="text-blue-600 font-medium">Đơn chờ chốt & đang giao</span>
+              <span className="text-blue-600 font-medium">
+                Đơn chờ chốt &amp; đang giao
+              </span>
             </p>
           </CardContent>
         </Card>
 
-        {/* 3. Đơn mới cần xử lý (PENDING) */}
-        <Card className="bg-white border-[#E7E7E3]">
+        {/* KPI 3: Đơn mới cần xử lý (PENDING) */}
+        <Card className="bg-white border-[#E7E7E3] rounded-[10px] shadow-none">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-medium text-[#74746E]">
               Đơn mới cần xử lý
             </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-[8px] bg-amber-50 text-amber-700 flex items-center justify-center">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#111] tracking-tight">
+            <div className="text-2xl font-bold text-[#111111] tracking-tight tabular-nums">
               {pendingOrdersCount}
             </div>
-            <div className="text-xs text-[#74746E] mt-1 flex items-center justify-between">
-              <span className="text-amber-600 font-medium">Trạng thái Chờ xử lý</span>
+            <div className="text-xs text-[#74746E] mt-1 flex items-center justify-between gap-2">
+              <span className="text-amber-600 font-medium">
+                Trạng thái Chờ xử lý
+              </span>
               {pendingOrdersCount > 0 && (
                 <Link
                   href="/admin/orders?status=PENDING"
-                  className="inline-flex items-center gap-0.5 text-xs text-[#111] font-semibold hover:underline"
+                  className="inline-flex items-center gap-0.5 text-xs text-[#111111] font-semibold hover:underline shrink-0"
                 >
                   <span>Xử lý ngay</span>
                   <ArrowRight className="w-3 h-3" />
@@ -315,185 +291,191 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* 4. Tổng giá trị hàng còn */}
-        <Card className="bg-white border-[#E7E7E3]">
+        {/* KPI 4: Tồn kho sẵn bán (Merged Inventory Card) */}
+        <Card className="bg-white border-[#E7E7E3] rounded-[10px] shadow-none">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-medium text-[#74746E]">
-              Tổng giá trị hàng còn
+              Tồn kho sẵn bán
             </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <Coins className="w-4 h-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-[#111] tracking-tight">
-              {formatPrice(inStockValue)}
-            </div>
-            <p className="text-xs text-[#74746E] mt-1 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#21A366]" />
-              <span className="text-[#21A366] font-medium">{inStockProductsCount} sp sẵn sàng bán</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* 5. Sản phẩm đang kinh doanh */}
-        <Card className="bg-white border-[#E7E7E3]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-medium text-[#74746E]">
-              Sản phẩm trong kho
-            </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-[8px] bg-[#F3F3F0] text-[#111111] flex items-center justify-center">
               <Package className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#111] tracking-tight">
-              {inStockProductsCount}
-              <span className="text-sm font-normal text-[#74746E] ml-1">/ {totalProductsCount}</span>
+            <div className="text-2xl font-bold text-[#111111] tracking-tight tabular-nums">
+              {formatPrice(inStockValue)}
             </div>
-            <p className="text-xs text-[#74746E] mt-1 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#21A366]" />
-              <span>Sẵn sàng kinh doanh</span>
+            <p className="text-xs text-[#74746E] mt-1 flex items-center gap-1 tabular-nums">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#21A366] shrink-0" />
+              <span>
+                <strong className="font-semibold text-[#111111]">
+                  {inStockProductsCount}
+                </strong>{" "}
+                / {totalProductsCount} sản phẩm còn hàng
+              </span>
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Snapshot Tài chính hôm nay & tháng này (ADMIN ONLY) */}
-      {isAdmin && financeSnapshot && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm font-bold text-[#111]">
-                  Tài chính hôm nay &amp; tháng này
-                </h3>
-                {financeSnapshot.thisMonth.missingCostItemsCount > 0 && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
-                    {financeSnapshot.thisMonth.missingCostItemsCount} món chưa có giá vốn
-                  </span>
-                )}
+      {/* 3. 2-Column Row: Dòng tiền (ADMIN) + Lượt truy cập hôm nay */}
+      <div
+        className={`grid grid-cols-1 gap-4 ${
+          isAdmin && financeSnapshot ? "lg:grid-cols-2" : ""
+        }`}
+      >
+        {/* Snapshot Dòng tiền hôm nay & tháng này (ADMIN ONLY) */}
+        {isAdmin && financeSnapshot && (
+          <div className="p-5 rounded-[10px] bg-white border border-[#E7E7E3] flex flex-col justify-between gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-[8px] bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-sm font-bold text-[#111111]">
+                      Dòng tiền hôm nay &amp; tháng này
+                    </h3>
+                    {financeSnapshot.thisMonth.missingCostItemsCount > 0 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200 tabular-nums">
+                        {financeSnapshot.thisMonth.missingCostItemsCount} món
+                        thiếu giá vốn
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#74746E] mt-0.5">
+                    Tổng hợp doanh thu, lợi nhuận ròng và dòng tiền
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-1 text-xs text-[#74746E]">
-                <span>
-                  DT hôm nay:{" "}
-                  <strong className="text-sm font-bold text-[#111]">
-                    {formatPrice(financeSnapshot.today.revenue)}
-                  </strong>
-                </span>
-                <span>•</span>
-                <span>
-                  Lợi nhuận ròng hôm nay:{" "}
+              <Link
+                href="/admin/finance"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-[#111111] hover:underline shrink-0"
+              >
+                <span>Chi tiết Dòng tiền</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 tabular-nums">
+              <div className="rounded-[8px] bg-[#F7F7F5] border border-[#E7E7E3] p-3">
+                <div className="text-[11px] text-[#74746E]">Hôm nay</div>
+                <div className="text-base font-bold text-[#111111] mt-0.5">
+                  {formatPrice(financeSnapshot.today.revenue)}
+                </div>
+                <div className="text-[11px] text-[#74746E] mt-1">
+                  LN ròng:{" "}
                   <strong
-                    className={`font-semibold ${
+                    className={
                       financeSnapshot.today.netProfit >= 0
                         ? "text-[#21A366]"
                         : "text-[#D94A4A]"
-                    }`}
+                    }
                   >
                     {formatPrice(financeSnapshot.today.netProfit)}
                   </strong>
-                </span>
-                <span className="hidden sm:inline">•</span>
-                <span className="hidden sm:inline">
-                  Tháng này: DT{" "}
-                  <strong className="font-semibold text-[#111]">
-                    {formatPrice(financeSnapshot.thisMonth.revenue)}
-                  </strong>{" "}
-                  / LN{" "}
+                </div>
+              </div>
+
+              <div className="rounded-[8px] bg-[#F7F7F5] border border-[#E7E7E3] p-3">
+                <div className="text-[11px] text-[#74746E]">Tháng này</div>
+                <div className="text-base font-bold text-[#111111] mt-0.5">
+                  {formatPrice(financeSnapshot.thisMonth.revenue)}
+                </div>
+                <div className="text-[11px] text-[#74746E] mt-1">
+                  LN:{" "}
                   <strong
-                    className={`font-semibold ${
+                    className={
                       financeSnapshot.thisMonth.netProfit >= 0
                         ? "text-[#21A366]"
                         : "text-[#D94A4A]"
-                    }`}
+                    }
                   >
                     {formatPrice(financeSnapshot.thisMonth.netProfit)}
                   </strong>
-                </span>
-                <span className="hidden xl:inline">•</span>
-                <span className="hidden xl:inline">
-                  Dòng tiền ròng tháng:{" "}
+                  {" • "}
+                  Dòng tiền:{" "}
                   <strong
-                    className={`font-semibold ${
+                    className={
                       financeSnapshot.thisMonth.netCashflow >= 0
                         ? "text-[#21A366]"
                         : "text-[#D94A4A]"
-                    }`}
+                    }
                   >
                     {financeSnapshot.thisMonth.netCashflow > 0 ? "+" : ""}
                     {formatPrice(financeSnapshot.thisMonth.netCashflow)}
                   </strong>
-                </span>
+                </div>
               </div>
             </div>
           </div>
+        )}
 
-          <div className="flex items-center gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E7E7E3]">
+        {/* Snapshot Lưu lượng truy cập hôm nay */}
+        <div className="p-5 rounded-[10px] bg-white border border-[#E7E7E3] flex flex-col justify-between gap-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-[8px] bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                <Users className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-[#111111]">
+                  Lượt truy cập hôm nay
+                </h3>
+                <p className="text-xs text-[#74746E] mt-0.5">
+                  Lưu lượng khách truy cập thực tế trên Storefront
+                </p>
+              </div>
+            </div>
             <Link
-              href="/admin/finance"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[#E7E7E3] hover:border-[#111] bg-white text-xs font-semibold text-[#111] hover:bg-[#F7F7F5] transition-colors"
+              href="/admin/traffic"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-[#111111] hover:underline shrink-0"
             >
-              <span>Chi tiết Tài chính</span>
+              <span>Chi tiết</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-        </div>
-      )}
 
-      {/* Snapshot Lưu lượng truy cập */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-            <Users className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-[#111]">Lượt truy cập hôm nay</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 tabular-nums">
+            <div className="rounded-[8px] bg-[#F7F7F5] border border-[#E7E7E3] p-3">
+              <div className="text-[11px] text-[#74746E]">Khách hôm nay</div>
+              <div className="text-base font-bold text-[#111111] mt-0.5">
+                {trafficOverview.today.visitors}
+              </div>
             </div>
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-1 text-xs text-[#74746E]">
-              <span>
-                Hôm nay: <strong className="text-sm font-bold text-[#111]">{trafficOverview.today.visitors}</strong> khách duy nhất
-              </span>
-              <span>•</span>
-              <span>
-                <strong className="font-semibold text-[#111]">{trafficOverview.today.pageviews}</strong> lượt xem trang
-              </span>
-              <span className="hidden sm:inline">•</span>
-              <span className="hidden sm:inline">
-                Hôm qua: <strong className="font-semibold text-[#111]">{trafficOverview.yesterday.visitors}</strong> khách
-              </span>
-              <span className="hidden md:inline">•</span>
-              <span className="hidden md:inline">
-                7 ngày: <strong className="font-semibold text-[#111]">{trafficOverview.last7Days.visitors}</strong> khách
-              </span>
+            <div className="rounded-[8px] bg-[#F7F7F5] border border-[#E7E7E3] p-3">
+              <div className="text-[11px] text-[#74746E]">Lượt xem trang</div>
+              <div className="text-base font-bold text-[#111111] mt-0.5">
+                {trafficOverview.today.pageviews}
+              </div>
+            </div>
+            <div className="rounded-[8px] bg-[#F7F7F5] border border-[#E7E7E3] p-3">
+              <div className="text-[11px] text-[#74746E]">Hôm qua</div>
+              <div className="text-base font-bold text-[#111111] mt-0.5">
+                {trafficOverview.yesterday.visitors}
+              </div>
+            </div>
+            <div className="rounded-[8px] bg-[#F7F7F5] border border-[#E7E7E3] p-3">
+              <div className="text-[11px] text-[#74746E]">7 ngày qua</div>
+              <div className="text-base font-bold text-[#111111] mt-0.5">
+                {trafficOverview.last7Days.visitors}
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E7E7E3]">
-          <Link
-            href="/admin/traffic"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[#E7E7E3] hover:border-[#111] bg-white text-xs font-semibold text-[#111] hover:bg-[#F7F7F5] transition-colors"
-          >
-            <span>Chi tiết biểu đồ & Thiết bị</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
       </div>
 
-      {/* Biểu đồ Doanh thu 7 ngày gần nhất (Pure SVG Bar Chart) */}
-      <Card className="bg-white border-[#E7E7E3]">
+      {/* 4. Biểu đồ Doanh thu 7 ngày gần nhất */}
+      <Card className="bg-white border-[#E7E7E3] rounded-[10px] shadow-none">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <div>
-            <CardTitle className="text-base font-bold text-[#111]">
+            <CardTitle className="text-base font-bold text-[#111111]">
               Doanh thu 7 ngày gần nhất
             </CardTitle>
             <p className="text-xs text-[#74746E] mt-0.5">
-              Thống kê doanh số thực tế đã hoàn thành và doanh số đang trong tiến trình xử lý.
+              Thống kê doanh số thực tế đã hoàn thành và doanh số đang trong tiến
+              trình xử lý.
             </p>
           </div>
         </CardHeader>
@@ -502,11 +484,11 @@ export default async function AdminDashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Bảng Đơn hàng Gần đây (Recent Orders Table) */}
-      <Card className="bg-white border-[#E7E7E3]">
+      {/* 5. Bảng Đơn hàng Gần đây */}
+      <Card className="bg-white border-[#E7E7E3] rounded-[10px] shadow-none overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
-            <CardTitle className="text-base font-bold text-[#111]">
+            <CardTitle className="text-base font-bold text-[#111111]">
               Đơn hàng gần đây
             </CardTitle>
             <p className="text-xs text-[#74746E] mt-0.5">
@@ -515,7 +497,7 @@ export default async function AdminDashboardPage() {
           </div>
           <Link
             href="/admin/orders"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#111] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#111111] hover:underline"
           >
             <span>Xem tất cả</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -542,8 +524,13 @@ export default async function AdminDashboardPage() {
                 </thead>
                 <tbody className="divide-y divide-[#E7E7E3]">
                   {recentOrders.map((order) => {
-                    const totalQty = order.items.reduce((sum, item) => sum + item.quantity, 0);
-                    const formattedDate = new Date(order.createdAt).toLocaleDateString("vi-VN", {
+                    const totalQty = order.items.reduce(
+                      (sum, item) => sum + item.quantity,
+                      0
+                    );
+                    const formattedDate = new Date(
+                      order.createdAt
+                    ).toLocaleDateString("vi-VN", {
                       day: "2-digit",
                       month: "2-digit",
                       hour: "2-digit",
@@ -551,39 +538,47 @@ export default async function AdminDashboardPage() {
                     });
 
                     return (
-                      <tr key={order.id} className="hover:bg-[#F7F7F5]/60 transition-colors">
-                        <td className="py-3.5 px-4 font-mono font-semibold text-[#111]">
+                      <tr
+                        key={order.id}
+                        className="hover:bg-[#F7F7F5]/60 transition-colors"
+                      >
+                        <td className="py-3.5 px-4 font-mono font-semibold text-[#111111] tabular-nums">
                           <Link
                             href={`/admin/orders/${order.id}`}
-                            className="hover:underline text-[#111]"
+                            className="hover:underline text-[#111111]"
                           >
                             #{order.orderNumber}
                           </Link>
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="font-medium text-[#111]">{order.customerName}</div>
-                          <div className="text-[11px] text-[#74746E]">{order.customerPhone}</div>
+                          <div className="font-medium text-[#111111]">
+                            {order.customerName}
+                          </div>
+                          <div className="text-[11px] text-[#74746E] tabular-nums">
+                            {order.customerPhone}
+                          </div>
                         </td>
                         <td className="py-3.5 px-4 text-[#74746E]">
-                          <span>{totalQty} món</span>
+                          <span className="tabular-nums">{totalQty} món</span>
                           <span className="text-[11px] block truncate max-w-[180px] text-[#999994]">
                             {order.items[0]?.productName}
-                            {order.items.length > 1 && ` +${order.items.length - 1}`}
+                            {order.items.length > 1 &&
+                              ` +${order.items.length - 1}`}
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 text-right font-semibold text-[#111]">
+                        <td className="py-3.5 px-4 text-right font-semibold text-[#111111] tabular-nums">
                           {formatPrice(order.totalAmount)}
                         </td>
                         <td className="py-3.5 px-4 text-center">
-                          {getStatusBadge(order.status)}
+                          <OrderStatusBadge status={order.status} />
                         </td>
-                        <td className="py-3.5 px-4 text-right text-[#74746E] font-mono text-[11px]">
+                        <td className="py-3.5 px-4 text-right text-[#74746E] font-mono text-[11px] tabular-nums">
                           {formattedDate}
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           <Link
                             href={`/admin/orders/${order.id}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-[#E7E7E3] hover:border-[#111] bg-white text-[#111] text-[11px] font-medium transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[6px] border border-[#E7E7E3] hover:border-[#111111] bg-white text-[#111111] text-[11px] font-medium transition-colors"
                           >
                             <span>Chi tiết</span>
                           </Link>
@@ -597,6 +592,9 @@ export default async function AdminDashboardPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* 6. VPS System Resource Monitor (Moved to bottom, ADMIN-only) */}
+      {isAdmin && <VpsMonitorCard />}
     </div>
   );
 }

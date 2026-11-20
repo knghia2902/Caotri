@@ -20,27 +20,61 @@ export default async function AdminOrderDetailPage({
 
   const { id } = await params;
 
-  const order = await prisma.order.findUnique({
-    where: { id },
-    include: {
-      items: {
-        include: {
-          product: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              images: true,
+  const [order, settingRows] = await Promise.all([
+    prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    }),
+    prisma.siteSetting.findMany({
+      where: {
+        key: {
+          in: [
+            "shop_name",
+            "shopName",
+            "hotline",
+            "shop_address",
+            "address",
+            "site_url",
+            "siteUrl",
+          ],
+        },
+      },
+    }),
+  ]);
 
   if (!order) {
     notFound();
   }
+
+  const settingMap: Record<string, string> = {};
+  for (const row of settingRows) {
+    settingMap[row.key] = row.value;
+  }
+
+  const shopInfo = {
+    shopName:
+      settingMap.shop_name?.trim() ||
+      settingMap.shopName?.trim() ||
+      "TringuyenGear",
+    hotline: settingMap.hotline?.trim() || "",
+    address:
+      settingMap.shop_address?.trim() || settingMap.address?.trim() || "",
+    siteUrl:
+      settingMap.site_url?.trim() || settingMap.siteUrl?.trim() || "",
+  };
 
   // Bảo mật: Tuyệt đối không gửi costPrice xuống Client Component nếu không phải ADMIN
   const sanitizedOrder = {
@@ -71,5 +105,11 @@ export default async function AdminOrderDetailPage({
     })),
   };
 
-  return <OrderDetailView order={sanitizedOrder} isAdmin={isAdmin} />;
+  return (
+    <OrderDetailView
+      order={sanitizedOrder}
+      isAdmin={isAdmin}
+      shopInfo={shopInfo}
+    />
+  );
 }

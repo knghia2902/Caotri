@@ -30,7 +30,7 @@ function ChangeBadge({ pct }: { pct: number | null }) {
   const isUp = pct >= 0;
   return (
     <span
-      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px] font-semibold ${
+      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px] font-semibold tabular-nums ${
         isUp
           ? "bg-emerald-50 text-[#21A366]"
           : "bg-red-50 text-[#D94A4A]"
@@ -99,10 +99,10 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
             </span>
             <ChangeBadge pct={analytics.revenueChangePct} />
           </div>
-          <div className="text-2xl font-bold text-[#111] tracking-tight mt-2">
+          <div className="text-2xl font-bold text-[#111] tracking-tight tabular-nums mt-2">
             {formatPrice(analytics.revenue)}
           </div>
-          <div className="flex items-center justify-between text-xs text-[#74746E] mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
+          <div className="flex items-center justify-between text-xs text-[#74746E] tabular-nums mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
             <span>Web: {formatPrice(analytics.webRevenue)}</span>
             <span>Ngoài: {formatPrice(analytics.offlineRevenue)}</span>
           </div>
@@ -116,7 +116,7 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
             </span>
             <Package className="w-4 h-4 text-[#A3A39D]" />
           </div>
-          <div className="text-2xl font-bold text-[#111] tracking-tight mt-2">
+          <div className="text-2xl font-bold text-[#111] tracking-tight tabular-nums mt-2">
             {formatPrice(analytics.cogs)}
           </div>
           <div className="mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
@@ -141,12 +141,12 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
             <span className="text-xs font-semibold uppercase tracking-wider text-[#74746E]">
               Lãi gộp
             </span>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#F3F3F1] text-[#111]">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold tabular-nums bg-[#F3F3F1] text-[#111]">
               Biên {analytics.grossMarginPct.toFixed(1)}%
             </span>
           </div>
           <div
-            className={`text-2xl font-bold tracking-tight mt-2 ${
+            className={`text-2xl font-bold tracking-tight tabular-nums mt-2 ${
               analytics.grossProfit >= 0 ? "text-[#111]" : "text-[#D94A4A]"
             }`}
           >
@@ -165,12 +165,12 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
             </span>
             <Receipt className="w-4 h-4 text-[#A3A39D]" />
           </div>
-          <div className="text-2xl font-bold text-[#D94A4A] tracking-tight mt-2">
+          <div className="text-2xl font-bold text-[#D94A4A] tracking-tight tabular-nums mt-2">
             {formatPrice(analytics.operatingExpenses)}
           </div>
           <div className="flex items-start gap-1.5 text-[11px] text-[#74746E] mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
             <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[#A3A39D]" />
-            <span>
+            <span className="tabular-nums">
               Nhập hàng ({formatPrice(analytics.inventoryImportOut)}) được theo
               dõi ở Sổ Quỹ, không tính trùng vào đây.
             </span>
@@ -184,21 +184,21 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
               Lợi nhuận ròng
             </span>
             <div className="flex items-center gap-1.5">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#F3F3F1] text-[#111]">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold tabular-nums bg-[#F3F3F1] text-[#111]">
                 {analytics.netMarginPct.toFixed(1)}%
               </span>
               <ChangeBadge pct={analytics.netProfitChangePct} />
             </div>
           </div>
           <div
-            className={`text-2xl font-bold tracking-tight mt-2 ${
+            className={`text-2xl font-bold tracking-tight tabular-nums mt-2 ${
               analytics.netProfit >= 0 ? "text-[#21A366]" : "text-[#D94A4A]"
             }`}
           >
             {analytics.netProfit > 0 ? "+" : ""}
             {formatPrice(analytics.netProfit)}
           </div>
-          <div className="flex items-center justify-between text-xs text-[#74746E] mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
+          <div className="flex items-center justify-between text-xs text-[#74746E] tabular-nums mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
             <span>Kỳ trước: {formatPrice(analytics.prevNetProfit)}</span>
             {analytics.otherIncome > 0 && (
               <span>Thu khác: +{formatPrice(analytics.otherIncome)}</span>
@@ -214,11 +214,11 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
             </span>
             <ShoppingBag className="w-4 h-4 text-[#A3A39D]" />
           </div>
-          <div className="text-2xl font-bold text-[#111] tracking-tight mt-2">
+          <div className="text-2xl font-bold text-[#111] tracking-tight tabular-nums mt-2">
             {analytics.ordersCount.toLocaleString("vi-VN")}{" "}
             <span className="text-sm font-medium text-[#74746E]">đơn</span>
           </div>
-          <div className="flex items-center justify-between text-xs text-[#74746E] mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
+          <div className="flex items-center justify-between text-xs text-[#74746E] tabular-nums mt-2.5 pt-2.5 border-t border-[#F3F3F1]">
             <span>
               Web:{" "}
               <strong className="text-[#111]">{analytics.webOrdersCount}</strong>
@@ -280,7 +280,7 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
                           ({ch.ordersCount} đơn)
                         </span>
                       </div>
-                      <span className="font-mono font-semibold text-[#111] shrink-0">
+                      <span className="font-mono tabular-nums font-semibold text-[#111] shrink-0">
                         {ch.sharePct.toFixed(1)}%
                       </span>
                     </div>
@@ -295,7 +295,7 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
                       />
                     </div>
 
-                    <div className="text-right text-[11px] font-medium text-[#74746E]">
+                    <div className="text-right text-[11px] font-medium tabular-nums text-[#74746E]">
                       {formatPrice(ch.revenue)}
                     </div>
                   </div>
@@ -308,7 +308,7 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
           <div className="mt-5 pt-4 border-t border-[#E7E7E3] flex items-center justify-between text-xs">
             <span className="text-[#74746E]">Dòng tiền ròng kỳ này</span>
             <span
-              className={`font-bold ${
+              className={`font-bold tabular-nums ${
                 analytics.netCashflow >= 0 ? "text-[#21A366]" : "text-[#D94A4A]"
               }`}
             >
@@ -397,31 +397,31 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
                         )}
                       </div>
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-xs">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs">
                       {row.ordersCount}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-xs">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs">
                       {formatPrice(row.webRevenue)}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-xs">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs">
                       {formatPrice(row.offlineRevenue)}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-xs font-semibold">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs font-semibold">
                       {formatPrice(row.revenue)}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-xs text-[#74746E]">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs text-[#74746E]">
                       {formatPrice(row.cogs)}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-xs">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs">
                       {formatPrice(row.grossProfit)}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono text-xs text-[#D94A4A]">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs text-[#D94A4A]">
                       {row.operatingExpenses > 0
                         ? `-${formatPrice(row.operatingExpenses)}`
                         : formatPrice(0)}
                     </td>
                     <td
-                      className={`py-2.5 px-3 text-right font-mono text-xs font-semibold ${
+                      className={`py-2.5 px-3 text-right font-mono tabular-nums text-xs font-semibold ${
                         row.netProfit > 0
                           ? "text-[#21A366]"
                           : row.netProfit < 0
@@ -432,7 +432,7 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
                       {row.netProfit > 0 ? "+" : ""}
                       {formatPrice(row.netProfit)}
                     </td>
-                    <td className="py-2.5 px-4 text-right font-mono text-xs">
+                    <td className="py-2.5 px-4 text-right font-mono tabular-nums text-xs">
                       {row.revenue > 0 ? `${margin.toFixed(1)}%` : "—"}
                     </td>
                   </tr>
@@ -444,31 +444,31 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
                 <td className="py-3 px-4 whitespace-nowrap text-xs uppercase tracking-wider">
                   {range.period === "day" ? "Tổng 7 ngày" : "Tổng cộng"}
                 </td>
-                <td className="py-3 px-3 text-right font-mono text-xs">
+                <td className="py-3 px-3 text-right font-mono tabular-nums text-xs">
                   {tableTotals.ordersCount}
                 </td>
-                <td className="py-3 px-3 text-right font-mono text-xs">
+                <td className="py-3 px-3 text-right font-mono tabular-nums text-xs">
                   {formatPrice(tableTotals.webRevenue)}
                 </td>
-                <td className="py-3 px-3 text-right font-mono text-xs">
+                <td className="py-3 px-3 text-right font-mono tabular-nums text-xs">
                   {formatPrice(tableTotals.offlineRevenue)}
                 </td>
-                <td className="py-3 px-3 text-right font-mono text-xs">
+                <td className="py-3 px-3 text-right font-mono tabular-nums text-xs">
                   {formatPrice(tableTotals.revenue)}
                 </td>
-                <td className="py-3 px-3 text-right font-mono text-xs text-[#555550]">
+                <td className="py-3 px-3 text-right font-mono tabular-nums text-xs text-[#555550]">
                   {formatPrice(tableTotals.cogs)}
                 </td>
-                <td className="py-3 px-3 text-right font-mono text-xs">
+                <td className="py-3 px-3 text-right font-mono tabular-nums text-xs">
                   {formatPrice(tableTotals.grossProfit)}
                 </td>
-                <td className="py-3 px-3 text-right font-mono text-xs text-[#D94A4A]">
+                <td className="py-3 px-3 text-right font-mono tabular-nums text-xs text-[#D94A4A]">
                   {tableTotals.operatingExpenses > 0
                     ? `-${formatPrice(tableTotals.operatingExpenses)}`
                     : formatPrice(0)}
                 </td>
                 <td
-                  className={`py-3 px-3 text-right font-mono text-xs ${
+                  className={`py-3 px-3 text-right font-mono tabular-nums text-xs ${
                     tableTotals.netProfit >= 0
                       ? "text-[#21A366]"
                       : "text-[#D94A4A]"
@@ -477,7 +477,7 @@ export function FinanceAnalyticsView({ analytics }: FinanceAnalyticsViewProps) {
                   {tableTotals.netProfit > 0 ? "+" : ""}
                   {formatPrice(tableTotals.netProfit)}
                 </td>
-                <td className="py-3 px-4 text-right font-mono text-xs">
+                <td className="py-3 px-4 text-right font-mono tabular-nums text-xs">
                   {tableTotals.revenue > 0
                     ? `${tableNetMargin.toFixed(1)}%`
                     : "—"}

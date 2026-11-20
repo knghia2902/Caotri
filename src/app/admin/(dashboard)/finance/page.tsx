@@ -17,7 +17,7 @@ import type { OfflineProductOption } from "@/components/admin/offline-order-moda
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Tài chính & Dòng tiền | Admin TringuyenGear",
+  title: "Dòng tiền | Admin TringuyenGear",
   description:
     "Phân tích doanh thu, giá vốn, lợi nhuận ròng và quản lý sổ quỹ thu/chi",
 };

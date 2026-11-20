@@ -24,13 +24,15 @@ interface AdminHeaderProps {
 
 const pathTitles: Record<string, string> = {
   "/admin": "Tổng quan Dashboard",
-  "/admin/orders": "Quản lý Đơn hàng",
-  "/admin/finance": "Tài chính & Dòng tiền",
-  "/admin/products": "Quản lý Sản phẩm",
-  "/admin/categories": "Quản lý Danh mục",
-  "/admin/banners": "Quản lý Banners",
-  "/admin/traffic": "Thống kê Lượt truy cập",
-  "/admin/settings": "Cài đặt Cửa hàng",
+  "/admin/orders": "Đơn hàng",
+  "/admin/finance": "Dòng tiền",
+  "/admin/products": "Sản phẩm",
+  "/admin/categories": "Danh mục",
+  "/admin/banners": "Banners",
+  "/admin/traffic": "Lượt truy cập",
+  "/admin/users": "Nhân viên",
+  "/admin/backups": "Sao lưu",
+  "/admin/settings": "Cài đặt Shop",
   "/admin/profile": "Hồ sơ cá nhân",
 };
 
@@ -63,14 +65,33 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
     };
   }, [isDropdownOpen]);
 
-  // Tìm tiêu đề breadcrumb tương ứng với route hiện tại
-  const currentTitle =
-    pathTitles[pathname] ||
-    (pathname.startsWith("/admin/products/")
-      ? "Chi tiết Sản phẩm"
-      : pathname.startsWith("/admin/orders/")
-      ? "Chi tiết Đơn hàng"
-      : "Quản trị hệ thống");
+  // Xác định breadcrumb parent (khi đang ở trang con) và tiêu đề hiện tại
+  let parentBreadcrumb: { label: string; href: string } | null = null;
+  let currentTitle = pathTitles[pathname];
+
+  if (!currentTitle) {
+    if (pathname === "/admin/products/new") {
+      parentBreadcrumb = { label: "Sản phẩm", href: "/admin/products" };
+      currentTitle = "Thêm sản phẩm";
+    } else if (pathname.startsWith("/admin/products/")) {
+      parentBreadcrumb = { label: "Sản phẩm", href: "/admin/products" };
+      currentTitle = pathname.endsWith("/edit")
+        ? "Chỉnh sửa Sản phẩm"
+        : "Chi tiết Sản phẩm";
+    } else if (pathname.startsWith("/admin/orders/")) {
+      parentBreadcrumb = { label: "Đơn hàng", href: "/admin/orders" };
+      currentTitle = "Chi tiết Đơn hàng";
+    } else {
+      const segments = pathname.split("/").filter(Boolean);
+      if (segments.length >= 3 && segments[0] === "admin") {
+        const parentHref = `/admin/${segments[1]}`;
+        if (pathTitles[parentHref]) {
+          parentBreadcrumb = { label: pathTitles[parentHref], href: parentHref };
+        }
+      }
+      currentTitle = "Chi tiết";
+    }
+  }
 
   return (
     <header className="h-16 border-b border-[#E7E7E3] bg-white px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 print:hidden">
@@ -88,6 +109,17 @@ export function AdminHeader({ session, onMenuClick }: AdminHeaderProps) {
           <Link href="/admin" className="hover:text-[#111] transition-colors">
             Admin
           </Link>
+          {parentBreadcrumb && (
+            <>
+              <ChevronRight className="w-3.5 h-3.5 text-[#D5D5D0]" />
+              <Link
+                href={parentBreadcrumb.href}
+                className="hover:text-[#111] transition-colors whitespace-nowrap"
+              >
+                {parentBreadcrumb.label}
+              </Link>
+            </>
+          )}
           <ChevronRight className="w-3.5 h-3.5 text-[#D5D5D0]" />
           <span className="text-[#111] font-medium truncate max-w-[150px] sm:max-w-none">
             {currentTitle}

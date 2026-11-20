@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -42,6 +42,7 @@ import {
   toggleProductInStock,
   toggleProductArchived,
 } from "@/app/actions/product";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 
 export interface ProductItem {
   id: string;
@@ -90,6 +91,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ProductItem | null>(null);
   const [togglingFeaturedId, setTogglingFeaturedId] = useState<string | null>(null);
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
   const [togglingArchiveId, setTogglingArchiveId] = useState<string | null>(null);
@@ -184,10 +186,29 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
     setCurrentPage(1);
   };
 
-  // Sync state if initialProducts changes
-  if (initialProducts !== products && initialProducts.length !== products.length) {
+  // Sync state when server props update
+  useEffect(() => {
     setProducts(initialProducts);
-  }
+  }, [initialProducts]);
+
+  // Close internal modals on Escape key (topmost first)
+  useEffect(() => {
+    if (!previewImageUrl && !viewingWarrantyProduct && !viewingInternalNoteProduct) {
+      return;
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (previewImageUrl) {
+        setPreviewImageUrl(null);
+      } else if (viewingWarrantyProduct) {
+        setViewingWarrantyProduct(null);
+      } else if (viewingInternalNoteProduct) {
+        setViewingInternalNoteProduct(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewImageUrl, viewingWarrantyProduct, viewingInternalNoteProduct]);
 
   // Lọc sản phẩm
   const filteredProducts = products.filter((p) => {
@@ -350,17 +371,14 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
     }
   };
 
-  // Xóa sản phẩm
-  const handleDelete = async (product: ProductItem) => {
-    const confirmMsg =
-      `Bạn có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm "${product.name}"?\n\n` +
-      `⚠️ Chú ý phân biệt:\n` +
-      `• Nếu sản phẩm chỉ TẠM HẾT HÀNG: Hãy hủy bỏ và bấm nút "Còn hàng / Hết hàng" để giữ lại thông tin & ảnh.\n` +
-      `• Nếu XÓA HẲN: Sản phẩm sẽ bị xóa khỏi hệ thống và toàn bộ file ảnh trên máy chủ sẽ được dọn dẹp để tiết kiệm ổ đĩa.`;
+  // Xóa sản phẩm (mở ConfirmDialog)
+  const handleDelete = (product: ProductItem) => {
+    setDeleteTarget(product);
+  };
 
-    if (!window.confirm(confirmMsg)) {
-      return;
-    }
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    const product = deleteTarget;
 
     setDeletingId(product.id);
     startTransition(async () => {
@@ -373,6 +391,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             : `Đã xóa sản phẩm "${product.name}" khỏi hệ thống.`
         );
         setProducts((prev) => prev.filter((p) => p.id !== product.id));
+        setDeleteTarget(null);
         router.refresh();
       } else {
         toast.error(res.error || "Không thể xóa sản phẩm");
@@ -395,74 +414,74 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
       {/* Product Inventory Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Tổng giá trị hàng còn */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+        <div className="p-4 sm:p-5 rounded-[10px] bg-white border border-[#E7E7E3] flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">
               Tổng giá trị hàng còn (Đang bán)
             </p>
-            <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight">
+            <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight tabular-nums">
               {formatPrice(totalInStockValue)}
             </p>
-            <p className="text-[11px] text-[#21A366] mt-1 font-medium flex items-center gap-1">
+            <p className="text-[11px] text-[#21A366] mt-1 font-medium flex items-center gap-1 tabular-nums">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{inStockCount} sản phẩm sẵn sàng bán</span>
             </p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-[10px] bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
             <Coins className="w-5 h-5" />
           </div>
         </div>
 
         {/* 2. Sản phẩm còn hàng */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+        <div className="p-4 sm:p-5 rounded-[10px] bg-white border border-[#E7E7E3] flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">
               Sản phẩm còn hàng
             </p>
-            <p className="text-xl sm:text-2xl font-bold text-emerald-600 mt-1 tracking-tight">
+            <p className="text-xl sm:text-2xl font-bold text-emerald-600 mt-1 tracking-tight tabular-nums">
               {inStockCount}
             </p>
             <p className="text-[11px] text-[#74746E] mt-1">
               Khách có thể đặt mua ngay
             </p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-[10px] bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-5 h-5" />
           </div>
         </div>
 
         {/* 3. Sản phẩm hết hàng */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+        <div className="p-4 sm:p-5 rounded-[10px] bg-white border border-[#E7E7E3] flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">
               Sản phẩm hết hàng
             </p>
-            <p className="text-xl sm:text-2xl font-bold text-rose-600 mt-1 tracking-tight">
+            <p className="text-xl sm:text-2xl font-bold text-rose-600 mt-1 tracking-tight tabular-nums">
               {outOfStockCount}
             </p>
             <p className="text-[11px] text-[#74746E] mt-1">
               Tạm ngưng nhận đơn
             </p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-[10px] bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
             <XCircle className="w-5 h-5" />
           </div>
         </div>
 
         {/* 4. Tổng sản phẩm (Web & Kho) */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7E7E3] shadow-sm flex items-center justify-between">
+        <div className="p-4 sm:p-5 rounded-[10px] bg-white border border-[#E7E7E3] flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">
               Tổng sản phẩm quản lý
             </p>
-            <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight">
+            <p className="text-xl sm:text-2xl font-bold text-[#111] mt-1 tracking-tight tabular-nums">
               {products.length}
             </p>
-            <p className="text-[11px] text-[#74746E] mt-1">
+            <p className="text-[11px] text-[#74746E] mt-1 tabular-nums">
               <span className="text-emerald-700 font-semibold">{activeProducts.length} đang bán</span> • <span className="text-amber-700 font-semibold">{archivedCount} lưu kho</span>
             </p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-[10px] bg-[#F3F3F1] text-[#3A3A36] flex items-center justify-center shrink-0">
             <Package className="w-5 h-5" />
           </div>
         </div>
@@ -552,7 +571,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
       </div>
 
       {/* Table Container */}
-      <div className="rounded-xl border border-[#E7E7E3] bg-white  overflow-hidden ">
+      <div className="rounded-[10px] border border-[#E7E7E3] bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-[#111]">
             <thead className="bg-[#FAFAFA] border-b border-[#E7E7E3] text-xs font-semibold uppercase text-[#74746E] tracking-wider">
@@ -567,7 +586,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                 <th className="py-3 px-4 align-middle text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60">
+            <tbody className="divide-y divide-[#E7E7E3]">
               {filteredProducts.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-[#74746E]">
@@ -595,7 +614,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                     >
                       {/* Image */}
                       <td className="py-3 px-4 align-middle">
-                        <div className="w-12 h-12 rounded-lg bg-[#111111] border border-[#E7E7E3] overflow-hidden flex items-center justify-center group-hover:border-[#111] transition-colors">
+                        <div className="w-12 h-12 rounded-lg bg-[#F3F3F1] border border-[#E7E7E3] overflow-hidden flex items-center justify-center group-hover:border-[#111] transition-colors">
                           {firstImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -605,7 +624,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).src =
-                                  "https://placehold.co/100x100/18181b/a1a1aa?text=No+Img";
+                                  "https://placehold.co/100x100/f3f3f1/74746e?text=No+Img";
                               }}
                             />
                           ) : (
@@ -642,9 +661,9 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       </td>
 
                       {/* Price */}
-                      <td className="py-3 px-4 align-middle font-mono">
+                      <td className="py-3 px-4 align-middle font-mono tabular-nums">
                         <div className="flex flex-col justify-center">
-                          <div className="font-bold text-[#111]">
+                          <div className="font-bold text-[#111] tabular-nums">
                             {formatPrice(product.price)}
                           </div>
                           {product.costPrice && product.costPrice > 0 ? (
@@ -654,7 +673,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                               className="text-[11px] text-[#74746E] hover:text-[#111] inline-flex items-center gap-1 font-sans mt-0.5 transition-colors cursor-pointer text-left"
                               title="Sổ tính & Ghi chú"
                             >
-                              <span>Vốn: <span className="font-mono text-[#555550]">{formatPrice(product.costPrice)}</span></span>
+                              <span>Vốn: <span className="font-mono tabular-nums text-[#555550]">{formatPrice(product.costPrice)}</span></span>
                               {product.internalNote && (
                                 <FileText className="w-3 h-3 text-indigo-600 shrink-0" />
                               )}
@@ -670,7 +689,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                               <span>Ghi chú</span>
                             </button>
                           ) : product.originalPrice && product.originalPrice > product.price ? (
-                            <div className="text-xs text-[#74746E] line-through">
+                            <div className="text-xs text-[#74746E] line-through tabular-nums">
                               {formatPrice(product.originalPrice)}
                             </div>
                           ) : null}
@@ -752,6 +771,17 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       {/* Actions */}
                       <td className="py-3 px-4 align-middle text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* Xem trên storefront */}
+                          <a
+                            href={`/products/${product.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Xem trang sản phẩm (mở tab mới)"
+                            className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-[#E7E7E3] bg-white text-[#74746E] hover:text-[#111] hover:bg-[#F3F3F1] transition-all"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+
                           {/* 1-Click Toggle Lưu kho */}
                           <button
                             type="button"
@@ -920,7 +950,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           onClick={() => setViewingWarrantyProduct(null)}
         >
           <div
-            className="bg-white rounded-2xl border border-[#E7E7E3] shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+            className="bg-white rounded-[10px] border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -992,7 +1022,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                           return (
                             <div
                               key={url + idx}
-                              className="group rounded-xl overflow-hidden border border-[#E7E7E3] bg-zinc-900 relative shadow-sm"
+                              className="group rounded-[10px] overflow-hidden border border-[#E7E7E3] bg-[#F3F3F1] relative"
                             >
                               <div
                                 onClick={() => setPreviewImageUrl(cleanUrl)}
@@ -1005,7 +1035,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                                   className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                                   onError={(e) => {
                                     (e.target as HTMLImageElement).src =
-                                      "https://placehold.co/400x400/18181b/a1a1aa?text=Lỗi+ảnh";
+                                      "https://placehold.co/400x400/f3f3f1/74746e?text=Lỗi+ảnh";
                                   }}
                                 />
                                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -1083,7 +1113,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           onClick={() => setViewingInternalNoteProduct(null)}
         >
           <div
-            className="bg-white rounded-2xl border border-[#E7E7E3] shadow-2xl max-w-lg w-full flex flex-col overflow-hidden"
+            className="bg-white rounded-[10px] border border-[#E7E7E3] shadow-[0_8px_30px_rgba(0,0,0,0.08)] max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -1108,20 +1138,20 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
             </div>
 
             {/* Content */}
-            <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+            <div className="p-5 space-y-4 overflow-y-auto">
               {/* Financial Box */}
               {viewingInternalNoteProduct.costPrice && viewingInternalNoteProduct.costPrice > 0 ? (
-                <div className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E7E7E3] space-y-3">
+                <div className="p-4 rounded-[10px] bg-[#FAFAFA] border border-[#E7E7E3] space-y-3">
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="p-2.5 rounded-lg bg-white border border-[#E7E7E3]">
                       <span className="text-[#74746E] block mb-0.5">Giá thu vào (vốn):</span>
-                      <span className="text-sm font-bold font-mono text-indigo-950">
+                      <span className="text-sm font-bold font-mono tabular-nums text-indigo-950">
                         {formatPrice(viewingInternalNoteProduct.costPrice)}
                       </span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-white border border-[#E7E7E3]">
                       <span className="text-[#74746E] block mb-0.5">Giá bán niêm yết:</span>
-                      <span className="text-sm font-bold font-mono text-[#111]">
+                      <span className="text-sm font-bold font-mono tabular-nums text-[#111]">
                         {formatPrice(viewingInternalNoteProduct.price)}
                       </span>
                     </div>
@@ -1137,7 +1167,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                       <span>Lời dự kiến:</span>
                     </span>
                     {viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice >= 0 ? (
-                      <span className="text-sm font-bold font-mono text-emerald-600">
+                      <span className="text-sm font-bold font-mono tabular-nums text-emerald-600">
                         +{formatPrice(viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice)}
                         {" "}
                         <span className="text-xs font-normal">
@@ -1145,7 +1175,7 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
                         </span>
                       </span>
                     ) : (
-                      <span className="text-sm font-bold font-mono text-rose-600">
+                      <span className="text-sm font-bold font-mono tabular-nums text-rose-600">
                         {formatPrice(viewingInternalNoteProduct.price - viewingInternalNoteProduct.costPrice)}
                       </span>
                     )}
@@ -1245,6 +1275,21 @@ export function ProductTable({ products: initialProducts, categories }: ProductT
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        title={`Xóa vĩnh viễn "${deleteTarget?.name || ""}"?`}
+        description="Nếu sản phẩm chỉ tạm hết hàng, hãy bấm Hủy và đổi trạng thái Còn hàng / Hết hàng để giữ lại thông tin & ảnh. Nếu xóa vĩnh viễn, sản phẩm và toàn bộ file ảnh trên máy chủ sẽ bị xóa khỏi hệ thống."
+        confirmLabel="Xóa vĩnh viễn"
+        cancelLabel="Hủy"
+        variant="danger"
+        loading={Boolean(deleteTarget && deletingId === deleteTarget.id)}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          if (!deletingId) setDeleteTarget(null);
+        }}
+      />
     </div>
   );
 }

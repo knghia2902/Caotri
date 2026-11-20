@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { loginAction } from "@/app/actions/auth";
-import { Lock, Mail, Eye, EyeOff, AlertCircle, Loader2, ArrowRight } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 
 export function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/admin";
 
@@ -56,12 +54,12 @@ export function LoginForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="admin-email"
-            className="block text-xs font-semibold uppercase tracking-wider text-[#555]"
+            className="block text-xs font-semibold uppercase tracking-wider text-[#555550]"
           >
             Tài khoản
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#888]">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#74746E]">
               <Mail className="w-4 h-4" />
             </div>
             <Input
@@ -74,7 +72,7 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
-              className="h-11 pl-10 pr-3.5 bg-white border-[#D5D5D0] text-[#111] placeholder:text-[#A3A39D] focus:border-[#111] focus:ring-1 focus:ring-[#111] rounded-xl transition-all text-sm"
+              className="h-11 pl-10 pr-3.5 bg-white border-[#D5D5D0] text-[#111111] placeholder:text-[#A3A39D] focus:border-[#111111] focus:ring-1 focus:ring-[#111111] rounded-[10px] transition-all text-sm"
             />
           </div>
         </div>
@@ -84,13 +82,13 @@ export function LoginForm() {
           <div className="flex items-center justify-between">
             <label
               htmlFor="admin-password"
-              className="block text-xs font-semibold uppercase tracking-wider text-[#555]"
+              className="block text-xs font-semibold uppercase tracking-wider text-[#555550]"
             >
               Mật khẩu
             </label>
           </div>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#888]">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#74746E]">
               <Lock className="w-4 h-4" />
             </div>
             <Input
@@ -103,13 +101,13 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isLoading}
-              className="h-11 pl-10 pr-11 bg-white border-[#D5D5D0] text-[#111] placeholder:text-[#A3A39D] focus:border-[#111] focus:ring-1 focus:ring-[#111] rounded-xl transition-all"
+              className="h-11 pl-10 pr-11 bg-white border-[#D5D5D0] text-[#111111] placeholder:text-[#A3A39D] focus:border-[#111111] focus:ring-1 focus:ring-[#111111] rounded-[10px] transition-all"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
-              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#74746E] hover:text-[#111] transition-colors"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#74746E] hover:text-[#111111] transition-colors"
               title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -121,7 +119,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full h-11 bg-[#111] hover:bg-black text-white font-medium text-sm rounded-xl transition-all duration-150 shadow-sm mt-2"
+          className="w-full h-11 bg-[#111111] hover:bg-black text-white font-medium text-sm rounded-[10px] transition-all duration-150 mt-2"
         >
           {isLoading ? (
             <>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   Users,
   ShieldCheck,
@@ -23,6 +24,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import {
   UserItem,
   createUserAction,
@@ -37,6 +39,7 @@ interface UserManagerProps {
 }
 
 export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
+  const router = useRouter();
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"ALL" | "ADMIN" | "STAFF">("ALL");
@@ -67,8 +70,24 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
 
   // Delete State
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteUser, setConfirmDeleteUser] = useState<UserItem | null>(null);
 
   const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
+
+  useEffect(() => {
+    if (!isCreateOpen && !editingUser) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (isCreateOpen && !isCreating) setIsCreateOpen(false);
+      if (editingUser && !isUpdating) setEditingUser(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isCreateOpen, isCreating, editingUser, isUpdating]);
 
   // Filtered users
   const filteredUsers = users.filter((u) => {
@@ -126,16 +145,9 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
           role: "ADMIN",
         });
 
-        // Cập nhật danh sách client
+        // Đồng bộ lại từ server để nhận ID thật từ database
         startTransition(() => {
-          const newUser: UserItem = {
-            id: `temp-${Date.now()}`,
-            name: createForm.name,
-            email: createForm.email.toLowerCase(),
-            role: createForm.role,
-            createdAt: new Date().toISOString(),
-          };
-          setUsers((prev) => [newUser, ...prev]);
+          router.refresh();
         });
       } else {
         toast.error(res.error || "Không thể tạo tài khoản.");
@@ -211,6 +223,7 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
           )
         );
         setEditingUser(null);
+        router.refresh();
       } else {
         toast.error(res.error || "Không thể cập nhật tài khoản.");
       }
@@ -222,15 +235,18 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
   };
 
   // 4. Xóa tài khoản
-  const handleDeleteUser = async (user: UserItem) => {
+  const handleDeleteUser = (user: UserItem) => {
     if (user.id === currentUserId) {
       toast.error("Không thể tự xóa tài khoản bạn đang đăng nhập!");
       return;
     }
 
-    if (!confirm(`Bạn có chắc chắn muốn xóa tài khoản "${user.name}" (${user.email}) không? Hành động này không thể hoàn tác!`)) {
-      return;
-    }
+    setConfirmDeleteUser(user);
+  };
+
+  const handleConfirmDeleteUser = async () => {
+    if (!confirmDeleteUser) return;
+    const user = confirmDeleteUser;
 
     setDeletingId(user.id);
     try {
@@ -238,6 +254,7 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
       if (res.success) {
         toast.success(res.message || "Đã xóa tài khoản thành công!");
         setUsers((prev) => prev.filter((u) => u.id !== user.id));
+        router.refresh();
       } else {
         toast.error(res.error || "Không thể xóa tài khoản.");
       }
@@ -245,6 +262,7 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
       toast.error("Lỗi khi xóa tài khoản.");
     } finally {
       setDeletingId(null);
+      setConfirmDeleteUser(null);
     }
   };
 
@@ -267,30 +285,30 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
     <div className="space-y-6">
       {/* 1. THẺ THỐNG KÊ NHANH */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-[#E7E7E3] p-5 shadow-xs flex items-center justify-between">
+        <div className="bg-white rounded-[10px] border border-[#E7E7E3] p-5 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">Tổng tài khoản</p>
-            <p className="text-2xl font-bold text-[#111] mt-1">{users.length}</p>
+            <p className="text-2xl font-bold text-[#111] tabular-nums mt-1">{users.length}</p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-[#111]">
+          <div className="w-12 h-12 rounded-xl bg-[#F7F7F5] border border-[#E7E7E3] flex items-center justify-center text-[#111]">
             <Users className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#E7E7E3] p-5 shadow-xs flex items-center justify-between">
+        <div className="bg-white rounded-[10px] border border-[#E7E7E3] p-5 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">Quản trị viên (ADMIN)</p>
-            <p className="text-2xl font-bold text-[#111] mt-1">{totalAdmins}</p>
+            <p className="text-2xl font-bold text-[#111] tabular-nums mt-1">{totalAdmins}</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600">
             <ShieldCheck className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#E7E7E3] p-5 shadow-xs flex items-center justify-between">
+        <div className="bg-white rounded-[10px] border border-[#E7E7E3] p-5 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-[#74746E]">Nhân viên (STAFF)</p>
-            <p className="text-2xl font-bold text-[#111] mt-1">{totalStaff}</p>
+            <p className="text-2xl font-bold text-[#111] tabular-nums mt-1">{totalStaff}</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
             <UserCog className="w-6 h-6" />
@@ -299,7 +317,7 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
       </div>
 
       {/* 2. THANH CÔNG CỤ: TÌM KIẾM, BỘ LỌC & NÚT TẠO MỚI */}
-      <div className="bg-white rounded-2xl border border-[#E7E7E3] p-4 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-[10px] border border-[#E7E7E3] p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-[#74746E] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -360,7 +378,7 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
       </div>
 
       {/* 3. BẢNG DANH SÁCH TÀI KHOẢN */}
-      <div className="bg-white rounded-2xl border border-[#E7E7E3] overflow-hidden shadow-xs">
+      <div className="bg-white rounded-[10px] border border-[#E7E7E3] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
@@ -503,8 +521,16 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
 
       {/* 4. MODAL TẠO TÀI KHOẢN MỚI */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl border border-[#E7E7E3] max-w-md w-full p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => {
+            if (!isCreating) setIsCreateOpen(false);
+          }}
+        >
+          <div
+            className="bg-white rounded-[10px] border border-[#E7E7E3] max-w-md w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-[#E7E7E3]">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
@@ -701,8 +727,16 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
 
       {/* 5. MODAL CHỈNH SỬA / ĐỔI MẬT KHẨU TÀI KHOẢN */}
       {editingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl border border-[#E7E7E3] max-w-md w-full p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => {
+            if (!isUpdating) setEditingUser(null);
+          }}
+        >
+          <div
+            className="bg-white rounded-[10px] border border-[#E7E7E3] max-w-md w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 border-b border-[#E7E7E3]">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
@@ -890,6 +924,25 @@ export function UserManager({ initialUsers, currentUserId }: UserManagerProps) {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={Boolean(confirmDeleteUser)}
+        title="Xóa tài khoản"
+        description={
+          confirmDeleteUser
+            ? `Bạn có chắc chắn muốn xóa tài khoản "${confirmDeleteUser.name}" (${confirmDeleteUser.email}) không? Hành động này không thể hoàn tác.`
+            : undefined
+        }
+        confirmLabel="Xóa tài khoản"
+        cancelLabel="Hủy"
+        variant="danger"
+        loading={Boolean(deletingId)}
+        onConfirm={handleConfirmDeleteUser}
+        onCancel={() => {
+          if (!deletingId) setConfirmDeleteUser(null);
+        }}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { AdminShell } from "@/components/admin/admin-shell";
 
 export default async function DashboardLayout({
@@ -13,5 +14,13 @@ export default async function DashboardLayout({
     redirect("/admin/login");
   }
 
-  return <AdminShell session={session}>{children}</AdminShell>;
+  const pendingOrdersCount = await prisma.order.count({
+    where: { status: "PENDING" },
+  });
+
+  return (
+    <AdminShell session={session} pendingOrdersCount={pendingOrdersCount}>
+      {children}
+    </AdminShell>
+  );
 }

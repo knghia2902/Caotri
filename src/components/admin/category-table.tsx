@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { CategoryModal, type CategoryModalData } from "@/components/admin/category-modal";
 import { MegaMenuConfigModal } from "@/components/admin/mega-menu-config-modal";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { deleteCategory } from "@/app/actions/category";
 import { useRouter } from "next/navigation";
 
@@ -35,7 +36,8 @@ export function CategoryTable({ categories }: CategoryTableProps) {
   const [isMegaMenuModalOpen, setIsMegaMenuModalOpen] = useState(false);
   const [megaMenuCategory, setMegaMenuCategory] = useState<{ id: string; name: string; slug: string } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [confirmDeleteCat, setConfirmDeleteCat] = useState<CategoryWithCount | null>(null);
+  const [, startTransition] = useTransition();
 
   const filteredCategories = categories.filter((cat) => {
     const q = search.toLowerCase().trim();
@@ -73,7 +75,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (cat: CategoryWithCount) => {
+  const handleDelete = (cat: CategoryWithCount) => {
     if (cat._count.products > 0) {
       toast.error(
         `Không thể xóa: Danh mục "${cat.name}" đang có ${cat._count.products} sản phẩm. Hãy chuyển sản phẩm sang danh mục khác trước.`
@@ -81,13 +83,12 @@ export function CategoryTable({ categories }: CategoryTableProps) {
       return;
     }
 
-    if (
-      !window.confirm(
-        `Bạn có chắc chắn muốn xóa danh mục "${cat.name}" không? Thao tác này không thể hoàn tác.`
-      )
-    ) {
-      return;
-    }
+    setConfirmDeleteCat(cat);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!confirmDeleteCat) return;
+    const cat = confirmDeleteCat;
 
     setDeletingId(cat.id);
     startTransition(async () => {
@@ -99,6 +100,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
         toast.error(res.error || "Không thể xóa danh mục");
       }
       setDeletingId(null);
+      setConfirmDeleteCat(null);
     });
   };
 
@@ -122,7 +124,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
       </div>
 
       {/* Categories Table */}
-      <div className="bg-white overflow-hidden">
+      <div className="border border-[#E7E7E3] rounded-[10px] bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-[#111]">
             <thead className="bg-[#FAFAFA] text-xs font-semibold text-[#111]">
@@ -278,6 +280,25 @@ export function CategoryTable({ categories }: CategoryTableProps) {
         category={megaMenuCategory}
         onSuccess={() => {
           router.refresh();
+        }}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={Boolean(confirmDeleteCat)}
+        title="Xóa danh mục"
+        description={
+          confirmDeleteCat
+            ? `Bạn có chắc chắn muốn xóa danh mục "${confirmDeleteCat.name}" không? Thao tác này không thể hoàn tác.`
+            : undefined
+        }
+        confirmLabel="Xóa danh mục"
+        cancelLabel="Hủy"
+        variant="danger"
+        loading={Boolean(deletingId)}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          if (!deletingId) setConfirmDeleteCat(null);
         }}
       />
     </div>

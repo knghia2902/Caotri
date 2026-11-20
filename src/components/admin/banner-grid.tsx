@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus,
@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BannerModal, type BannerModalData } from "@/components/admin/banner-modal";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { deleteBanner, toggleBannerActive } from "@/app/actions/banner";
 import { normalizeImageUrl } from "@/lib/utils";
 
@@ -39,12 +40,13 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState<BannerModalData | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteBanner, setConfirmDeleteBanner] = useState<BannerItem | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
-  if (initialBanners !== banners && initialBanners.length !== banners.length) {
+  useEffect(() => {
     setBanners(initialBanners);
-  }
+  }, [initialBanners]);
 
   const handleAddNew = () => {
     setSelectedBanner(null);
@@ -91,10 +93,13 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
     }
   };
 
-  const handleDelete = async (banner: BannerItem) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa banner "${banner.title}"?`)) {
-      return;
-    }
+  const handleDelete = (banner: BannerItem) => {
+    setConfirmDeleteBanner(banner);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!confirmDeleteBanner) return;
+    const banner = confirmDeleteBanner;
 
     setDeletingId(banner.id);
     startTransition(async () => {
@@ -107,6 +112,7 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
         toast.error(res.error || "Không thể xóa banner");
       }
       setDeletingId(null);
+      setConfirmDeleteBanner(null);
     });
   };
 
@@ -127,7 +133,7 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
 
       {/* Card Grid */}
       {banners.length === 0 ? (
-        <div className="py-16 text-center rounded-2xl border border-dashed border-[#E7E7E3] bg-white/30">
+        <div className="py-16 text-center rounded-[10px] border border-dashed border-[#E7E7E3] bg-white/30">
           <ImageIcon className="w-12 h-12 mx-auto text-[#A3A39D] mb-3" />
           <h3 className="text-base font-semibold text-[#111]">Chưa có banner nào</h3>
           <p className="text-xs text-[#74746E] mt-1 max-w-sm mx-auto">
@@ -143,10 +149,10 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
           {banners.map((banner) => (
             <div
               key={banner.id}
-              className="group rounded-2xl border border-[#E7E7E3] bg-white overflow-hidden hover:border-[#111] transition-all flex flex-col "
+              className="group rounded-[10px] border border-[#E7E7E3] bg-white overflow-hidden hover:border-[#111] transition-all flex flex-col"
             >
               {/* Image Preview */}
-              <div className="relative aspect-[16/8] w-full bg-[#111111] overflow-hidden">
+              <div className="relative aspect-[16/8] w-full bg-[#F3F3F1] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={normalizeImageUrl(banner.imageUrl)}
@@ -161,7 +167,7 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
 
                 {/* Badges on top of image */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                  <Badge className="bg-white/80  text-[#111] border border-[#E7E7E3] font-mono text-[11px] px-2 py-0.5">
+                  <Badge className="bg-white/90 text-[#111] border border-[#E7E7E3] font-mono tabular-nums text-[11px] px-2 py-0.5">
                     Thứ tự #{banner.orderIndex}
                   </Badge>
                 </div>
@@ -171,10 +177,10 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
                     type="button"
                     onClick={() => handleToggleActive(banner)}
                     disabled={togglingId === banner.id}
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold  border transition-all ${
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-all ${
                       banner.isActive
-                        ? "bg-emerald-950/80 text-emerald-300 border-emerald-700/60 hover:bg-emerald-900/90"
-                        : "bg-white/80 text-[#74746E] border-[#E7E7E3] hover:bg-[#FAFAFA]/90"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                        : "bg-white/90 text-[#74746E] border-[#E7E7E3] hover:bg-[#FAFAFA]"
                     }`}
                   >
                     {togglingId === banner.id ? (
@@ -251,6 +257,25 @@ export function BannerGrid({ banners: initialBanners }: BannerGridProps) {
         banner={selectedBanner}
         onSuccess={() => {
           router.refresh();
+        }}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={Boolean(confirmDeleteBanner)}
+        title="Xóa banner"
+        description={
+          confirmDeleteBanner
+            ? `Bạn có chắc chắn muốn xóa banner "${confirmDeleteBanner.title}"? Thao tác này không thể hoàn tác.`
+            : undefined
+        }
+        confirmLabel="Xóa banner"
+        cancelLabel="Hủy"
+        variant="danger"
+        loading={Boolean(deletingId)}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          if (!deletingId) setConfirmDeleteBanner(null);
         }}
       />
     </div>
